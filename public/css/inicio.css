@@ -97,7 +97,7 @@
     }
     .transacciones {
         width: 90%;
-        height: 45%;
+        height: 40%;
         border-radius: var(--border-radius-lg);
         padding: 2px;
         margin-block: 1rem;

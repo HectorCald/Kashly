@@ -28,6 +28,17 @@ app.get('/', (req, res) => {
     res.render('inicio');
 });
 
+/* ===== RUTAS PWA ===== */
+app.get('/manifest.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(join(__dirname, 'public', 'manifest.json'));
+});
+
+app.get('/sw.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(join(__dirname, 'public', 'sw.js'));
+});
+
 
 
 

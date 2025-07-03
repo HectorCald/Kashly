@@ -1,0 +1,27 @@
+{
+  "name": "Kashly - Gestor de Finanzas",
+  "short_name": "Kashly",
+  "description": "Aplicación para gestionar transacciones financieras con categorías y etiquetas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#4a90e2",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/img/img-inicio/logo-trans.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/img-inicio/logo-trans.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "lang": "es",
+  "dir": "ltr"
+} 

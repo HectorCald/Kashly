@@ -253,6 +253,7 @@ function eventosEntradaManual() {
         document.querySelectorAll('.entrada-manual .etiquetas button').forEach(b=>b.classList.remove('muestra-categoria','oculta-categoria'));
         // Despacha evento para actualizar dashboard
         window.dispatchEvent(new Event('transaccionGuardada'));
+        document.querySelector('.overlay').classList.remove('active');
     });
 
     // Previene que el teclado se cierre o abra al presionar botones de tipo
