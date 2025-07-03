@@ -32,7 +32,7 @@
         }
 
         p.total-number {
-            font-size: var(--text-size-2xl);
+            font-size: var(--text-size-6xl);
             font-family: 'Archivo Black', sans-serif;
             font-weight: var(--font-weight-bold);
             color: var(--text);
@@ -136,12 +136,14 @@
         text-align: center;
         width: 100%;
         word-break: break-word;
+        background: none;
     }
     .monto-pilar {
         font-size: var(--text-size-xs);
         color: white;
         text-align: center;
         width: 100%;
+        background: none;
     }
     .buscar {
         border: none;
@@ -173,14 +175,15 @@
             border: none;
             border-radius: var(--border-radius-lg);
             cursor: pointer;
-            width: 50px;
-            height: 50px;
+            width: 70px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
 
             i {
-                font-size: var(--text-size-sm);
+                font-size: var(--text-size-3xl);
+                background: none;
             }
         }
 
@@ -192,7 +195,7 @@
             color: var(--quaternary-color);
 
             i {
-                font-size: 18px;
+                font-size: var(--text-size-4xl);
             }
         }
         button:last-child {
@@ -201,8 +204,8 @@
             border-radius: 50%;
             cursor: pointer;
             color: var(--text);
-            width: 30px;
-            height: 30px;
+            width: 50px;
+            height: 50px;
         }
     }
     .ajustes {

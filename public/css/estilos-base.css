@@ -9,6 +9,7 @@ body, html, *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background-color: var(--fondo-color);
 }
 
 /* ====== VARIABLES ====== */
@@ -27,11 +28,15 @@ body, html, *{
     --warning-color: #ffa500;
     --info-color: #0000ff;
 
-    --text-size-2xl: 2rem;
-    --text-size-xl: 1.5rem;
-    --text-size-base: 1.2rem;
-    --text-size-sm: 1rem;
-    --text-size-xs: 0.8rem;
+    --text-size-6xl: 48px;
+    --text-size-5xl: 40px;
+    --text-size-4xl: 30px;
+    --text-size-3xl: 24px;
+    --text-size-2xl: 20px;
+    --text-size-xl: 18px;
+    --text-size-base: 16px;
+    --text-size-sm: 14px;
+    --text-size-xs: 12px;
 
     --font-weight-normal: 500;
     --font-weight-medium: 600;
