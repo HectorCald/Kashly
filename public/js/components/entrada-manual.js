@@ -252,6 +252,7 @@ function eventosEntradaManual() {
         document.querySelectorAll('.entrada-manual .categorias button').forEach(b=>b.classList.remove('muestra-categoria','oculta-categoria'));
         document.querySelectorAll('.entrada-manual .etiquetas button').forEach(b=>b.classList.remove('muestra-categoria','oculta-categoria'));
         // Despacha evento para actualizar dashboard
+        console.log('📤 Disparando evento transaccionGuardada');
         window.dispatchEvent(new Event('transaccionGuardada'));
         document.querySelector('.overlay').classList.remove('active');
     });

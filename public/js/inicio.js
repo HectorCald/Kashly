@@ -99,6 +99,7 @@ async function renderPilaresCategorias() {
 }
 
 export async function actualizarDashboard() {
+    console.log('🔄 actualizarDashboard() ejecutándose');
     const transacciones = await obtenerTransacciones();
     // Calcular totales para los botones
     let totalPositivo = 0;
@@ -119,6 +120,11 @@ export async function actualizarDashboard() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Hook para actualizar después de guardar
+    window.addEventListener('transaccionGuardada', actualizarDashboard);
+    
+    console.log('🔧 Event listener transaccionGuardada agregado');
+    
     actualizarDashboard();
     setTimeout(() => {
         const btnNegativo = document.querySelector('.tipo .negativo');

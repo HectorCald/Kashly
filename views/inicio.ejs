@@ -216,27 +216,12 @@
     
     <!-- Service Worker Registration -->
     <script>
-        // Registrar el Service Worker
+        // Registrar el Service Worker básico
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then((registration) => {
-                        console.log('✅ Service Worker registrado exitosamente:', registration.scope);
-                        
-                        // Verificar actualizaciones
-                        registration.addEventListener('updatefound', () => {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // Hay una nueva versión disponible
-                                    console.log('🔄 Nueva versión disponible');
-                                    if (confirm('Hay una nueva versión disponible. ¿Deseas actualizar?')) {
-                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
-                                        window.location.reload();
-                                    }
-                                }
-                            });
-                        });
+                        console.log('✅ Service Worker básico registrado');
                     })
                     .catch((error) => {
                         console.error('❌ Error al registrar el Service Worker:', error);
@@ -244,52 +229,29 @@
             });
         }
 
-        // Manejar la instalación de la PWA
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Mostrar botón de instalación si es necesario
-            const installButton = document.createElement('button');
-            installButton.textContent = 'Instalar App';
-            installButton.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 1000;
-                background: #4a90e2;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 14px;
-            `;
-            
-            installButton.addEventListener('click', () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('✅ Usuario aceptó la instalación');
-                        } else {
-                            console.log('❌ Usuario rechazó la instalación');
-                        }
-                        deferredPrompt = null;
-                        installButton.remove();
-                    });
-                }
-            });
-            
-            document.body.appendChild(installButton);
-        });
-
         // Manejar cuando la app se instala
         window.addEventListener('appinstalled', () => {
             console.log('🎉 PWA instalada exitosamente');
-            deferredPrompt = null;
         });
+
+        // Función para limpiar todo (desarrollo)
+        window.clearCache = async () => {
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                console.log('🧹 Cache limpiado');
+            }
+            
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                    console.log('🗑️ Service Worker desinstalado');
+                }
+            }
+            
+            window.location.reload();
+        };
     </script>
 </body>
 
