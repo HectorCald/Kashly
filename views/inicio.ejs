@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kashly</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="./img/img-inicio/logo-trans.webp">
+    <link rel="shortcut icon" type="image/webp" href="./img/img-inicio/logo-trans.webp">
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="/css/inicio.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+</head>
+
+<body>
+    <div class="main">
+        <div class="total-container">
+            <p>Total</p>
+            <p class="total-number" data-raw="0">+0,00 <span>Bs</span></p>
+        </div>
+        <div class="tipo">
+            <button class="negativo active">- Bs 0,00</button>
+            <button class="positivo">+ Bs 0,00</button>
+        </div>
+        <div class="filtros-main">
+            <button>Este mes</button>
+            <p>en</p>
+            <button>Lista</button>
+        </div>
+        <div class="transacciones">
+            <!-- Los pilares de categorías se llenan dinámicamente desde JS -->
+        </div>
+        <button class="buscar"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+        <div class="entradas">
+            <button><i class="fa-solid fa-microphone"></i></button>
+            <button><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <button class="ajustes"><i class="fa-solid fa-gear"></i></button>
+
+        <!-- Ajustes -->
+        <div class="ajustes-container">
+            <div class="titulo">
+                <p>Ajustes</p>
+                <button class="cerrar"><i class="fa-solid fa-xmark"></i></button>
+                <div class="ascensor"></div>
+            </div>
+            <div class="opcion categorias">
+                <i class="fa-solid fa-list-check"></i>
+                <p>Categorias</p>
+            </div>
+            <div class="opcion etiquetas">
+                <i class="fa-solid fa-tags"></i>
+                <p>Etiquetas</p>
+            </div>
+            <div class="opcion listas">
+                <i class="fa-solid fa-list"></i>
+                <p>Listas</p>
+            </div>
+        </div>
+
+        <!-- Entrada manual -->
+        <div class="entrada-manual">
+            <div class="titulo">
+                <p></p>
+                <button class="cerrar"><i class="fa-solid fa-xmark"></i></button>
+                <div class="ascensor"></div>
+            </div>
+            <div class="content-entrada">
+                <div class="fecha-recurrencia">
+                    <button class="fecha">Hoy</button>
+                    <input type="text" class="input-fecha" style="display:none;">
+                    <select class="recurrencia">
+                        <option value="una-vez">Una vez</option>
+                        <option value="diario">Diario</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="quincenal">Quincenal</option>
+                        <option value="mensual">Mensual</option>
+                        <option value="bimestral">Bimestral</option>
+                        <option value="trimestral">Trimestral</option>
+                        <option value="cuatrimestral">Cuatrimestral</option>
+                        <option value="semestral">Semestral</option>
+                        <option value="anual">Anual</option>
+                        <option value="bimensual">Bimensual</option>
+                    </select>
+                </div>
+                <div class="monto">
+                    <input class="descripcion" type="text" placeholder="Descripción">
+                    <div class="tipo-monto-container input-wrapper">
+                        <div class="tipo-monto">
+                            <button class="active negativo"><i class="fa-solid fa-minus"></i></button>
+                            <button class="positivo"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                        <span class="bs-prefix" style="display:none;">Bs</span>
+                        <input class="monto-input" type="text" placeholder="Monto" inputmode="numeric" pattern="[0-9]*">
+                    </div>   
+                </div>
+                <div class="categorias">
+                    <!-- Las categorías se llenan dinámicamente -->
+                </div>
+                <div class="etiquetas">
+                    <!-- Las etiquetas se llenan dinámicamente -->
+                </div>
+                <button class="guardar"><i class="fa-solid fa-check"></i> Guardar</button>
+            </div>
+        </div>
+
+        <!-- Buscador de transacciones -->
+        <div class="buscador-transacciones">
+            <div class="titulo">
+                <p>Todas las transacciones</p>
+                <button class="cerrar"><i class="fa-solid fa-xmark"></i></button>
+                <div class="ascensor"></div>
+            </div>
+            <div class="search">
+                <input type="text" placeholder="Buscar">
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <div class="filtros">
+                <button>Este mes</button>
+                <button>Lista</button>
+                <button>tipo</button>
+            </div>
+            <div class="transacciones-container">
+                <div class="transaccion">
+                    <div class="fecha-monto">
+                        <p>10/07/2025</p>
+                        <p>+ Bs 100,00</p>
+                    </div>
+                    <div class="descripcion">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <div class="detalle">
+                            <p class="categoria">Categoria</p>
+                            <p class="descripcion">Descripción</p>
+                            <p class="etiqueta">Etiqueta</p>
+                        </div>
+                        <div class="botones">
+                            <button>editar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categorias -->
+        <div class="categorias-container">
+            <div class="titulo">
+                <p>Categorias</p>
+                <button class="cerrar-categorias"><i class="fa-solid fa-xmark"></i></button>
+                <div class="ascensor"></div>
+            </div>
+            <div class="agregar-categoria">
+                <input type="text" placeholder="Agregar categoria">
+            </div>
+            <div class="categorias-content">
+                <div class="categoria">
+                    <i class="fa-solid fa-tag"></i>
+                    <p>Categoria 1</p>
+                </div>
+                <div class="categoria">
+                    <i class="fa-solid fa-tag"></i>
+                    <p>Categoria 2</p>
+                </div>
+                <div class="categoria">
+                    <i class="fa-solid fa-tag"></i>
+                    <p>Categoria 3</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Etiquetas -->
+        <div class="etiquetas-container">
+            <div class="titulo">
+                <p>Etiquetas</p>
+                <button class="cerrar-etiquetas"><i class="fa-solid fa-xmark"></i></button>
+                <div class="ascensor"></div>
+            </div>
+            <div class="agregar-etiqueta">
+                <input type="text" placeholder="Agregar etiqueta">
+            </div>
+            <div class="etiquetas-content">
+                <div class="etiqueta">  
+                    <p>#Etiqueta1</p>
+                </div>
+                <div class="etiqueta">  
+                    <p>#Etiqueta2</p>
+                </div>
+                <div class="etiqueta">  
+                    <p>#Etiqueta3</p>
+                </div>
+                <div class="etiqueta">  
+                    <p>#Etiqueta4</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="overlay"></div>
+    </div>
+    <div class="notificacion-toast">Comida Mensual -10</div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="/js/inicio.js" type="module"></script>
+</body>
+
+</html>
