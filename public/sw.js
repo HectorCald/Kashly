@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kashly-v3';
+const CACHE_NAME = 'kashly-v4';
 
 // Instalación básica
 self.addEventListener('install', (event) => {

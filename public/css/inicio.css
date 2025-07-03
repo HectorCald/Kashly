@@ -136,14 +136,12 @@
         text-align: center;
         width: 100%;
         word-break: break-word;
-        background: none;
     }
     .monto-pilar {
         font-size: var(--text-size-xs);
         color: white;
         text-align: center;
         width: 100%;
-        background: none;
     }
     .buscar {
         border: none;
@@ -195,7 +193,7 @@
             color: var(--quaternary-color);
 
             i {
-                font-size: var(--text-size-4xl);
+                font-size: 18px;
             }
         }
         button:last-child {
