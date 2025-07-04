@@ -4,6 +4,11 @@ const BASE_VERSION = 1;
 const STORE_CATEGORIAS = 'categorias';
 const STORE_ETIQUETAS = 'etiquetas';
 
+let listenersCategorias = false;
+let listenersEtiquetas = false;
+
+
+/* ===== INDEXEDDB ===== */
 function getCurrentVersion() {
     return new Promise((resolve, reject) => {
         const req = indexedDB.open(DB_NAME);
@@ -19,7 +24,6 @@ function getCurrentVersion() {
         };
     });
 }
-
 function openDB(requiredStores = []) {
     return getCurrentVersion().then(currentVersion => {
         return new Promise((resolve, reject) => {
@@ -66,6 +70,7 @@ function openDB(requiredStores = []) {
     });
 }
 
+/* ===== CATEGORIAS ===== */
 function guardarCategoria(nombre) {
     return openDB([STORE_CATEGORIAS]).then(db => {
         return new Promise((resolve, reject) => {
@@ -77,7 +82,16 @@ function guardarCategoria(nombre) {
         });
     });
 }
-
+async function borrarCategoriaPorId(id) {
+    const db = await openDB([STORE_CATEGORIAS]);
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_CATEGORIAS, 'readwrite');
+        const store = tx.objectStore(STORE_CATEGORIAS);
+        const req = store.delete(id);
+        req.onsuccess = () => { resolve(); db.close(); };
+        req.onerror = () => { reject(req.error); db.close(); };
+    });
+}
 function obtenerCategorias() {
     return openDB([STORE_CATEGORIAS]).then(db => {
         return new Promise((resolve, reject) => {
@@ -89,48 +103,6 @@ function obtenerCategorias() {
         });
     });
 }
-
-function guardarEtiqueta(nombre) {
-    return openDB([STORE_ETIQUETAS]).then(db => {
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_ETIQUETAS, 'readwrite');
-            const store = tx.objectStore(STORE_ETIQUETAS);
-            const req = store.add({ nombre });
-            req.onsuccess = () => { resolve(req.result); db.close(); };
-            req.onerror = () => { reject(req.error); db.close(); };
-        });
-    });
-}
-
-function obtenerEtiquetas() {
-    return openDB([STORE_ETIQUETAS]).then(db => {
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_ETIQUETAS, 'readonly');
-            const store = tx.objectStore(STORE_ETIQUETAS);
-            const req = store.getAll();
-            req.onsuccess = () => { resolve(req.result); db.close(); };
-            req.onerror = () => { reject(req.error); db.close(); };
-        });
-    });
-}
-
-export function mostrarAjustes() {
-    const btnAjustes = document.querySelector('.ajustes');
-    const ajustesContainer = document.querySelector('.ajustes-container');
-    const overlay = document.querySelector('.overlay');
-
-    btnAjustes.addEventListener('click', () => {
-        ajustesContainer.style.transform = 'translateY(0)';
-        mostrarCategorias();
-        mostrarEtiquetas();
-        overlay.classList.add('active');
-    });
-    ascensorAjustes(ajustesContainer);
-}
-
-let listenersCategorias = false;
-let listenersEtiquetas = false;
-
 function mostrarCategorias() {
     const btnCategorias = document.querySelector('.categorias');
     const categoriasContainer = document.querySelector('.categorias-container');
@@ -146,11 +118,6 @@ function mostrarCategorias() {
     ascensorAjustes(categoriasContainer);
     categorias();
 }
-
-function capitalizeFirst(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
-
 function categorias() {
     if (categorias._initialized) return;
     categorias._initialized = true;
@@ -180,7 +147,6 @@ function categorias() {
     }
     agregarCategoria();
 }
-
 async function mostrarCategoriasContent(nombreAnimada = null) {
     const categoriasContent = document.querySelector('.categorias-container .categorias-content');
     Array.from(categoriasContent.children).forEach(child => {
@@ -242,7 +208,49 @@ async function mostrarCategoriasContent(nombreAnimada = null) {
         categoriasContent.insertBefore(div, categoriasContent.querySelector('.agregar-categoria'));
     });
 }
+function ocultarCategorias() {
+    const btnCerrarCategorias = document.querySelector('.categorias-container .cerrar-categorias');
+    const categoriasContainer = document.querySelector('.categorias-container');
 
+    btnCerrarCategorias.addEventListener('click', () => {
+        categoriasContainer.style.transform = 'translateY(100%)';
+    });
+}
+
+
+/* ===== ETIQUETAS ===== */
+function guardarEtiqueta(nombre) {
+    return openDB([STORE_ETIQUETAS]).then(db => {
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_ETIQUETAS, 'readwrite');
+            const store = tx.objectStore(STORE_ETIQUETAS);
+            const req = store.add({ nombre });
+            req.onsuccess = () => { resolve(req.result); db.close(); };
+            req.onerror = () => { reject(req.error); db.close(); };
+        });
+    });
+}
+async function borrarEtiquetaPorId(id) {
+    const db = await openDB([STORE_ETIQUETAS]);
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_ETIQUETAS, 'readwrite');
+        const store = tx.objectStore(STORE_ETIQUETAS);
+        const req = store.delete(id);
+        req.onsuccess = () => { resolve(); db.close(); };
+        req.onerror = () => { reject(req.error); db.close(); };
+    });
+}
+function obtenerEtiquetas() {
+    return openDB([STORE_ETIQUETAS]).then(db => {
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_ETIQUETAS, 'readonly');
+            const store = tx.objectStore(STORE_ETIQUETAS);
+            const req = store.getAll();
+            req.onsuccess = () => { resolve(req.result); db.close(); };
+            req.onerror = () => { reject(req.error); db.close(); };
+        });
+    });
+}
 function mostrarEtiquetas() {
     const btnEtiquetas = document.querySelector('.etiquetas');
     const etiquetasContainer = document.querySelector('.etiquetas-container');
@@ -258,7 +266,6 @@ function mostrarEtiquetas() {
     ascensorAjustes(etiquetasContainer);
     etiquetas();
 }
-
 function etiquetas() {
     if (etiquetas._initialized) return;
     etiquetas._initialized = true;
@@ -287,7 +294,6 @@ function etiquetas() {
     }
     agregarEtiqueta();
 }
-
 async function mostrarEtiquetasContent(nombreAnimada = null) {
     const etiquetasContent = document.querySelector('.etiquetas-container .etiquetas-content');
     Array.from(etiquetasContent.children).forEach(child => {
@@ -349,15 +355,6 @@ async function mostrarEtiquetasContent(nombreAnimada = null) {
         etiquetasContent.appendChild(div);
     });
 }
-
-function ocultarCategorias() {
-    const btnCerrarCategorias = document.querySelector('.categorias-container .cerrar-categorias');
-    const categoriasContainer = document.querySelector('.categorias-container');
-
-    btnCerrarCategorias.addEventListener('click', () => {
-        categoriasContainer.style.transform = 'translateY(100%)';
-    });
-}
 function ocultarEtiquetas() {
     const btnCerrarEtiquetas = document.querySelector('.etiquetas-container .cerrar-etiquetas');
     const etiquetasContainer = document.querySelector('.etiquetas-container');
@@ -367,25 +364,21 @@ function ocultarEtiquetas() {
     });
 }
 
-// Borrar categoría con confirmación por clicks
-async function borrarCategoriaPorId(id) {
-    const db = await openDB([STORE_CATEGORIAS]);
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_CATEGORIAS, 'readwrite');
-        const store = tx.objectStore(STORE_CATEGORIAS);
-        const req = store.delete(id);
-        req.onsuccess = () => { resolve(); db.close(); };
-        req.onerror = () => { reject(req.error); db.close(); };
+
+/* ===== AJUSTES ===== */
+export function mostrarAjustes() {
+    const btnAjustes = document.querySelector('.ajustes');
+    const ajustesContainer = document.querySelector('.ajustes-container');
+    const overlay = document.querySelector('.overlay');
+
+    btnAjustes.addEventListener('click', () => {
+        ajustesContainer.style.transform = 'translateY(0)';
+        mostrarCategorias();
+        mostrarEtiquetas();
+        overlay.classList.add('active');
     });
+    ascensorAjustes(ajustesContainer);
 }
-// Borrar etiqueta con confirmación por clicks
-async function borrarEtiquetaPorId(id) {
-    const db = await openDB([STORE_ETIQUETAS]);
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_ETIQUETAS, 'readwrite');
-        const store = tx.objectStore(STORE_ETIQUETAS);
-        const req = store.delete(id);
-        req.onsuccess = () => { resolve(); db.close(); };
-        req.onerror = () => { reject(req.error); db.close(); };
-    });
+function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }

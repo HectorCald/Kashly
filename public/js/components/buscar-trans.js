@@ -1,3 +1,4 @@
+/* ===== INDEXEDDB ===== */
 const STORE_TRANSACCIONES = 'transacciones';
 const DB_NAME = 'KashlyDB';
 
@@ -55,6 +56,8 @@ function openDBBuscar(requiredStores = []) {
         });
     });
 }
+
+/* ===== TRANSACCIONES ===== */
 function obtenerTransaccionesBuscar() {
     return openDBBuscar([STORE_TRANSACCIONES]).then(db => {
         return new Promise((resolve, reject) => {
@@ -66,7 +69,6 @@ function obtenerTransaccionesBuscar() {
         });
     });
 }
-
 function obtenerCategoriasBuscar() {
     return openDBBuscar(['categorias']).then(db => {
         return new Promise((resolve, reject) => {
@@ -90,6 +92,7 @@ function obtenerEtiquetasBuscar() {
     });
 }
 
+/* ===== BUSCAR TRANSACCIONES ===== */
 async function renderTransacciones(categoriaId = null) {
     const cont = document.querySelector('.transacciones-container');
     if (!cont) return;
@@ -143,7 +146,6 @@ async function renderTransacciones(categoriaId = null) {
         cont.appendChild(div);
     });
 }
-
 export function mostrarBuscarTrans() {
     const btnBuscarTrans = document.querySelector('.buscar');
     const buscarTransContainer = document.querySelector('.buscador-transacciones');

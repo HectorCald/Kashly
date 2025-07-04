@@ -1,3 +1,67 @@
+/* ===== INDEXEDDB ===== */
+const DB_NAME = 'KashlyDB';
+const BASE_VERSION = 1;
+const STORE_CATEGORIAS = 'categorias';
+const STORE_ETIQUETAS = 'etiquetas';
+const STORE_TRANSACCIONES = 'transacciones';
+
+
+function getCurrentVersion() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME);
+        req.onsuccess = function(e) {
+            const db = e.target.result;
+            resolve(db.version);
+            db.close();
+        };
+        req.onerror = () => resolve(BASE_VERSION);
+        req.onupgradeneeded = function(e) {
+            resolve(e.target.result.version);
+        };
+    });
+}
+function openDB(requiredStores = []) {
+    return getCurrentVersion().then(currentVersion => {
+        return new Promise((resolve, reject) => {
+            let needsUpgrade = false;
+            let newVersion = currentVersion;
+            const req = indexedDB.open(DB_NAME);
+            req.onsuccess = function(e) {
+                const db = e.target.result;
+                const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
+                db.close();
+                if (missingStores.length > 0) {
+                    needsUpgrade = true;
+                    newVersion = currentVersion + 1;
+                }
+                if (needsUpgrade) {
+                    const upgradeReq = indexedDB.open(DB_NAME, newVersion);
+                    upgradeReq.onupgradeneeded = function(ev) {
+                        const db2 = ev.target.result;
+                        requiredStores.forEach(store => {
+                            if (!db2.objectStoreNames.contains(store)) {
+                                db2.createObjectStore(store, { keyPath: 'id', autoIncrement: true });
+                            }
+                        });
+                    };
+                    upgradeReq.onsuccess = () => {
+                        resolve(upgradeReq.result);
+                    };
+                    upgradeReq.onerror = () => reject(upgradeReq.error);
+                } else {
+                    const finalReq = indexedDB.open(DB_NAME, currentVersion);
+                    finalReq.onsuccess = function(ev) {
+                        resolve(finalReq.result);
+                    };
+                    finalReq.onerror = () => reject(finalReq.error);
+                }
+            };
+            req.onerror = () => reject(req.error);
+        });
+    });
+}
+
+/* ===== ENTRADA MANUAL ===== */
 export function mostrarEntradaManual() {
     const btnEntradaManual = document.querySelector('.entradas button:nth-child(2)');
     const entradaManualContainer = document.querySelector('.entrada-manual');
@@ -12,75 +76,6 @@ export function mostrarEntradaManual() {
     ascensorAjustes(entradaManualContainer);
     eventosEntradaManual();
 }
-
-function aplicarAnimacionCategorias() {
-    const categorias = document.querySelector('.entrada-manual .content-entrada .categorias');
-    let categoriaActiva = null;
-    categorias.addEventListener('click', function handler(e) {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        const categoriaBtns = Array.from(categorias.querySelectorAll('button'));
-        if (btn === categoriaActiva) {
-            categoriaBtns.forEach(b => {
-                b.classList.remove('oculta-categoria');
-                b.classList.add('muestra-categoria');
-            });
-            categoriaActiva = null;
-        } else {
-            categoriaBtns.forEach(b => {
-                if (b !== btn) {
-                    b.classList.remove('muestra-categoria');
-                    b.classList.add('oculta-categoria');
-                } else {
-                    b.classList.remove('oculta-categoria');
-                    b.classList.add('muestra-categoria');
-                }
-            });
-            categorias.insertBefore(btn, categorias.firstChild);
-            btn.scrollIntoView({behavior: 'smooth', inline: 'start', block: 'nearest'});
-            categoriaActiva = btn;
-        }
-    });
-    // Previene blur y teclado
-    categorias.addEventListener('pointerdown', e => {
-        if (e.target.closest('button')) e.preventDefault();
-    });
-}
-
-function aplicarAnimacionEtiquetas() {
-    const etiquetas = document.querySelector('.entrada-manual .content-entrada .etiquetas');
-    let etiquetaActiva = null;
-    etiquetas.addEventListener('click', function handler(e) {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        const etiquetaBtns = Array.from(etiquetas.querySelectorAll('button'));
-        if (btn === etiquetaActiva) {
-            etiquetaBtns.forEach(b => {
-                b.classList.remove('oculta-categoria');
-                b.classList.add('muestra-categoria');
-            });
-            etiquetaActiva = null;
-        } else {
-            etiquetaBtns.forEach(b => {
-                if (b !== btn) {
-                    b.classList.remove('muestra-categoria');
-                    b.classList.add('oculta-categoria');
-                } else {
-                    b.classList.remove('oculta-categoria');
-                    b.classList.add('muestra-categoria');
-                }
-            });
-            etiquetas.insertBefore(btn, etiquetas.firstChild);
-            btn.scrollIntoView({behavior: 'smooth', inline: 'start', block: 'nearest'});
-            etiquetaActiva = btn;
-        }
-    });
-    // Previene blur y teclado
-    etiquetas.addEventListener('pointerdown', e => {
-        if (e.target.closest('button')) e.preventDefault();
-    });
-}
-
 function eventosEntradaManual() {
     const btnEntradaManual = document.querySelector('.entradas button:nth-child(2)');
     const entradaManualContainer = document.querySelector('.entrada-manual');
@@ -265,69 +260,75 @@ function eventosEntradaManual() {
     });
 }
 
-// --- IndexedDB helpers robustos (copiados de ajustes.js) ---
-const DB_NAME = 'KashlyDB';
-const BASE_VERSION = 1;
-const STORE_CATEGORIAS = 'categorias';
-const STORE_ETIQUETAS = 'etiquetas';
-const STORE_TRANSACCIONES = 'transacciones';
-
-function getCurrentVersion() {
-    return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME);
-        req.onsuccess = function(e) {
-            const db = e.target.result;
-            resolve(db.version);
-            db.close();
-        };
-        req.onerror = () => resolve(BASE_VERSION);
-        req.onupgradeneeded = function(e) {
-            resolve(e.target.result.version);
-        };
-    });
-}
-
-function openDB(requiredStores = []) {
-    return getCurrentVersion().then(currentVersion => {
-        return new Promise((resolve, reject) => {
-            let needsUpgrade = false;
-            let newVersion = currentVersion;
-            const req = indexedDB.open(DB_NAME);
-            req.onsuccess = function(e) {
-                const db = e.target.result;
-                const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
-                db.close();
-                if (missingStores.length > 0) {
-                    needsUpgrade = true;
-                    newVersion = currentVersion + 1;
-                }
-                if (needsUpgrade) {
-                    const upgradeReq = indexedDB.open(DB_NAME, newVersion);
-                    upgradeReq.onupgradeneeded = function(ev) {
-                        const db2 = ev.target.result;
-                        requiredStores.forEach(store => {
-                            if (!db2.objectStoreNames.contains(store)) {
-                                db2.createObjectStore(store, { keyPath: 'id', autoIncrement: true });
-                            }
-                        });
-                    };
-                    upgradeReq.onsuccess = () => {
-                        resolve(upgradeReq.result);
-                    };
-                    upgradeReq.onerror = () => reject(upgradeReq.error);
+/* ===== ANIMACIONES ===== */
+function aplicarAnimacionCategorias() {
+    const categorias = document.querySelector('.entrada-manual .content-entrada .categorias');
+    let categoriaActiva = null;
+    categorias.addEventListener('click', function handler(e) {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const categoriaBtns = Array.from(categorias.querySelectorAll('button'));
+        if (btn === categoriaActiva) {
+            categoriaBtns.forEach(b => {
+                b.classList.remove('oculta-categoria');
+                b.classList.add('muestra-categoria');
+            });
+            categoriaActiva = null;
+        } else {
+            categoriaBtns.forEach(b => {
+                if (b !== btn) {
+                    b.classList.remove('muestra-categoria');
+                    b.classList.add('oculta-categoria');
                 } else {
-                    const finalReq = indexedDB.open(DB_NAME, currentVersion);
-                    finalReq.onsuccess = function(ev) {
-                        resolve(finalReq.result);
-                    };
-                    finalReq.onerror = () => reject(finalReq.error);
+                    b.classList.remove('oculta-categoria');
+                    b.classList.add('muestra-categoria');
                 }
-            };
-            req.onerror = () => reject(req.error);
-        });
+            });
+            categorias.insertBefore(btn, categorias.firstChild);
+            btn.scrollIntoView({behavior: 'smooth', inline: 'start', block: 'nearest'});
+            categoriaActiva = btn;
+        }
+    });
+    // Previene blur y teclado
+    categorias.addEventListener('pointerdown', e => {
+        if (e.target.closest('button')) e.preventDefault();
+    });
+}
+function aplicarAnimacionEtiquetas() {
+    const etiquetas = document.querySelector('.entrada-manual .content-entrada .etiquetas');
+    let etiquetaActiva = null;
+    etiquetas.addEventListener('click', function handler(e) {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const etiquetaBtns = Array.from(etiquetas.querySelectorAll('button'));
+        if (btn === etiquetaActiva) {
+            etiquetaBtns.forEach(b => {
+                b.classList.remove('oculta-categoria');
+                b.classList.add('muestra-categoria');
+            });
+            etiquetaActiva = null;
+        } else {
+            etiquetaBtns.forEach(b => {
+                if (b !== btn) {
+                    b.classList.remove('muestra-categoria');
+                    b.classList.add('oculta-categoria');
+                } else {
+                    b.classList.remove('oculta-categoria');
+                    b.classList.add('muestra-categoria');
+                }
+            });
+            etiquetas.insertBefore(btn, etiquetas.firstChild);
+            btn.scrollIntoView({behavior: 'smooth', inline: 'start', block: 'nearest'});
+            etiquetaActiva = btn;
+        }
+    });
+    // Previene blur y teclado
+    etiquetas.addEventListener('pointerdown', e => {
+        if (e.target.closest('button')) e.preventDefault();
     });
 }
 
+/* ===== CATEGORIAS ===== */
 export function obtenerCategoriasEntrada() {
     return openDB([STORE_CATEGORIAS]).then(db => {
         return new Promise((resolve, reject) => {
@@ -339,42 +340,6 @@ export function obtenerCategoriasEntrada() {
         });
     });
 }
-
-function obtenerEtiquetasEntrada() {
-    return openDB([STORE_ETIQUETAS]).then(db => {
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_ETIQUETAS, 'readonly');
-            const store = tx.objectStore(STORE_ETIQUETAS);
-            const req = store.getAll();
-            req.onsuccess = () => { resolve(req.result); db.close(); };
-            req.onerror = () => { reject(req.error); db.close(); };
-        });
-    });
-}
-
-function guardarTransaccion({fecha, descripcion, monto, idCategoria, idEtiqueta, tipo}) {
-    return openDB([STORE_TRANSACCIONES]).then(db => {
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_TRANSACCIONES, 'readwrite');
-            const store = tx.objectStore(STORE_TRANSACCIONES);
-            const req = store.add({ fecha, descripcion, monto, idCategoria, idEtiqueta, tipo });
-            req.onsuccess = () => { resolve(req.result); db.close(); };
-            req.onerror = () => { reject(req.error); db.close(); };
-        });
-    });
-}
-
-function mostrarToast(mensaje) {
-    const toast = document.querySelector('.notificacion-toast');
-    if (!toast) return;
-    toast.textContent = mensaje;
-    toast.classList.add('mostrar');
-    setTimeout(() => {
-        toast.classList.remove('mostrar');
-    }, 2500);
-}
-
-// --- Render dinámico ---
 async function renderCategoriasEntrada() {
     const categoriasDiv = document.querySelector('.entrada-manual .content-entrada .categorias');
     categoriasDiv.innerHTML = '';
@@ -387,6 +352,7 @@ async function renderCategoriasEntrada() {
     aplicarAnimacionCategorias();
 }
 
+/* ===== ETIQUETAS ===== */
 async function renderEtiquetasEntrada() {
     const etiquetasDiv = document.querySelector('.entrada-manual .content-entrada .etiquetas');
     etiquetasDiv.innerHTML = '';
@@ -398,7 +364,19 @@ async function renderEtiquetasEntrada() {
     });
     aplicarAnimacionEtiquetas();
 }
+function obtenerEtiquetasEntrada() {
+    return openDB([STORE_ETIQUETAS]).then(db => {
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_ETIQUETAS, 'readonly');
+            const store = tx.objectStore(STORE_ETIQUETAS);
+            const req = store.getAll();
+            req.onsuccess = () => { resolve(req.result); db.close(); };
+            req.onerror = () => { reject(req.error); db.close(); };
+        });
+    });
+}
 
+/* ===== TRANSACCIONES ===== */
 export function obtenerTransacciones() {
     return openDB([STORE_TRANSACCIONES]).then(db => {
         return new Promise((resolve, reject) => {
@@ -409,4 +387,26 @@ export function obtenerTransacciones() {
             req.onerror = () => { reject(req.error); db.close(); };
         });
     });
+}
+function guardarTransaccion({fecha, descripcion, monto, idCategoria, idEtiqueta, tipo}) {
+    return openDB([STORE_TRANSACCIONES]).then(db => {
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_TRANSACCIONES, 'readwrite');
+            const store = tx.objectStore(STORE_TRANSACCIONES);
+            const req = store.add({ fecha, descripcion, monto, idCategoria, idEtiqueta, tipo });
+            req.onsuccess = () => { resolve(req.result); db.close(); };
+            req.onerror = () => { reject(req.error); db.close(); };
+        });
+    });
+}
+
+/* ===== NOTIFICACIONES ===== */
+function mostrarToast(mensaje) {
+    const toast = document.querySelector('.notificacion-toast');
+    if (!toast) return;
+    toast.textContent = mensaje;
+    toast.classList.add('mostrar');
+    setTimeout(() => {
+        toast.classList.remove('mostrar');
+    }, 2500);
 }

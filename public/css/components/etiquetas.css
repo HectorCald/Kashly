@@ -109,17 +109,9 @@
 .etiqueta.slide-in {
     animation: slideInLeft 0.4s cubic-bezier(0.4,0,0.2,1);
 }
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-40px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-    }
+.etiqueta.slide-out {
+    animation: slideOutLeft 0.4s forwards cubic-bezier(0.4,0,0.2,1);
 }
-
 .etiqueta.delete-pending {
     background-color: #c0392b !important;
     color: #fff !important;
@@ -134,9 +126,7 @@
     color: #fff !important;
 }
 
-.etiqueta.slide-out {
-    animation: slideOutLeft 0.4s forwards cubic-bezier(0.4,0,0.2,1);
-}
+
 @keyframes slideOutLeft {
     to {
         opacity: 0;
@@ -144,5 +134,15 @@
         width: 0;
         min-width: 0;
         max-width: 0;
+    }
+}
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
     }
 }

@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
     <title>Kashly</title>
     <!-- Favicon -->
     <link rel="icon" type="image/webp" href="./img/img-inicio/logo-trans.webp">
@@ -83,7 +84,8 @@
             <div class="content-entrada">
                 <div class="fecha-recurrencia">
                     <button class="fecha">Hoy</button>
-                    <input type="text" class="input-fecha" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;">
+                    <input type="text" class="input-fecha"
+                        style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;">
                     <select class="recurrencia">
                         <option value="una-vez">Una vez</option>
                         <option value="diario">Diario</option>
@@ -107,7 +109,7 @@
                         </div>
                         <span class="bs-prefix" style="display:none;">Bs</span>
                         <input class="monto-input" type="text" placeholder="Monto" inputmode="numeric" pattern="[0-9]*">
-                    </div>   
+                    </div>
                 </div>
                 <div class="categorias">
                     <!-- Las categorías se llenan dinámicamente -->
@@ -193,16 +195,16 @@
                 <input type="text" placeholder="Agregar etiqueta">
             </div>
             <div class="etiquetas-content">
-                <div class="etiqueta">  
+                <div class="etiqueta">
                     <p>#Etiqueta1</p>
                 </div>
-                <div class="etiqueta">  
+                <div class="etiqueta">
                     <p>#Etiqueta2</p>
                 </div>
-                <div class="etiqueta">  
+                <div class="etiqueta">
                     <p>#Etiqueta3</p>
                 </div>
-                <div class="etiqueta">  
+                <div class="etiqueta">
                     <p>#Etiqueta4</p>
                 </div>
             </div>
@@ -213,7 +215,7 @@
     <div class="notificacion-toast">Comida Mensual -10</div>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="/js/inicio.js" type="module"></script>
-    
+
     <!-- Service Worker Registration -->
     <script>
         // Registrar el Service Worker básico
@@ -241,7 +243,7 @@
                 await Promise.all(cacheNames.map(name => caches.delete(name)));
                 console.log('🧹 Cache limpiado');
             }
-            
+
             if ('serviceWorker' in navigator) {
                 const registrations = await navigator.serviceWorker.getRegistrations();
                 for (let registration of registrations) {
@@ -249,7 +251,7 @@
                     console.log('🗑️ Service Worker desinstalado');
                 }
             }
-            
+
             window.location.reload();
         };
     </script>

@@ -1,17 +1,17 @@
+/* ===== IMPORTACIÓN ===== */
 import { ocultarContenedores, ascensorAjustes } from './components/components.js';
 import { mostrarAjustes} from './components/ajustes.js';
 import { mostrarBuscarTrans } from './components/buscar-trans.js';
 import { mostrarEntradaManual, obtenerCategoriasEntrada, obtenerTransacciones } from './components/entrada-manual.js';
 
-
+/* ===== EXPORTACIÓN ===== */
 window.mostrarAjustes = mostrarAjustes;
 window.ocultarContenedores = ocultarContenedores;
 window.mostrarBuscarTrans = mostrarBuscarTrans;
 window.mostrarEntradaManual = mostrarEntradaManual;
 window.ascensorAjustes = ascensorAjustes;
 
-let tipoDashboard = 'negativo'; // Por defecto, salidas
-
+let tipoDashboard = 'negativo';
 function animarTotal(finalTotal) {
     const totalNumber = document.querySelector('.total-number');
     let actual = parseFloat(totalNumber.dataset.raw || '0');
@@ -32,7 +32,6 @@ function animarTotal(finalTotal) {
     }
     animate();
 }
-
 async function renderPilaresCategorias() {
     const transDiv = document.querySelector('.transacciones');
     transDiv.innerHTML = '';
@@ -97,7 +96,6 @@ async function renderPilaresCategorias() {
         });
     });
 }
-
 export async function actualizarDashboard() {
     console.log('🔄 actualizarDashboard() ejecutándose');
     const transacciones = await obtenerTransacciones();
@@ -115,17 +113,6 @@ export async function actualizarDashboard() {
     if (btnPositivo) btnPositivo.innerHTML = `+ Bs ${totalPositivo.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
     // Total general: ingresos - egresos
     const total = totalPositivo - totalNegativo;
-    animarTotal(total);
-    renderPilaresCategorias();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Hook para actualizar después de guardar
-    window.addEventListener('transaccionGuardada', actualizarDashboard);
-    
-    console.log('🔧 Event listener transaccionGuardada agregado');
-    
-    actualizarDashboard();
     setTimeout(() => {
         const btnNegativo = document.querySelector('.tipo .negativo');
         const btnPositivo = document.querySelector('.tipo .positivo');
@@ -147,6 +134,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('No se encontraron los botones de tipo');
         }
     }, 0);
+    animarTotal(total);
+    renderPilaresCategorias();
+}
+
+
+/* ===== INICIALIZACIÓN ===== */
+document.addEventListener('DOMContentLoaded', () => {
+    // Hook para actualizar después de guardar
+    window.addEventListener('transaccionGuardada', actualizarDashboard);
+    
+    actualizarDashboard();
     mostrarAjustes();
     ocultarContenedores();
     mostrarBuscarTrans();
