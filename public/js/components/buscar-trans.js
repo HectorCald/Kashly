@@ -272,3 +272,7 @@ window.addEventListener('transaccionRestauradaUI', (event) => {
     });
 });
 
+window.addEventListener('transaccionEditadaUI', () => {
+    renderTransacciones();
+});
+

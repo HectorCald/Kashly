@@ -294,14 +294,29 @@ export function resetearEntradaManual() {
 }
 
 /* ===== ANIMACIONES ===== */
-function aplicarAnimacionCategorias() {
-    const categorias = document.querySelector('.entrada-manual .content-entrada .categorias');
-    let categoriaActiva = null;
-    categorias.addEventListener('click', function handler(e) {
+// Variables globales para animación de categorías/etiquetas y handlers
+let categoriaActiva = null;
+let etiquetaActiva = null;
+let handlerCategorias = null;
+let handlerEtiquetas = null;
+
+async function renderCategoriasEntrada() {
+    const categoriasDiv = document.querySelector('.entrada-manual .content-entrada .categorias');
+    categoriasDiv.innerHTML = '';
+    const categorias = await obtenerCategoriasEntrada();
+    categorias.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.innerHTML = `<i class="fa-solid fa-tag"></i> ${cat.nombre}`;
+        categoriasDiv.appendChild(btn);
+    });
+    // Resetear variable y handler
+    categoriaActiva = null;
+    if (handlerCategorias) categoriasDiv.removeEventListener('click', handlerCategorias);
+    handlerCategorias = function handler(e) {
         const btn = e.target.closest('button');
         if (!btn) return;
-        const categoriaBtns = Array.from(categorias.querySelectorAll('button'));
-        if (btn === categoriaActiva) {
+        const categoriaBtns = Array.from(categoriasDiv.querySelectorAll('button'));
+        if (btn === categoriaActiva || (btn.classList.contains('muestra-categoria') && categoriaBtns.filter(b=>b.classList.contains('muestra-categoria')).length === 1)) {
             categoriaBtns.forEach(b => {
                 b.classList.remove('oculta-categoria');
                 b.classList.add('muestra-categoria');
@@ -317,24 +332,34 @@ function aplicarAnimacionCategorias() {
                     b.classList.add('muestra-categoria');
                 }
             });
-            categorias.insertBefore(btn, categorias.firstChild);
+            categoriasDiv.insertBefore(btn, categoriasDiv.firstChild);
             btn.scrollIntoView({behavior: 'smooth', inline: 'start', block: 'nearest'});
             categoriaActiva = btn;
         }
-    });
-    // Previene blur y teclado
-    categorias.addEventListener('pointerdown', e => {
+    };
+    categoriasDiv.addEventListener('click', handlerCategorias);
+    categoriasDiv.addEventListener('pointerdown', e => {
         if (e.target.closest('button')) e.preventDefault();
     });
 }
-function aplicarAnimacionEtiquetas() {
-    const etiquetas = document.querySelector('.entrada-manual .content-entrada .etiquetas');
-    let etiquetaActiva = null;
-    etiquetas.addEventListener('click', function handler(e) {
+
+async function renderEtiquetasEntrada() {
+    const etiquetasDiv = document.querySelector('.entrada-manual .content-entrada .etiquetas');
+    etiquetasDiv.innerHTML = '';
+    const etiquetas = await obtenerEtiquetasEntrada();
+    etiquetas.forEach(et => {
+        const btn = document.createElement('button');
+        btn.textContent = '#' + et.nombre;
+        etiquetasDiv.appendChild(btn);
+    });
+    // Resetear variable y handler
+    etiquetaActiva = null;
+    if (handlerEtiquetas) etiquetasDiv.removeEventListener('click', handlerEtiquetas);
+    handlerEtiquetas = function handler(e) {
         const btn = e.target.closest('button');
         if (!btn) return;
-        const etiquetaBtns = Array.from(etiquetas.querySelectorAll('button'));
-        if (btn === etiquetaActiva) {
+        const etiquetaBtns = Array.from(etiquetasDiv.querySelectorAll('button'));
+        if (btn === etiquetaActiva || (btn.classList.contains('muestra-categoria') && etiquetaBtns.filter(b=>b.classList.contains('muestra-categoria')).length === 1)) {
             etiquetaBtns.forEach(b => {
                 b.classList.remove('oculta-categoria');
                 b.classList.add('muestra-categoria');
@@ -350,13 +375,13 @@ function aplicarAnimacionEtiquetas() {
                     b.classList.add('muestra-categoria');
                 }
             });
-            etiquetas.insertBefore(btn, etiquetas.firstChild);
+            etiquetasDiv.insertBefore(btn, etiquetasDiv.firstChild);
             btn.scrollIntoView({behavior: 'smooth', inline: 'start', block: 'nearest'});
             etiquetaActiva = btn;
         }
-    });
-    // Previene blur y teclado
-    etiquetas.addEventListener('pointerdown', e => {
+    };
+    etiquetasDiv.addEventListener('click', handlerEtiquetas);
+    etiquetasDiv.addEventListener('pointerdown', e => {
         if (e.target.closest('button')) e.preventDefault();
     });
 }
@@ -373,30 +398,8 @@ export function obtenerCategoriasEntrada() {
         });
     });
 }
-async function renderCategoriasEntrada() {
-    const categoriasDiv = document.querySelector('.entrada-manual .content-entrada .categorias');
-    categoriasDiv.innerHTML = '';
-    const categorias = await obtenerCategoriasEntrada();
-    categorias.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.innerHTML = `<i class="fa-solid fa-tag"></i> ${cat.nombre}`;
-        categoriasDiv.appendChild(btn);
-    });
-    aplicarAnimacionCategorias();
-}
 
 /* ===== ETIQUETAS ===== */
-async function renderEtiquetasEntrada() {
-    const etiquetasDiv = document.querySelector('.entrada-manual .content-entrada .etiquetas');
-    etiquetasDiv.innerHTML = '';
-    const etiquetas = await obtenerEtiquetasEntrada();
-    etiquetas.forEach(et => {
-        const btn = document.createElement('button');
-        btn.textContent = '#'+et.nombre;
-        etiquetasDiv.appendChild(btn);
-    });
-    aplicarAnimacionEtiquetas();
-}
 function obtenerEtiquetasEntrada() {
     return openDB([STORE_ETIQUETAS]).then(db => {
         return new Promise((resolve, reject) => {
@@ -450,7 +453,6 @@ let transaccionEditando = null;
 
 window.addEventListener('editarTransaccion', async (event) => {
     const tipoMonto = document.querySelector('.entrada-manual .content-entrada .monto .tipo-monto-container');
-    console.log('[entrada-manual] Evento editarTransaccion recibido:', event.detail); // LOG
     const tr = event.detail;
     const entradaManualContainer = document.querySelector('.entrada-manual');
     const overlay = document.querySelector('.overlay');
@@ -490,33 +492,56 @@ window.addEventListener('editarTransaccion', async (event) => {
     }
     if (tipoMonto) tipoMonto.style.transform = 'translateX(0)';
 
-    // Seleccionar categoría
+    // Marcar y mover la categoría activa
     if (tr.idCategoria != null) {
         const cats = await obtenerCategoriasEntrada();
         const cat = cats.find(c => c.id === tr.idCategoria);
         if (cat) {
-            document.querySelectorAll('.entrada-manual .categorias button').forEach(b => {
-                if (b.textContent.trim().endsWith(cat.nombre)) b.classList.add('muestra-categoria');
-                else b.classList.remove('muestra-categoria');
+            const btns = Array.from(document.querySelectorAll('.entrada-manual .categorias button'));
+            btns.forEach(b => {
+                if (b.textContent.trim().endsWith(cat.nombre)) {
+                    b.classList.add('muestra-categoria');
+                    b.classList.remove('oculta-categoria');
+                } else {
+                    b.classList.remove('muestra-categoria');
+                    b.classList.add('oculta-categoria');
+                }
             });
+            // Mover el botón activo al inicio
+            const categoriasDiv = document.querySelector('.entrada-manual .content-entrada .categorias');
+            const btnSel = btns.find(b => b.textContent.trim().endsWith(cat.nombre));
+            if (btnSel && categoriasDiv) {
+                categoriasDiv.insertBefore(btnSel, categoriasDiv.firstChild);
+            }
         }
     }
-    // Seleccionar etiqueta
+    // Marcar y mover la etiqueta activa
     if (tr.idEtiqueta != null) {
         const ets = await obtenerEtiquetasEntrada();
         const et = ets.find(e => e.id === tr.idEtiqueta);
         if (et) {
-            document.querySelectorAll('.entrada-manual .etiquetas button').forEach(b => {
-                if (b.textContent.trim() === '#' + et.nombre) b.classList.add('muestra-categoria');
-                else b.classList.remove('muestra-categoria');
+            const btns = Array.from(document.querySelectorAll('.entrada-manual .etiquetas button'));
+            btns.forEach(b => {
+                if (b.textContent.trim() === '#' + et.nombre) {
+                    b.classList.add('muestra-categoria');
+                    b.classList.remove('oculta-categoria');
+                } else {
+                    b.classList.remove('muestra-categoria');
+                    b.classList.add('oculta-categoria');
+                }
             });
+            // Mover el botón activo al inicio
+            const etiquetasDiv = document.querySelector('.entrada-manual .content-entrada .etiquetas');
+            const btnSel = btns.find(b => b.textContent.trim() === '#' + et.nombre);
+            if (btnSel && etiquetasDiv) {
+                etiquetasDiv.insertBefore(btnSel, etiquetasDiv.firstChild);
+            }
         }
     }
     mostrarBotonesEdicion();
     // Actualizar texto del botón de fecha
     const btnFecha = document.querySelector('.entrada-manual .fecha-recurrencia .fecha');
     if (btnFecha && inputFecha.value) {
-        // Determinar si es hoy, ayer, mañana o una fecha específica
         const [d, m, y] = inputFecha.value.split(/[\\/]/).map(Number);
         if (d && m && y) {
             const selected = new Date(y, m - 1, d);
@@ -542,6 +567,9 @@ window.addEventListener('editarTransaccion', async (event) => {
             btnFecha.textContent = inputFecha.value;
         }
     }
+    // Resetear variables de animación para UX consistente
+    categoriaActiva = null;
+    etiquetaActiva = null;
 });
 
 function mostrarBotonesEdicion() {
@@ -615,7 +643,7 @@ async function guardarEdicionTransaccion() {
     const btnTipoMontoPositivo = document.querySelector('.entrada-manual .content-entrada .monto .tipo-monto-container .tipo-monto button.positivo');
     if (btnTipoMontoPositivo.classList.contains('active')) tipo = 'positivo';
     // Actualizar transacción en IndexedDB
-    await actualizarTransaccion({
+    const transEditada = {
         ...transaccionEditando,
         fecha,
         descripcion: descripcionVal,
@@ -623,12 +651,14 @@ async function guardarEdicionTransaccion() {
         idCategoria,
         idEtiqueta,
         tipo
-    });
+    };
+    await actualizarTransaccion(transEditada);
     mostrarToast('Transacción actualizada');
     document.querySelector('.entrada-manual').style.transform = 'translateY(100%)';
     ocultarBotonesEdicion();
     document.querySelector('.overlay').classList.remove('active');
     window.dispatchEvent(new Event('transaccionGuardada'));
+    window.dispatchEvent(new CustomEvent('transaccionEditadaUI', { detail: transEditada }));
     resetearEntradaManual();
 }
 async function eliminarTransaccion() {
