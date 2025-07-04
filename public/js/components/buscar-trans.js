@@ -558,133 +558,28 @@ function actualizarTotalesFiltrados(transacciones) {
 
 window.addEventListener('transaccionEliminadaUI', (event) => {
     const tr = event.detail;
-    const cont = document.querySelector('.transacciones-container');
-    if (!cont) return;
-    const items = Array.from(cont.querySelectorAll('.transaccion'));
-    const item = items.find(div => {
-        const desc = div.querySelector('.descripcion .detalle .descripcion');
-        return desc && desc.textContent === (tr.descripcion || '');
-    });
-    if (item) {
-        item.style.transition = 'height 0.3s, margin 0.3s, opacity 0.3s';
-        item.style.overflow = 'hidden';
-        item.style.height = item.offsetHeight + 'px';
-        setTimeout(() => {
-            item.style.height = '0px';
-            item.style.margin = '0px';
-            item.style.opacity = '0';
-        }, 10);
-        setTimeout(() => {
-            if (item.parentNode) item.parentNode.removeChild(item);
-        }, 350);
-    }
     
-    // Actualizar totales si hay filtro activo
-    if (filtroActivo || categoriaFiltroActiva) {
-        setTimeout(() => {
-            if (filtroActivo) {
-                buscarTransacciones(filtroActivo);
-            } else {
-                renderTransacciones(categoriaFiltroActiva);
-            }
-        }, 400);
+    // Re-renderizar la lista completa para mantener el orden correcto
+    if (filtroActivo) {
+        buscarTransacciones(filtroActivo);
+    } else {
+        renderTransacciones(categoriaFiltroActiva);
     }
 });
 
-window.addEventListener('transaccionRestauradaUI', (event) => {
+window.addEventListener('transaccionRestauradaUI', async (event) => {
     const tr = event.detail;
-    const cont = document.querySelector('.transacciones-container');
-    if (!cont) return;
     
-    // Crear el div de la transacción restaurada
-    const div = document.createElement('div');
-    div.className = 'transaccion';
-    
-    // Buscar nombre de categoría y etiqueta
-    let nombreCat = tr.categoriaNombre || (tr.idCategoria ? 'Categoría ' + tr.idCategoria : '');
-    let nombreEt = tr.etiquetaNombre || (tr.idEtiqueta ? 'Etiqueta ' + tr.idEtiqueta : '');
-    let iconoCategoria = '';
-    let colorCategoria = '#888';
-    
-    // Generar icono de categoría
-    if (tr.categoriaIcono && tr.categoriaIcono.startsWith('bx:')) {
-        iconoCategoria = `<i class="bx ${tr.categoriaIcono.split(':')[1]}" style="color:${tr.categoriaColor || '#888'};font-size:1.2em;"></i>`;
-    } else if (tr.categoriaIcono && tr.categoriaIcono.startsWith('fa:')) {
-        iconoCategoria = `<i class="fa-solid ${tr.categoriaIcono.split(':')[1]}" style="color:${tr.categoriaColor || '#888'};font-size:1.2em;"></i>`;
+    // Simplemente re-renderizar la lista completa para mantener el orden correcto
+    if (filtroActivo) {
+        buscarTransacciones(filtroActivo);
     } else {
-        iconoCategoria = `<i class="fa-solid fa-tag" style="color:${tr.categoriaColor || '#888'};font-size:1.2em;"></i>`;
-    }
-    
-    div.innerHTML = `
-        <div class="descripcion">
-            <div class="icono-categoria" style="background-color: ${(tr.categoriaColor || '#888')}20;">
-                ${iconoCategoria}
-            </div>
-            <div class="detalle">
-                <p class="categoria">${nombreCat}</p>
-                <p class="descripcion">${tr.descripcion || ''}</p>
-                <p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>
-            </div>
-            <div class="botones">
-                <button class="btn-editar" title="${tr.tipo === 'negativo' ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}">editar</button>
-            </div>
-        </div>
-    `;
-    
-    // Función para parsear fecha
-    const parseFecha = f => {
-        if (!f) return 0;
-        const [d, m, y] = f.split(/[\\/]/).map(Number);
-        return new Date(y, m - 1, d).getTime();
-    };
-    
-    // Insertar en la posición correcta según fecha e ID
-    const nuevaFecha = parseFecha(tr.fecha);
-    const nuevoId = tr.id || 0;
-    let insertado = false;
-    const transDivs = Array.from(cont.querySelectorAll('.transaccion'));
-    
-    for (let i = 0; i < transDivs.length; i++) {
-        const descExistente = transDivs[i].querySelector('.descripcion .detalle .descripcion');
-        if (descExistente && nuevoId > (transDivs[i].dataset.transactionId || 0)) {
-            cont.insertBefore(div, transDivs[i]);
-            insertado = true;
-            break;
-        }
-    }
-    
-    if (!insertado) cont.appendChild(div);
-    
-    // Animar aparición
-    div.style.height = '0px';
-    div.style.margin = '0px';
-    div.style.opacity = '0';
-    setTimeout(() => {
-        div.style.transition = 'height 0.3s, margin 0.3s, opacity 0.3s';
-        div.style.height = '';
-        div.style.margin = '';
-        div.style.opacity = '1';
-    }, 10);
-    
-    div.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') e.stopPropagation();
-        window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
-    });
-    
-    // Actualizar totales si hay filtro activo
-    if (filtroActivo || categoriaFiltroActiva) {
-        setTimeout(() => {
-            if (filtroActivo) {
-                buscarTransacciones(filtroActivo);
-            } else {
-                renderTransacciones(categoriaFiltroActiva);
-            }
-        }, 400);
+        renderTransacciones(categoriaFiltroActiva);
     }
 });
 
 window.addEventListener('transaccionEditadaUI', () => {
-    // Mantener filtros activos al editar
+    // Re-renderizar la lista completa para mantener el orden correcto
     if (filtroActivo) {
         buscarTransacciones(filtroActivo);
     } else {
