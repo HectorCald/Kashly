@@ -31,7 +31,7 @@
             background-color: transparent;
             border: none;
             cursor: pointer;
-            font-size: var(--text-size-xl);
+            font-size: var(--text-size-2xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
         }

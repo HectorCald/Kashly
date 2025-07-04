@@ -21,7 +21,7 @@
         padding-inline: 20px;
 
         p {
-            font-size: var(--text-size-base);
+            font-size: var(--text-size-2xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
         }
@@ -30,7 +30,7 @@
             background-color: transparent;
             border: none;
             cursor: pointer;
-            font-size: var(--text-size-xl);
+            font-size: var(--text-size-2xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
         }
@@ -112,7 +112,7 @@
         align-items: flex-start;
         justify-content: flex-start;
         padding: 20px;
-        gap: 10px;
+        gap: 5px;
 
         .categoria {
             min-width: 70px;
@@ -122,9 +122,9 @@
             align-items: center;
             justify-content: center;
             white-space: nowrap;
-            border-radius: var(--border-radius-2xl);
+            border-radius: 10px;
             background-color: var(--aux-color);
-            padding: 5px 10px;
+            padding: 7px 12px;
             color: var(--text-white);
             font-size: var(--text-size-sm);
             font-weight: var(--font-weight-bold);

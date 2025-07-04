@@ -40,7 +40,7 @@
         }
 
         span {
-            font-size: var(--text-size-sm);
+            font-size: var(--text-size-2xl) !important;
             color: gray;
         }
     }
