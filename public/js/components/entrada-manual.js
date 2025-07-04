@@ -667,13 +667,13 @@ function mostrarSnackbarEliminada(trans) {
         snackbar.classList.remove('visible');
         setTimeout(() => snackbar.remove(), 300);
     });
-    // Auto ocultar tras 5s
+    // Auto ocultar tras 2s
     setTimeout(() => {
         if (document.body.contains(snackbar)) {
             snackbar.classList.remove('visible');
             setTimeout(() => snackbar.remove(), 300);
         }
-    }, 5000);
+    }, 2000);
 }
 async function restaurarTransaccion(trans) {
     // Restaurar en IndexedDB

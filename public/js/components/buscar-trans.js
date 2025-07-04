@@ -102,14 +102,21 @@ async function renderTransacciones(categoriaId = null) {
         obtenerCategoriasBuscar(),
         obtenerEtiquetasBuscar()
     ]);
-    
-    // Filtrar transacciones por categoría si se especifica
+    // Ordenar por fecha descendente (más reciente primero)
     let transaccionesFiltradas = trans;
     if (categoriaId) {
         transaccionesFiltradas = trans.filter(tr => tr.idCategoria === parseInt(categoriaId));
     }
-    
-    transaccionesFiltradas.reverse().forEach(tr => {
+    transaccionesFiltradas = transaccionesFiltradas.slice().sort((a, b) => {
+        // Asumimos formato fecha d/m/Y
+        const parseFecha = f => {
+            if (!f) return 0;
+            const [d, m, y] = f.split(/[\\/]/).map(Number);
+            return new Date(y, m - 1, d).getTime();
+        };
+        return parseFecha(b.fecha) - parseFecha(a.fecha);
+    });
+    transaccionesFiltradas.forEach(tr => {
         const div = document.createElement('div');
         div.className = 'transaccion';
         // Determinar tipo y signo
@@ -144,10 +151,8 @@ async function renderTransacciones(categoriaId = null) {
             </div>
         `;
         div.addEventListener('click', (e) => {
-            // Evitar que el click en el botón editar propague
             if (e.target.tagName === 'BUTTON') e.stopPropagation();
             console.log('[buscar-trans] Click en transacción:', tr); // LOG
-            // Lanzar evento personalizado con los datos de la transacción
             window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
         });
         cont.appendChild(div);
@@ -212,7 +217,6 @@ window.addEventListener('transaccionRestauradaUI', (event) => {
     div.className = 'transaccion';
     let esNegativo = tr.tipo === 'negativo';
     const icon = esNegativo ? '<i class="fa-solid fa-arrow-up negativo"></i>' : '<i class="fa-solid fa-arrow-down positivo"></i>';
-    // Buscar nombre de categoría y etiqueta (puede que no estén en memoria, así que solo muestra los ids si no tienes los nombres)
     let nombreCat = tr.categoriaNombre || (tr.idCategoria ? 'Categoría ' + tr.idCategoria : '');
     let nombreEt = tr.etiquetaNombre || (tr.idEtiqueta ? 'Etiqueta ' + tr.idEtiqueta : '');
     div.innerHTML = `
@@ -235,16 +239,33 @@ window.addEventListener('transaccionRestauradaUI', (event) => {
     div.style.height = '0px';
     div.style.margin = '0px';
     div.style.opacity = '0';
-    // Insertar al inicio (puedes ajustar la posición si lo deseas)
-    cont.insertBefore(div, cont.firstChild);
-    // Animar expansión
+    // Insertar en la posición correcta según la fecha
+    const parseFecha = f => {
+        if (!f) return 0;
+        const [d, m, y] = f.split(/[\\/]/).map(Number);
+        return new Date(y, m - 1, d).getTime();
+    };
+    const nuevaFecha = parseFecha(tr.fecha);
+    let insertado = false;
+    const transDivs = Array.from(cont.querySelectorAll('.transaccion'));
+    for (let i = 0; i < transDivs.length; i++) {
+        const fechaDiv = transDivs[i].querySelector('.fecha-monto p');
+        if (fechaDiv) {
+            const fechaExistente = fechaDiv.textContent;
+            if (parseFecha(fechaExistente) < nuevaFecha) {
+                cont.insertBefore(div, transDivs[i]);
+                insertado = true;
+                break;
+            }
+        }
+    }
+    if (!insertado) cont.appendChild(div);
     setTimeout(() => {
         div.style.transition = 'height 0.3s, margin 0.3s, opacity 0.3s';
         div.style.height = '';
         div.style.margin = '';
         div.style.opacity = '1';
     }, 10);
-    // Agregar el event listener de edición
     div.addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON') e.stopPropagation();
         window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
