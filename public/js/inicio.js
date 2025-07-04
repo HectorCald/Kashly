@@ -1,7 +1,7 @@
 /* ===== IMPORTACIÓN ===== */
 import { ocultarContenedores, ascensorAjustes } from './components/components.js';
 import { mostrarAjustes} from './components/ajustes.js';
-import { mostrarBuscarTrans } from './components/buscar-trans.js';
+import { mostrarBuscarTrans} from './components/buscar-trans.js';
 import { mostrarEntradaManual, obtenerCategoriasEntrada, obtenerTransacciones } from './components/entrada-manual.js';
 
 /* ===== EXPORTACIÓN ===== */
@@ -41,6 +41,7 @@ async function renderPilaresCategorias() {
         obtenerCategoriasEntrada(),
         obtenerTransacciones()
     ]);
+    
     // Agrupar montos por categoría según tipoDashboard
     const montosPorCat = {};
     categorias.forEach(cat => { montosPorCat[cat.id] = 0; });
@@ -113,21 +114,25 @@ async function renderPilaresCategorias() {
 export async function actualizarDashboard() {
     console.log('🔄 actualizarDashboard() ejecutándose');
     const transacciones = await obtenerTransacciones();
-    // Calcular totales para los botones
-    let totalPositivo = 0;
-    let totalNegativo = 0;
-    transacciones.forEach(t => {
-        if (t.tipo === 'negativo') totalNegativo += Number(t.monto);
-        if (t.tipo === 'positivo') totalPositivo += Number(t.monto);
-    });
-    // Actualizar texto de los botones
-    const btnNegativo = document.querySelector('.tipo .negativo');
-    const btnPositivo = document.querySelector('.tipo .positivo');
-    if (btnNegativo) btnNegativo.innerHTML = `- Bs ${totalNegativo.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-    if (btnPositivo) btnPositivo.innerHTML = `+ Bs ${totalPositivo.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-    // Total general: ingresos - egresos
-    const total = totalPositivo - totalNegativo;
     
+
+
+        // Calcular totales para los botones (sin filtro)
+        let totalPositivo = 0;
+        let totalNegativo = 0;
+        transacciones.forEach(t => {
+            if (t.tipo === 'negativo') totalNegativo += Number(t.monto);
+            if (t.tipo === 'positivo') totalPositivo += Number(t.monto);
+        });
+        // Actualizar texto de los botones
+        const btnNegativo = document.querySelector('.tipo .negativo');
+        const btnPositivo = document.querySelector('.tipo .positivo');
+        if (btnNegativo) btnNegativo.innerHTML = `- Bs ${totalNegativo.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        if (btnPositivo) btnPositivo.innerHTML = `+ Bs ${totalPositivo.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        // Total general: ingresos - egresos
+        const total = totalPositivo - totalNegativo;
+        animarTotal(total);
+
     // Inicializar listeners solo una vez
     if (!listenersInicializados) {
         setTimeout(() => {
@@ -154,7 +159,6 @@ export async function actualizarDashboard() {
         }, 0);
     }
     
-    animarTotal(total);
     renderPilaresCategorias();
 }
 

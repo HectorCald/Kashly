@@ -61,6 +61,7 @@
             cursor: pointer;
             color: var(--text-white);
             font-weight: var(--font-weight-bold);
+            transition: all 0.5s ease-in-out;
         }
         button.positivo.active{
             background-color: var(--success-color);
