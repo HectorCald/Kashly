@@ -87,14 +87,15 @@ function eventosEntradaManual() {
     const bsPrefix = document.querySelector('.entrada-manual .content-entrada .monto .tipo-monto-container .bs-prefix');
     const btnGuardar = document.querySelector('.entrada-manual .guardar');
 
+    // Calendario con flatpickr para el botón Hoy
+    const btnFecha = document.querySelector('.entrada-manual .fecha-recurrencia .fecha');
+    const inputFecha = document.querySelector('.entrada-manual .fecha-recurrencia .input-fecha');
+
+
     btnEntradaManual.addEventListener('click', () => {
         entradaManualContainer.style.transform = 'translateY(0)';
         setTimeout(() => {
-            if (descripcion) {
             descripcion.focus();
-            } else {
-                console.log('No se encontró el input descripcion');
-            }
         }, 200);
     });
     monto.addEventListener('input', (e) => {
@@ -138,10 +139,12 @@ function eventosEntradaManual() {
         btnTipoMontoNegativo.classList.remove('active');
     });
     
-    // Calendario con flatpickr para el botón Hoy
-    const btnFecha = document.querySelector('.entrada-manual .fecha-recurrencia .fecha');
-    const inputFecha = document.querySelector('.entrada-manual .fecha-recurrencia .input-fecha');
-    if (btnFecha && inputFecha && window.flatpickr) {
+    
+
+    btnFecha.addEventListener('click', () => {
+        picker.open();
+    });
+    if (btnFecha && window.flatpickr) {
         const picker = flatpickr(inputFecha, {
             dateFormat: "d/m/Y",
             defaultDate: new Date(),
@@ -182,10 +185,8 @@ function eventosEntradaManual() {
                 }, 0);
             }
         });
-        btnFecha.addEventListener('click', () => {
-            picker.open();
-        });
     }
+
 
     btnGuardar.addEventListener('click', async () => {
         // Obtener datos

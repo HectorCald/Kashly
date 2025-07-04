@@ -88,6 +88,10 @@
                 padding-right: 30px;
                 min-width: 120px;
             }
+            .recurrencia:focus {
+                border: none;
+                outline: none;
+            }
             
             .input-fecha {
                 position: absolute !important;
