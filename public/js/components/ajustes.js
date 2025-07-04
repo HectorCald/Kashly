@@ -745,7 +745,34 @@ const ICON_GROUPS_BASE = [
             { type: 'bx', name: 'bxs-star' },
             { type: 'fa', name: 'fa-star-of-david' }
         ]
+    },
+    {
+        nombre: 'Finanzas',
+        iconos: [
+            { type: 'bx', name: 'bx-money' },
+            { type: 'fa', name: 'fa-money-bill' },
+            { type: 'bx', name: 'bx-wallet' },
+            { type: 'bx', name: 'bxs-wallet' },
+            { type: 'fa', name: 'fa-wallet' },
+            { type: 'bx', name: 'bx-credit-card' },
+            { type: 'bx', name: 'bxs-credit-card' },
+            { type: 'fa', name: 'fa-credit-card' },
+            { type: 'bx', name: 'bx-bar-chart-alt-2' },
+            { type: 'bx', name: 'bxs-bar-chart-alt-2' },
+            { type: 'fa', name: 'fa-chart-bar' },
+            { type: 'bx', name: 'bx-trending-up' },
+            { type: 'fa', name: 'fa-chart-line' },
+            { type: 'bx', name: 'bx-dollar' },
+            { type: 'bx', name: 'bxs-dollar-circle' },
+            { type: 'fa', name: 'fa-dollar-sign' },
+            { type: 'bx', name: 'bx-yen' },
+            { type: 'fa', name: 'fa-yen-sign' },
+            { type: 'bx', name: 'bx-euro' },
+            { type: 'fa', name: 'fa-euro-sign' },
+            { type: 'bx', name: 'bx-pound' },
+        ]
     }
+    
 ];
 const ICON_GROUPS = ICON_GROUPS_BASE;
 
