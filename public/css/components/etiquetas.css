@@ -125,7 +125,7 @@
             background-color: var(--aux-color);
             padding: 5px 10px;
             color: var(--text-white);
-            font-size: var(--text-size-xs);
+            font-size: var(--text-size-sm);
         }
     }
 }
