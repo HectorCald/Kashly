@@ -274,16 +274,7 @@ function categorias() {
             }, null, null, inputCategoria);
         });
         
-        // Agregar categoría con Enter o espacio
-        inputCategoria.addEventListener('keydown', async (e) => {
-            if (
-                (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') &&
-                inputCategoria.value.trim()
-            ) {
-                e.preventDefault();
-                await agregarCategoriaFunc();
-            }
-        });
+
         
         // Agregar categoría con el botón
         btnAgregarActual.addEventListener('click', async (e) => {
@@ -461,16 +452,7 @@ function etiquetas() {
             mostrarEtiquetasContent(nombre); // Pasa el nombre para animar
         }
         
-        // Agregar etiqueta con Enter o espacio
-        inputEtiqueta.addEventListener('keydown', async (e) => {
-            if (
-                (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') &&
-                inputEtiqueta.value.trim()
-            ) {
-                e.preventDefault();
-                await agregarEtiquetaFunc();
-            }
-        });
+
         
         // Agregar etiqueta con el botón
         btnAgregar.addEventListener('click', async (e) => {
