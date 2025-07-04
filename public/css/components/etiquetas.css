@@ -64,19 +64,43 @@
             color: var(--text-white);
             font-size: var(--text-size-sm);
             padding: 15px 15px;
+            padding-left: 45px;
             margin-bottom: 10px;
         }
         input:focus {
             outline: none;
         }
-        button {
+        button.hashtag {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             background: none;
             border: none;
             cursor: pointer;
             color: var(--text-white);
             position: absolute;
-            top: 26px;
-            right: 35px;
+            top: 16px;
+            left: 25px; 
+            font-size: var(--text-size-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button.btn-agregar-etiqueta {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgb(74, 74, 74);
+            border: none;
+            cursor: pointer;
+            color: var(--text-white);
+            position: absolute;
+            top: 16px;
+            right: 25px; 
+            font-size: var(--text-size-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
     .etiquetas-content {
@@ -130,10 +154,12 @@
 @keyframes slideOutLeft {
     to {
         opacity: 0;
-        transform: scaleX(0.1) translateX(-40px);
+        transform: scaleX(0) translateX(-100%);
         width: 0;
         min-width: 0;
         max-width: 0;
+        margin: 0;
+        padding: 0;
     }
 }
 @keyframes slideInLeft {

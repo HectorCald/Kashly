@@ -174,6 +174,7 @@ function categorias() {
             const existentes = await obtenerCategorias();
             if (existentes.some(cat => cat.nombre.toLowerCase() === nombre.toLowerCase())) {
                 inputCategoria.value = '';
+                inputCategoria.blur(); // Forzar blur para limpiar autocompletado
                 return;
             }
             // Usar icono/color seleccionados o por defecto
@@ -181,6 +182,7 @@ function categorias() {
             const color = colorCategoriaSeleccionado || '#fff';
             await guardarCategoria(nombre, icono, color);
             inputCategoria.value = '';
+            inputCategoria.blur(); // Forzar blur para limpiar autocompletado
             mostrarCategoriasContent(nombre); // Pasa el nombre para animar
             // Reset icono/color a por defecto
             iconoCategoriaSeleccionado = 'fa:fa-tag';
@@ -357,26 +359,43 @@ function etiquetas() {
     etiquetas._initialized = true;
     function agregarEtiqueta() {
         const inputEtiqueta = document.querySelector('.agregar-etiqueta input');
+        const btnAgregar = document.querySelector('.btn-agregar-etiqueta');
+        
+        // Función para agregar etiqueta
+        async function agregarEtiquetaFunc() {
+            let nombre = inputEtiqueta.value.trim().toLowerCase();
+            if (!nombre) return;
+            
+            // Verifica duplicados (ignorando mayúsculas/minúsculas)
+            const existentes = await obtenerEtiquetas();
+            if (existentes.some(et => et.nombre.toLowerCase() === nombre)) {
+                inputEtiqueta.value = '';
+                inputEtiqueta.blur(); // Forzar blur para limpiar autocompletado
+                return;
+            }
+            
+            await guardarEtiqueta(nombre);
+            inputEtiqueta.value = '';
+            inputEtiqueta.blur(); // Forzar blur para limpiar autocompletado
+            mostrarEtiquetasContent(nombre); // Pasa el nombre para animar
+        }
+        
+        // Agregar etiqueta con Enter o espacio
         inputEtiqueta.addEventListener('keydown', async (e) => {
             if (
                 (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') &&
                 inputEtiqueta.value.trim()
             ) {
                 e.preventDefault();
-                let nombre = inputEtiqueta.value.trim().toLowerCase();
-                // Verifica duplicados (ignorando mayúsculas/minúsculas)
-                const existentes = await obtenerEtiquetas();
-                if (existentes.some(et => et.nombre.toLowerCase() === nombre)) {
-                    inputEtiqueta.value = '';
-                    return;
-                }
-                inputEtiqueta.value = '';
-                await guardarEtiqueta(nombre);
-                inputEtiqueta.value = '';
-                mostrarEtiquetasContent(nombre); // Pasa el nombre para animar
+                await agregarEtiquetaFunc();
             }
         });
-
+        
+        // Agregar etiqueta con el botón
+        btnAgregar.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await agregarEtiquetaFunc();
+        });
     }
     agregarEtiqueta();
 }
