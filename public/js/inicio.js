@@ -12,6 +12,8 @@ window.mostrarEntradaManual = mostrarEntradaManual;
 window.ascensorAjustes = ascensorAjustes;
 
 let tipoDashboard = 'negativo';
+let listenersInicializados = false;
+
 function animarTotal(finalTotal) {
     const totalNumber = document.querySelector('.total-number');
     let actual = parseFloat(totalNumber.dataset.raw || '0');
@@ -59,7 +61,12 @@ async function renderPilaresCategorias() {
         const monto = montosPorCat[cat.id];
         const montoElement = document.createElement('p');
         montoElement.className = 'monto-pilar';
-        montoElement.textContent = `${monto.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        // Formatear monto: sin signo negativo, solo decimales si es necesario
+        const montoAbsoluto = Math.abs(monto);
+        const montoFormateado = montoAbsoluto % 1 === 0 
+            ? montoAbsoluto.toLocaleString('es-ES', {minimumFractionDigits:0, maximumFractionDigits:0})
+            : montoAbsoluto.toLocaleString('es-ES', {minimumFractionDigits:1, maximumFractionDigits:1});
+        montoElement.textContent = montoFormateado;
         const pilar = document.createElement('div');
         pilar.className = 'tag-pilar';
         pilar.style.height = '0%';
@@ -120,27 +127,33 @@ export async function actualizarDashboard() {
     if (btnPositivo) btnPositivo.innerHTML = `+ Bs ${totalPositivo.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
     // Total general: ingresos - egresos
     const total = totalPositivo - totalNegativo;
-    setTimeout(() => {
-        const btnNegativo = document.querySelector('.tipo .negativo');
-        const btnPositivo = document.querySelector('.tipo .positivo');
-        console.log('btnNegativo:', btnNegativo, 'btnPositivo:', btnPositivo);
-        if (btnNegativo && btnPositivo) {
-            btnNegativo.addEventListener('click', () => {
-                btnNegativo.classList.add('active');
-                btnPositivo.classList.remove('active');
-                tipoDashboard = 'negativo';
-                actualizarDashboard();
-            });
-            btnPositivo.addEventListener('click', () => {
-                btnPositivo.classList.add('active');
-                btnNegativo.classList.remove('active');
-                tipoDashboard = 'positivo';
-                actualizarDashboard();
-            });
-        } else {
-            console.log('No se encontraron los botones de tipo');
-        }
-    }, 0);
+    
+    // Inicializar listeners solo una vez
+    if (!listenersInicializados) {
+        setTimeout(() => {
+            const btnNegativo = document.querySelector('.tipo .negativo');
+            const btnPositivo = document.querySelector('.tipo .positivo');
+            console.log('btnNegativo:', btnNegativo, 'btnPositivo:', btnPositivo);
+            if (btnNegativo && btnPositivo) {
+                btnNegativo.addEventListener('click', () => {
+                    btnNegativo.classList.add('active');
+                    btnPositivo.classList.remove('active');
+                    tipoDashboard = 'negativo';
+                    actualizarDashboard();
+                });
+                btnPositivo.addEventListener('click', () => {
+                    btnPositivo.classList.add('active');
+                    btnNegativo.classList.remove('active');
+                    tipoDashboard = 'positivo';
+                    actualizarDashboard();
+                });
+                listenersInicializados = true;
+            } else {
+                console.log('No se encontraron los botones de tipo');
+            }
+        }, 0);
+    }
+    
     animarTotal(total);
     renderPilaresCategorias();
 }

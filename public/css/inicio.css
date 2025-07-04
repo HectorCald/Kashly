@@ -140,6 +140,7 @@
     }
     .monto-pilar {
         font-size: var(--text-size-xs);
+        font-weight: var(--font-weight-bold);
         color: white;
         text-align: center;
         width: 100%;
