@@ -181,7 +181,7 @@
             justify-content: center;
 
             i {
-                font-size: var(--text-size-3xl);
+                font-size: var(--text-size-2xl);
                 background: none;
             }
         }
@@ -194,7 +194,7 @@
             color: var(--quaternary-color);
 
             i {
-                font-size: 18px;
+                font-size: 25px;
             }
         }
         button:last-child {
@@ -219,7 +219,7 @@
         background: none;
 
         i {
-            font-size: var(--text-size-xl);
+            font-size: var(--text-size-3xl);
             color: var(--text-white);
         }
     }

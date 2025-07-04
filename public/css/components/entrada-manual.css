@@ -248,6 +248,35 @@
             color: var(--text-white);
         }
     }
+
+    .btn-check{
+        width: 50px;
+        height: 50px;
+        background-color: var(--aux-color);
+        border: none;
+        cursor: pointer;
+        color: var(--text-white);
+        font-size: var(--text-size-3xl);
+        padding: 5px 10px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-borrar{
+        width: 50px;
+        height: 50px;
+        background-color: var(--aux-color);
+        border: none;
+        cursor: pointer;
+        color: var(--text-white);
+        font-size: var(--text-size-3xl);
+        padding: 5px 10px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 
@@ -280,3 +309,5 @@
     pointer-events: auto;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+

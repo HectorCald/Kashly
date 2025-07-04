@@ -1,3 +1,4 @@
+import { resetearEntradaManual } from './entrada-manual.js';
 
 export function ocultarContenedores() {
     const btnCerrar = document.querySelectorAll('.cerrar');
@@ -11,6 +12,7 @@ export function ocultarContenedores() {
         buscarTransContainer.style.transform = 'translateY(100%)';
         entradasContainer.style.transform = 'translateY(100%)';
         overlay.classList.remove('active');
+        resetearEntradaManual();
     });
 
     btnCerrar.forEach(btn => {
@@ -22,6 +24,9 @@ export function ocultarContenedores() {
                 // Solo quita el overlay si es el de ajustes o buscar trans
                 if (contenedor.classList.contains('ajustes-container') || contenedor.classList.contains('buscador-transacciones')) {
                     overlay.classList.remove('active');
+                }
+                if (contenedor.classList.contains('entrada-manual')) {
+                    resetearEntradaManual();
                 }
             }
             window.dispatchEvent(new Event('transaccionGuardada'));

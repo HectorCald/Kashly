@@ -13,7 +13,7 @@
     transition: transform 0.3s ease-in-out;
     display: flex;
     flex-direction: column;
-    z-index: 3;
+    z-index: 2;
 
     .titulo {
         display: flex;
@@ -125,6 +125,8 @@
             justify-content: center;
             flex-direction: column;
             width: 100%;
+            transition: height 0.3s, margin 0.3s, opacity 0.3s;
+            overflow: hidden;
 
             .fecha-monto {
                 display: flex;

@@ -143,6 +143,13 @@ async function renderTransacciones(categoriaId = null) {
                 </div>
             </div>
         `;
+        div.addEventListener('click', (e) => {
+            // Evitar que el click en el botón editar propague
+            if (e.target.tagName === 'BUTTON') e.stopPropagation();
+            console.log('[buscar-trans] Click en transacción:', tr); // LOG
+            // Lanzar evento personalizado con los datos de la transacción
+            window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
+        });
         cont.appendChild(div);
     });
 }
@@ -172,4 +179,75 @@ export function mostrarBuscarTrans() {
     
     ascensorAjustes(buscarTransContainer);
 }
+
+window.addEventListener('transaccionEliminadaUI', (event) => {
+    const tr = event.detail;
+    const cont = document.querySelector('.transacciones-container');
+    if (!cont) return;
+    const items = Array.from(cont.querySelectorAll('.transaccion'));
+    const item = items.find(div => {
+        const desc = div.querySelector('.descripcion .detalle .descripcion');
+        return desc && desc.textContent === (tr.descripcion || '');
+    });
+    if (item) {
+        item.style.transition = 'height 0.3s, margin 0.3s, opacity 0.3s';
+        item.style.overflow = 'hidden';
+        item.style.height = item.offsetHeight + 'px';
+        setTimeout(() => {
+            item.style.height = '0px';
+            item.style.margin = '0px';
+            item.style.opacity = '0';
+        }, 10);
+        setTimeout(() => {
+            if (item.parentNode) item.parentNode.removeChild(item);
+        }, 350);
+    }
+});
+window.addEventListener('transaccionRestauradaUI', (event) => {
+    const tr = event.detail;
+    const cont = document.querySelector('.transacciones-container');
+    if (!cont) return;
+    // Crear el div de la transacción restaurada igual que en renderTransacciones
+    const div = document.createElement('div');
+    div.className = 'transaccion';
+    let esNegativo = tr.tipo === 'negativo';
+    const icon = esNegativo ? '<i class="fa-solid fa-arrow-up negativo"></i>' : '<i class="fa-solid fa-arrow-down positivo"></i>';
+    // Buscar nombre de categoría y etiqueta (puede que no estén en memoria, así que solo muestra los ids si no tienes los nombres)
+    let nombreCat = tr.categoriaNombre || (tr.idCategoria ? 'Categoría ' + tr.idCategoria : '');
+    let nombreEt = tr.etiquetaNombre || (tr.idEtiqueta ? 'Etiqueta ' + tr.idEtiqueta : '');
+    div.innerHTML = `
+        <div class="fecha-monto">
+            <p>${tr.fecha || ''}</p>
+            <p>${esNegativo ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}</p>
+        </div>
+        <div class="descripcion">
+            ${icon}
+            <div class="detalle">
+                <p class="categoria">${nombreCat}</p>
+                <p class="descripcion">${tr.descripcion || ''}</p>
+                <p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>
+            </div>
+            <div class="botones">
+                <button>editar</button>
+            </div>
+        </div>
+    `;
+    div.style.height = '0px';
+    div.style.margin = '0px';
+    div.style.opacity = '0';
+    // Insertar al inicio (puedes ajustar la posición si lo deseas)
+    cont.insertBefore(div, cont.firstChild);
+    // Animar expansión
+    setTimeout(() => {
+        div.style.transition = 'height 0.3s, margin 0.3s, opacity 0.3s';
+        div.style.height = '';
+        div.style.margin = '';
+        div.style.opacity = '1';
+    }, 10);
+    // Agregar el event listener de edición
+    div.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') e.stopPropagation();
+        window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
+    });
+});
 
