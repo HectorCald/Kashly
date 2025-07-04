@@ -125,6 +125,8 @@
             justify-content: center;
             flex-direction: column;
             width: 100%;
+            min-height: 80px;
+            height: 80px;
             transition: height 0.3s, margin 0.3s, opacity 0.3s;
             overflow: hidden;
 
