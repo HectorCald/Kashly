@@ -66,6 +66,9 @@
             padding: 15px 15px;
             margin-bottom: 10px;
         }
+        input:focus {
+            outline: none;
+        }
         button {
             background: none;
             border: none;

@@ -70,6 +70,9 @@
             font-size: var(--text-size-sm);
             padding: 15px 15px;
         }
+        input:focus {
+            outline: none;
+        }
 
         button {
             background: none;

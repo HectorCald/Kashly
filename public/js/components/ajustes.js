@@ -170,6 +170,7 @@ function categorias() {
                     inputCategoria.value = '';
                     return;
                 }
+                inputCategoria.value = '';
                 await guardarCategoria(nombre);
                 inputCategoria.value = '';
                 mostrarCategoriasContent(nombre); // Pasa el nombre para animar
@@ -276,6 +277,7 @@ function etiquetas() {
                     inputEtiqueta.value = '';
                     return;
                 }
+                inputEtiqueta.value = '';
                 await guardarEtiqueta(nombre);
                 inputEtiqueta.value = '';
                 mostrarEtiquetasContent(nombre); // Pasa el nombre para animar
