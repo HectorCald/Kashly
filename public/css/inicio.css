@@ -218,7 +218,7 @@
         background: none;
 
         i {
-            font-size: var(--text-size-sm);
+            font-size: var(--text-size-xl);
             color: var(--text-white);
         }
     }

@@ -26,7 +26,7 @@
         padding-inline: 20px;
 
         p {
-            font-size: var(--text-size-base);
+            font-size: var(--text-size-xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
         }
@@ -35,7 +35,7 @@
             background-color: transparent;
             border: none;
             cursor: pointer;
-            font-size: var(--text-size-base);
+            font-size: var(--text-size-xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
         }

@@ -22,7 +22,7 @@
         padding-inline: 20px;
 
         p {
-            font-size: var(--text-size-base);
+            font-size: var(--text-size-xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
         }
@@ -31,7 +31,7 @@
             background-color: transparent;
             border: none;
             cursor: pointer;
-            font-size: var(--text-size-base);
+            font-size: var(--text-size-xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
         }
@@ -75,6 +75,28 @@
                 padding: 5px 10px;
                 border-radius: var(--border-radius-2xl);
                 font-weight: var(--font-weight-bold);
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+            
+            .recurrencia {
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 8px center;
+                background-size: 16px;
+                padding-right: 30px;
+                min-width: 120px;
+            }
+            
+            .input-fecha {
+                position: absolute !important;
+                left: -9999px !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
             }
         }
 
@@ -91,7 +113,7 @@
                 border: none;
                 color: var(--text-white);
                 padding: 5px 0px;
-                font-size: var(--text-size-xl);
+                font-size: var(--text-size-4xl);
                 font-weight: var(--font-weight-bold);
                 text-decoration: none;
             }
@@ -208,15 +230,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 5px;
             position: absolute;
-            bottom: 10px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
             padding: 15px;
             background-color: var(--aux-color);
             border-radius: var(--border-radius-lg);
             font-weight: var(--font-weight-bold);
+            font-size: var(--text-size-base);
             border: none;
             color: var(--text-white);
         }
