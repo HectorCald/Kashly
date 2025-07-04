@@ -88,15 +88,34 @@ export const CATEGORIA_COLORES = [
     '#78909C', // gris azulado
     '#42A5F5', // azul medio
     '#7E57C2', // violeta
-    '#26C6DA', // celeste
-    '#D4E157', // lima
-    '#FFB300', // ámbar
-    '#C62828', // rojo
-    '#00897B', // verde oscuro
-    '#F9A825', // mostaza
-    '#5C6BC0', // azul violeta
-    '#8BC34A', // verde lima
-];
+  
+    '#FFAD8A', // naranja claro
+    '#6ECFF9', // azul claro
+    '#98D89E', // verde claro
+    '#C88ED3', // morado claro
+    '#FFCA7F', // naranja aún más claro
+    '#F279A3', // rosa claro
+    '#5CD0C7', // turquesa claro
+    '#FFE066', // amarillo claro
+    '#B39B94', // marrón claro
+    '#A7B6C0', // gris azulado claro
+    '#7AB9F7', // azul medio claro
+    '#A18CCF', // violeta claro
+  
+    '#CC5734', // naranja oscuro
+    '#1C82AC', // azul oscuro
+    '#4A8C4D', // verde oscuro
+    '#873995', // morado oscuro
+    '#CC831F', // naranja más oscuro
+    '#B93161', // rosa oscuro
+    '#1D7E76', // turquesa oscuro
+    '#CC9F20', // amarillo oscuro
+    '#6F554E', // marrón oscuro
+    '#5C6D78', // gris azulado oscuro
+    '#317AC0', // azul medio oscuro
+    '#6046A0', // violeta oscuro
+  ];
+  
 
 
 
@@ -154,16 +173,30 @@ function mostrarCategorias() {
         listenersCategorias = true;
     }
     ocultarEtiquetas();
+    ocultarCategorias();
     ascensorAjustes(categoriasContainer);
     categorias();
 }
 function categorias() {
-    if (categorias._initialized) return;
-    categorias._initialized = true;
+    // Limpiar listeners anteriores si existen
+    const btnIcono = document.querySelector('.icono-categoria');
+    const btnAgregar = document.querySelector('.btn-agregar-categoria');
+    const inputCategoria = document.querySelector('.agregar-categoria input');
+    
+    if (btnIcono) {
+        const btnIconoClone = btnIcono.cloneNode(true);
+        btnIcono.parentNode.replaceChild(btnIconoClone, btnIcono);
+    }
+    
+    if (btnAgregar) {
+        const btnAgregarClone = btnAgregar.cloneNode(true);
+        btnAgregar.parentNode.replaceChild(btnAgregarClone, btnAgregar);
+    }
+    
     function agregarCategoria() {
         const inputCategoria = document.querySelector('.agregar-categoria input');
-        const btnIcono = document.querySelector('.icono-categoria');
-        const btnAgregar = document.querySelector('.btn-agregar-categoria');
+        const btnIconoActual = document.querySelector('.icono-categoria');
+        const btnAgregarActual = document.querySelector('.btn-agregar-categoria');
         
         // Función para agregar categoría
         async function agregarCategoriaFunc() {
@@ -187,21 +220,22 @@ function categorias() {
             // Reset icono/color a por defecto
             iconoCategoriaSeleccionado = 'fa:fa-tag';
             colorCategoriaSeleccionado = '#fff';
-            btnIcono.innerHTML = `<i class="fa-solid fa-tag" style="color:#fff"></i>`;
+            btnIconoActual.innerHTML = `<i class="fa-solid fa-tag" style="color:#fff"></i>`;
         }
         
         // Modal solo se abre al pulsar el botón de icono
-        btnIcono.addEventListener('click', (e) => {
+        btnIconoActual.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             mostrarModalIconos((iconoSeleccionado, colorSeleccionado) => {
                 // Guardar selección y reflejar en el botón
                 iconoCategoriaSeleccionado = iconoSeleccionado || 'fa:fa-tag';
                 colorCategoriaSeleccionado = colorSeleccionado || '#fff';
                 // Renderizar icono y color en el botón
                 if (iconoCategoriaSeleccionado.startsWith('bx:')) {
-                    btnIcono.innerHTML = `<i class="bx ${iconoCategoriaSeleccionado.split(':')[1]}" style="color:${colorCategoriaSeleccionado}"></i>`;
+                    btnIconoActual.innerHTML = `<i class="bx ${iconoCategoriaSeleccionado.split(':')[1]}" style="color:${colorCategoriaSeleccionado}"></i>`;
                 } else {
-                    btnIcono.innerHTML = `<i class="fa-solid ${iconoCategoriaSeleccionado.split(':')[1]}" style="color:${colorCategoriaSeleccionado}"></i>`;
+                    btnIconoActual.innerHTML = `<i class="fa-solid ${iconoCategoriaSeleccionado.split(':')[1]}" style="color:${colorCategoriaSeleccionado}"></i>`;
                 }
             }, null, null, inputCategoria);
         });
@@ -218,7 +252,7 @@ function categorias() {
         });
         
         // Agregar categoría con el botón
-        btnAgregar.addEventListener('click', async (e) => {
+        btnAgregarActual.addEventListener('click', async (e) => {
             e.preventDefault();
             await agregarCategoriaFunc();
         });
@@ -904,19 +938,38 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
             onSelect(`${iconoSeleccionadoTipo}:${iconoSeleccionado}`, colorSeleccionado);
             modal.remove();
             document.querySelector('.overlay2').classList.remove('active');
+            document.removeEventListener('click', cerrarModalHandler);
+            document.removeEventListener('keydown', escapeModalHandler);
         }
     });
     // Cancelar
     modal.querySelector('.btn-cerrar').addEventListener('click', () => {
         modal.remove();
         document.querySelector('.overlay2').classList.remove('active');
+        document.removeEventListener('click', cerrarModalHandler);
+        document.removeEventListener('keydown', escapeModalHandler);
     });
     // Cerrar al hacer click fuera
-    document.addEventListener('click', function cerrarModal(e) {
+    const cerrarModalHandler = function(e) {
         if (!modal.contains(e.target) && !e.target.closest('.icono-categoria')) {
             modal.remove();
             document.querySelector('.overlay2').classList.remove('active');
-            document.removeEventListener('click', cerrarModal);
+            document.removeEventListener('click', cerrarModalHandler);
+            document.removeEventListener('keydown', escapeModalHandler);
         }
-    });
+    };
+    
+    // Cerrar con Escape
+    const escapeModalHandler = function(e) {
+        if (e.key === 'Escape') {
+            e.stopPropagation();
+            modal.remove();
+            document.querySelector('.overlay2').classList.remove('active');
+            document.removeEventListener('click', cerrarModalHandler);
+            document.removeEventListener('keydown', escapeModalHandler);
+        }
+    };
+    
+    document.addEventListener('click', cerrarModalHandler);
+    document.addEventListener('keydown', escapeModalHandler);
 }

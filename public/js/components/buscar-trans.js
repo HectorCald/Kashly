@@ -261,7 +261,7 @@ async function renderTransacciones(categoriaId = null) {
             
             div.innerHTML = `
                 <div class="descripcion">
-                    <div class="icono-categoria" style="background-color: ${colorCategoria}20;">
+                    <div class="icono-transaccion" style="background-color: ${colorCategoria}20;">
                         ${iconoCategoria}
                     </div>
                     <div class="detalle">
@@ -289,7 +289,14 @@ async function renderTransacciones(categoriaId = null) {
     }
 }
 
+// Variable para controlar si ya se inicializaron los listeners
+let listenersBuscarTransInicializados = false;
+
 export function mostrarBuscarTrans() {
+    // Evitar inicialización múltiple
+    if (listenersBuscarTransInicializados) return;
+    listenersBuscarTransInicializados = true;
+    
     const btnBuscarTrans = document.querySelector('.buscar');
     const buscarTransContainer = document.querySelector('.buscador-transacciones');
     const overlay = document.querySelector('.overlay');
@@ -310,7 +317,11 @@ export function mostrarBuscarTrans() {
         input.value = '';
         
         renderTransacciones();
+        
+        // Agregar escape handler cuando se abre
+        agregarEscapeHandler();
     });
+    
     function normalizarTexto(texto) {
         return texto
           .toLowerCase()                                  
@@ -366,8 +377,8 @@ export function mostrarBuscarTrans() {
         }
     });
     
-    // Cerrar con Escape key
-    document.addEventListener('keydown', (e) => {
+    // Cerrar con Escape key - Solo cuando el buscador está abierto
+    const escapeHandler = (e) => {
         if (e.key === 'Escape' && buscarTransContainer.style.transform === 'translateY(0px)') {
             // Limpiar filtros y restaurar normalidad
             filtroActivo = '';
@@ -381,6 +392,32 @@ export function mostrarBuscarTrans() {
             
             buscarTransContainer.style.transform = 'translateY(100%)';
             overlay.classList.remove('active');
+            
+            // Remover el escape handler cuando se cierra
+            removerEscapeHandler();
+        }
+    };
+    
+    // Función para agregar el escape handler
+    function agregarEscapeHandler() {
+        document.addEventListener('keydown', escapeHandler);
+    }
+    
+    // Función para remover el escape handler
+    function removerEscapeHandler() {
+        document.removeEventListener('keydown', escapeHandler);
+    }
+    
+
+    
+    // Remover el event listener cuando se cierra el buscador
+    btnCerrar.addEventListener('click', () => {
+        removerEscapeHandler();
+    });
+    
+    overlay.addEventListener('click', () => {
+        if (buscarTransContainer.style.transform === 'translateY(0px)') {
+            removerEscapeHandler();
         }
     });
     
@@ -505,7 +542,7 @@ async function buscarTransacciones(termino) {
             
             div.innerHTML = `
                 <div class="descripcion">
-                    <div class="icono-categoria" style="background-color: ${colorCategoria}20;">
+                    <div class="icono-transaccion" style="background-color: ${colorCategoria}20;">
                         ${iconoCategoria}
                     </div>
                     <div class="detalle">
