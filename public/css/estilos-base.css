@@ -186,6 +186,16 @@ body {
     pointer-events: auto;
 }
 
+.notificacion-toast.error {
+    background-color: #c0392b;
+    border-left: 4px solid #e74c3c;
+}
+
+.notificacion-toast.success {
+    background-color: #27ae60;
+    border-left: 4px solid #2ecc71;
+}
+
 
 /* ====== SNACKBAR ELIMINADA ====== */
 .snackbar-eliminada {

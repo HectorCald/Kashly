@@ -212,15 +212,15 @@ function eventosEntradaManual() {
         }
         // Validaciones
         if (!idCategoria) {
-            mostrarToast('Selecciona una categoría');
+            mostrarToast('Selecciona una categoría', 'error');
             return;
         }
         if (!descripcionVal || descripcionVal.length < 1) {
-            mostrarToast('Agrega una descripción');
+            mostrarToast('Agrega una descripción', 'error');
             return;
         }
         if (isNaN(montoVal) || montoVal < 1) {
-            mostrarToast('El monto debe ser al menos 1');
+            mostrarToast('El monto debe ser al menos 1', 'error');
             return;
         }
         // Determinar tipo
@@ -230,13 +230,15 @@ function eventosEntradaManual() {
         await guardarTransaccion({fecha, descripcion: descripcionVal, monto: montoVal, idCategoria, idEtiqueta, tipo});
         // Cerrar entrada manual
         document.querySelector('.entrada-manual').style.transform = 'translateY(100%)';
-        // Notificación
+        // Notificación - Verde para ingresos, rojo para gastos
         if (nombreCategoria && montoVal) {
-            mostrarToast(`${nombreCategoria} ${montoVal > 0 ? (tipo==='positivo'?'+':'-') : ''}${montoVal}`);
+            const tipoNotificacion = tipo === 'positivo' ? 'success' : 'error';
+            mostrarToast(`${nombreCategoria} ${tipo==='positivo'?'+':'-'}${montoVal}`, tipoNotificacion);
         } else if (montoVal) {
-            mostrarToast(`${montoVal > 0 ? (tipo==='positivo'?'+':'-') : ''}${montoVal}`);
+            const tipoNotificacion = tipo === 'positivo' ? 'success' : 'error';
+            mostrarToast(`${tipo==='positivo'?'+':'-'}${montoVal}`, tipoNotificacion);
         } else {
-            mostrarToast('Guardado');
+            mostrarToast('Guardado', 'success');
         }
         // Limpiar campos
         descripcion.value = '';
@@ -445,10 +447,11 @@ function guardarTransaccion({fecha, descripcion, monto, idCategoria, idEtiqueta,
 }
 
 /* ===== NOTIFICACIONES ===== */
-function mostrarToast(mensaje) {
+function mostrarToast(mensaje, tipo = 'success') {
     const toast = document.querySelector('.notificacion-toast');
     if (!toast) return;
     toast.textContent = mensaje;
+    toast.className = `notificacion-toast ${tipo}`;
     toast.classList.add('mostrar');
     setTimeout(() => {
         toast.classList.remove('mostrar');
@@ -636,15 +639,15 @@ async function guardarEdicionTransaccion() {
     }
     // Validaciones
     if (!idCategoria) {
-        mostrarToast('Selecciona una categoría');
+        mostrarToast('Selecciona una categoría', 'error');
         return;
     }
     if (!descripcionVal || descripcionVal.length < 1) {
-        mostrarToast('Agrega una descripción');
+        mostrarToast('Agrega una descripción', 'error');
         return;
     }
     if (isNaN(montoVal) || montoVal < 1) {
-        mostrarToast('El monto debe ser al menos 1');
+        mostrarToast('El monto debe ser al menos 1', 'error');
         return;
     }
     let tipo = 'negativo';
@@ -661,7 +664,8 @@ async function guardarEdicionTransaccion() {
         tipo
     };
     await actualizarTransaccion(transEditada);
-    mostrarToast('Transacción actualizada');
+    // Notificación - Verde para edición exitosa
+    mostrarToast('Transacción actualizada', 'success');
     document.querySelector('.entrada-manual').style.transform = 'translateY(100%)';
     ocultarBotonesEdicion();
     document.querySelector('.overlay').classList.remove('active');

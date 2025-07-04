@@ -3,6 +3,7 @@ const DB_NAME = 'KashlyDB';
 const BASE_VERSION = 1;
 const STORE_CATEGORIAS = 'categorias';
 const STORE_ETIQUETAS = 'etiquetas';
+const STORE_TRANSACCIONES = 'transacciones';
 
 let listenersCategorias = false;
 let listenersEtiquetas = false;
@@ -161,6 +162,39 @@ function obtenerCategorias() {
         });
     });
 }
+
+function obtenerTransacciones() {
+    return openDB([STORE_TRANSACCIONES]).then(db => {
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_TRANSACCIONES, 'readonly');
+            const store = tx.objectStore(STORE_TRANSACCIONES);
+            const req = store.getAll();
+            req.onsuccess = () => { resolve(req.result); db.close(); };
+            req.onerror = () => { reject(req.error); db.close(); };
+        });
+    });
+}
+
+async function verificarCategoriaEnUso(categoriaId) {
+    const transacciones = await obtenerTransacciones();
+    return transacciones.some(tr => tr.idCategoria === categoriaId);
+}
+
+
+
+function mostrarNotificacion(mensaje, tipo = 'error') {
+    const notificacion = document.querySelector('.notificacion-toast');
+    if (notificacion) {
+        notificacion.textContent = mensaje;
+        notificacion.className = `notificacion-toast ${tipo}`;
+        notificacion.classList.add('mostrar');
+        
+        // Ocultar después de 3 segundos
+        setTimeout(() => {
+            notificacion.classList.remove('mostrar');
+        }, 3000);
+    }
+}
 function mostrarCategorias() {
     const btnCategorias = document.querySelector('.categorias');
     const categoriasContainer = document.querySelector('.categorias-container');
@@ -310,11 +344,24 @@ async function mostrarCategoriasContent(nombreAnimada = null) {
                 deleteState = 2;
                 div._deleteState = 2;
             } else if (deleteState === 2) {
-                div.classList.add('slide-out');
-                await borrarCategoriaPorId(cat.id);
-                setTimeout(() => {
-                    mostrarCategoriasContent();
-                }, 300);
+                // Verificar si la categoría está en uso antes de eliminar
+                const categoriaEnUso = await verificarCategoriaEnUso(cat.id);
+                if (categoriaEnUso) {
+                    // La categoría está en uso, mostrar notificación y resetear
+                    mostrarNotificacion(`No se puede eliminar "${cat.nombre}" porque está siendo usada en transacciones`, 'error');
+                    div.classList.remove('delete-pending');
+                    div.querySelector('p').textContent = div.dataset.nombre;
+                    deleteState = 0;
+                    div._deleteState = 0;
+                } else {
+                    // La categoría no está en uso, proceder con la eliminación
+                    div.classList.add('slide-out');
+                    await borrarCategoriaPorId(cat.id);
+                    mostrarNotificacion(`Categoría "${cat.nombre}" eliminada`, 'error');
+                    setTimeout(() => {
+                        mostrarCategoriasContent();
+                    }, 300);
+                }
             }
         });
         document.addEventListener('click', function resetCategoria(e) {
