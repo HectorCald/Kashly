@@ -4,6 +4,7 @@ const DB_NAME = 'KashlyDB';
 
 // Variables globales para filtros persistentes
 let filtroActivo = '';
+let categoriaFiltroActiva = null;
 
 function getCurrentVersionBuscar() {
     return new Promise((resolve, reject) => {
@@ -116,7 +117,64 @@ function ordenarTransacciones(transacciones) {
     });
 }
 
-/* ===== CARGAR TRANSACCIONES ===== */
+/* ===== FUNCIONES DE FECHA ===== */
+function formatearFechaSubtitulo(fecha) {
+    if (!fecha) return 'Sin fecha';
+    
+    const [dia, mes, año] = fecha.split(/[\\/]/).map(Number);
+    const fechaObj = new Date(año, mes - 1, dia);
+    const hoy = new Date();
+    const ayer = new Date(hoy);
+    ayer.setDate(hoy.getDate() - 1);
+    const anteayer = new Date(hoy);
+    anteayer.setDate(hoy.getDate() - 2);
+    
+    // Comparar solo fecha (sin hora)
+    const fechaComparar = new Date(fechaObj.getFullYear(), fechaObj.getMonth(), fechaObj.getDate());
+    const hoyComparar = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    const ayerComparar = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate());
+    const anteayerComparar = new Date(anteayer.getFullYear(), anteayer.getMonth(), anteayer.getDate());
+    
+    if (fechaComparar.getTime() === hoyComparar.getTime()) {
+        return 'Hoy';
+    } else if (fechaComparar.getTime() === ayerComparar.getTime()) {
+        return 'Ayer';
+    } else if (fechaComparar.getTime() === anteayerComparar.getTime()) {
+        return 'Anteayer';
+    } else {
+        const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        return `${diasSemana[fechaObj.getDay()]} ${dia} de ${meses[fechaObj.getMonth()]}`;
+    }
+}
+
+function agruparPorFecha(transacciones) {
+    const grupos = {};
+    
+    transacciones.forEach(tr => {
+        const fechaSubtitulo = formatearFechaSubtitulo(tr.fecha);
+        if (!grupos[fechaSubtitulo]) {
+            grupos[fechaSubtitulo] = [];
+        }
+        grupos[fechaSubtitulo].push(tr);
+    });
+    
+    return grupos;
+}
+
+function calcularTotalDia(transacciones) {
+    let total = 0;
+    transacciones.forEach(tr => {
+        if (tr.tipo === 'positivo') {
+            total += Number(tr.monto);
+        } else if (tr.tipo === 'negativo') {
+            total -= Number(tr.monto);
+        }
+    });
+    return total;
+}
+
+/* ===== BUSCAR TRANSACCIONES ===== */
 async function renderTransacciones(categoriaId = null) {
     const cont = document.querySelector('.transacciones-container');
     if (!cont) return;
@@ -151,63 +209,78 @@ async function renderTransacciones(categoriaId = null) {
     // Ordenar transacciones
     transaccionesFiltradas = ordenarTransacciones(transaccionesFiltradas);
     
-    transaccionesFiltradas.forEach(tr => {
-        const div = document.createElement('div');
-        div.className = 'transaccion';
+    // Agrupar por fecha
+    const gruposPorFecha = agruparPorFecha(transaccionesFiltradas);
+    
+    // Renderizar grupos
+    Object.keys(gruposPorFecha).forEach(fechaSubtitulo => {
+        const transaccionesDelDia = gruposPorFecha[fechaSubtitulo];
+        const totalDia = calcularTotalDia(transaccionesDelDia);
         
-        // Buscar nombre de categoría y etiqueta
-        let nombreCat = '';
-        let nombreEt = '';
-        let iconoCategoria = '';
-        let colorCategoria = '#888';
+        // Crear subtítulo con total del día
+        const subtituloDiv = document.createElement('div');
+        subtituloDiv.className = 'fecha-subtitulo';
+        subtituloDiv.innerHTML = `
+            <h3>${fechaSubtitulo}</h3>
+            <span class="total-dia">${totalDia > 0 ? '+' : ''}${totalDia.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} Bs</span>
+        `;
+        cont.appendChild(subtituloDiv);
         
-        if (tr.idCategoria != null) {
-            const cat = categorias.find(c => c.id === tr.idCategoria);
-            if (cat) {
-                nombreCat = cat.nombre;
-                colorCategoria = cat.color || '#888';
-                
-                // Generar icono de categoría
-                if (cat.icono && cat.icono.startsWith('bx:')) {
-                    iconoCategoria = `<i class="bx ${cat.icono.split(':')[1]}" style="color:${colorCategoria};font-size:1.2em;"></i>`;
-                } else if (cat.icono && cat.icono.startsWith('fa:')) {
-                    iconoCategoria = `<i class="fa-solid ${cat.icono.split(':')[1]}" style="color:${colorCategoria};font-size:1.2em;"></i>`;
-                } else {
-                    iconoCategoria = `<i class="fa-solid fa-tag" style="color:${colorCategoria};font-size:1.2em;"></i>`;
+        // Renderizar transacciones del día
+        transaccionesDelDia.forEach(tr => {
+            const div = document.createElement('div');
+            div.className = 'transaccion';
+            
+            // Buscar nombre de categoría y etiqueta
+            let nombreCat = '';
+            let nombreEt = '';
+            let iconoCategoria = '';
+            let colorCategoria = '#888';
+            
+            if (tr.idCategoria != null) {
+                const cat = categorias.find(c => c.id === tr.idCategoria);
+                if (cat) {
+                    nombreCat = cat.nombre;
+                    colorCategoria = cat.color || '#888';
+                    
+                    // Generar icono de categoría
+                    if (cat.icono && cat.icono.startsWith('bx:')) {
+                        iconoCategoria = `<i class="bx ${cat.icono.split(':')[1]}" style="color:${colorCategoria};font-size:1.2em;"></i>`;
+                    } else if (cat.icono && cat.icono.startsWith('fa:')) {
+                        iconoCategoria = `<i class="fa-solid ${cat.icono.split(':')[1]}" style="color:${colorCategoria};font-size:1.2em;"></i>`;
+                    } else {
+                        iconoCategoria = `<i class="fa-solid fa-tag" style="color:${colorCategoria};font-size:1.2em;"></i>`;
+                    }
                 }
             }
-        }
-        
-        if (tr.idEtiqueta != null) {
-            const et = etiquetas.find(e => e.id === tr.idEtiqueta);
-            if (et) nombreEt = et.nombre;
-        }
-        
-        div.innerHTML = `
-            <div class="fecha-monto">
-                <p>${tr.fecha || ''}</p>
-                <p>${tr.tipo === 'negativo' ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}</p>
-            </div>
-            <div class="descripcion">
-                <div class="icono-categoria" style="background-color: ${colorCategoria}20;">
-                    ${iconoCategoria}
+            
+            if (tr.idEtiqueta != null) {
+                const et = etiquetas.find(e => e.id === tr.idEtiqueta);
+                if (et) nombreEt = et.nombre;
+            }
+            
+            div.innerHTML = `
+                <div class="descripcion">
+                    <div class="icono-categoria" style="background-color: ${colorCategoria}20;">
+                        ${iconoCategoria}
+                    </div>
+                    <div class="detalle">
+                        <p class="categoria">${nombreCat}</p>
+                        <p class="descripcion">${tr.descripcion || ''}</p>
+                        ${nombreEt ? `<p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>` : ''}
+                    </div>
+                    <div class="botones">
+                        <button class="btn-editar">${tr.tipo === 'negativo' ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}</button>
+                    </div>
                 </div>
-                <div class="detalle">
-                    <p class="categoria">${nombreCat}</p>
-                    <p class="descripcion">${tr.descripcion || ''}</p>
-                    <p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>
-                </div>
-                <div class="botones">
-                    <button>editar</button>
-                </div>
-            </div>
-        `;
-        div.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') e.stopPropagation();
-            console.log('[buscar-trans] Click en transacción:', tr); // LOG
-            window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
+            `;
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') e.stopPropagation();
+                console.log('[buscar-trans] Click en transacción:', tr); // LOG
+                window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
+            });
+            cont.appendChild(div);
         });
-        cont.appendChild(div);
     });
     
     // Actualizar totales del dashboard si hay filtro activo
@@ -215,6 +288,7 @@ async function renderTransacciones(categoriaId = null) {
         actualizarTotalesFiltrados(transaccionesFiltradas);
     }
 }
+
 export function mostrarBuscarTrans() {
     const btnBuscarTrans = document.querySelector('.buscar');
     const buscarTransContainer = document.querySelector('.buscador-transacciones');
@@ -230,33 +304,44 @@ export function mostrarBuscarTrans() {
         const titulo = buscarTransContainer.querySelector('.titulo p');
         if (titulo) titulo.textContent = 'Todas las transacciones';
         
+        // Limpiar filtros
+        filtroActivo = '';
+        categoriaFiltroActiva = null;
+        input.value = '';
+        
         renderTransacciones();
     });
-    
+    function normalizarTexto(texto) {
+        return texto
+          .toLowerCase()                                  
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+          .trim()                                         
+          .replace(/\s+/g, "-")                           
+          .replace(/-+/g, "-");                           
+      }
+      
     // Búsqueda en tiempo real
     input.addEventListener('input', (e) => {
-        const busqueda = e.target.value.trim();
+        const busqueda = normalizarTexto(e.target.value.trim());
         filtroActivo = busqueda;
         
         if (busqueda) {
             buscarTransacciones(busqueda);
         } else {
-            renderTransacciones();
+            renderTransacciones(categoriaFiltroActiva);
         }
     });
     
     // Botón cerrar
     btnCerrar.addEventListener('click', () => {
-        // Si no se guardó, limpiar filtros y restaurar normalidad
-        if (filtroActivo) {
-            filtroActivo = '';
-            input.value = '';
-            actualizarBotonesPrincipales();
-            
-            // Restaurar totales originales
-            if (typeof window.actualizarDashboard === 'function') {
-                window.actualizarDashboard();
-            }
+        // Limpiar filtros y restaurar normalidad
+        filtroActivo = '';
+        categoriaFiltroActiva = null;
+        input.value = '';
+        
+        // Restaurar totales originales
+        if (typeof window.actualizarDashboard === 'function') {
+            window.actualizarDashboard();
         }
         
         buscarTransContainer.style.transform = 'translateY(100%)';
@@ -266,16 +351,14 @@ export function mostrarBuscarTrans() {
     // Cerrar con overlay
     overlay.addEventListener('click', () => {
         if (buscarTransContainer.style.transform === 'translateY(0px)') {
-            // Si no se guardó, limpiar filtros y restaurar normalidad
-            if (filtroActivo) {
-                filtroActivo = '';
-                input.value = '';
-                actualizarBotonesPrincipales();
-                
-                // Restaurar totales originales
-                if (typeof window.actualizarDashboard === 'function') {
-                    window.actualizarDashboard();
-                }
+            // Limpiar filtros y restaurar normalidad
+            filtroActivo = '';
+            categoriaFiltroActiva = null;
+            input.value = '';
+            
+            // Restaurar totales originales
+            if (typeof window.actualizarDashboard === 'function') {
+                window.actualizarDashboard();
             }
             
             buscarTransContainer.style.transform = 'translateY(100%)';
@@ -286,16 +369,14 @@ export function mostrarBuscarTrans() {
     // Cerrar con Escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && buscarTransContainer.style.transform === 'translateY(0px)') {
-            // Si no se guardó, limpiar filtros y restaurar normalidad
-            if (filtroActivo) {
-                filtroActivo = '';
-                input.value = '';
-                actualizarBotonesPrincipales();
-                
-                // Restaurar totales originales
-                if (typeof window.actualizarDashboard === 'function') {
-                    window.actualizarDashboard();
-                }
+            // Limpiar filtros y restaurar normalidad
+            filtroActivo = '';
+            categoriaFiltroActiva = null;
+            input.value = '';
+            
+            // Restaurar totales originales
+            if (typeof window.actualizarDashboard === 'function') {
+                window.actualizarDashboard();
             }
             
             buscarTransContainer.style.transform = 'translateY(100%)';
@@ -313,9 +394,10 @@ export function mostrarBuscarTrans() {
         const titulo = buscarTransContainer.querySelector('.titulo p');
         if (titulo) titulo.textContent = categoriaNombre;
         
-        // Limpiar input y filtros para categoría
-        input.value = '';
+        // Establecer filtro de categoría persistente
+        categoriaFiltroActiva = categoriaId;
         filtroActivo = '';
+        input.value = '';
         
         renderTransacciones(categoriaId);
     });
@@ -323,8 +405,15 @@ export function mostrarBuscarTrans() {
     ascensorAjustes(buscarTransContainer);
 }
 
-/* ===== BUSCAR TRANSACCIONES ===== */
 async function buscarTransacciones(termino) {
+    function normalizarTexto(texto) {
+        return texto
+          .toLowerCase()                                 
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+          .trim()                                         
+          .replace(/\s+/g, "-")                           
+          .replace(/-+/g, "-");                           
+      }
     const cont = document.querySelector('.transacciones-container');
     if (!cont) return;
     cont.innerHTML = '';
@@ -336,88 +425,137 @@ async function buscarTransacciones(termino) {
     ]);
     
     // Filtrar transacciones
-    const transaccionesFiltradas = trans.filter(tr => {
+    let transaccionesFiltradas = trans;
+    
+    // Primero filtrar por categoría si está activa
+    if (categoriaFiltroActiva) {
+        transaccionesFiltradas = transaccionesFiltradas.filter(tr => tr.idCategoria === parseInt(categoriaFiltroActiva));
+    }
+    
+    // Luego filtrar por término de búsqueda
+    transaccionesFiltradas = transaccionesFiltradas.filter(tr => {
         const textoCompleto = [
             tr.descripcion || '',
             tr.fecha || '',
             tr.monto?.toString() || '',
             categorias.find(c => c.id === tr.idCategoria)?.nombre || '',
             etiquetas.find(e => e.id === tr.idEtiqueta)?.nombre || ''
-        ].join(' ').toLowerCase();
-        
-        return textoCompleto.includes(termino);
+        ].join(' ');
+    
+        // Normaliza ambos
+        const textoNormalizado = normalizarTexto(textoCompleto);
+        const terminoNormalizado = normalizarTexto(termino);
+    
+        return textoNormalizado.includes(terminoNormalizado);
     });
+    
     
     // Ordenar transacciones
     const transaccionesOrdenadas = ordenarTransacciones(transaccionesFiltradas);
     
-    // Crear transacciones
-    transaccionesOrdenadas.forEach(tr => {
-        const div = document.createElement('div');
-        div.className = 'transaccion';
+    // Agrupar por fecha
+    const gruposPorFecha = agruparPorFecha(transaccionesOrdenadas);
+    
+    // Renderizar grupos
+    Object.keys(gruposPorFecha).forEach(fechaSubtitulo => {
+        const transaccionesDelDia = gruposPorFecha[fechaSubtitulo];
+        const totalDia = calcularTotalDia(transaccionesDelDia);
         
-        // Buscar nombre de categoría y etiqueta
-        let nombreCat = '';
-        let nombreEt = '';
-        let iconoCategoria = '';
-        let colorCategoria = '#888';
+        // Crear subtítulo con total del día
+        const subtituloDiv = document.createElement('div');
+        subtituloDiv.className = 'fecha-subtitulo';
+        subtituloDiv.innerHTML = `
+            <h3>${fechaSubtitulo}</h3>
+            <span class="total-dia">${totalDia > 0 ? '+' : ''}${totalDia.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} Bs</span>
+        `;
+        cont.appendChild(subtituloDiv);
         
-        if (tr.idCategoria != null) {
-            const cat = categorias.find(c => c.id === tr.idCategoria);
-            if (cat) {
-                nombreCat = cat.nombre;
-                colorCategoria = cat.color || '#888';
-                
-                // Generar icono de categoría
-                if (cat.icono && cat.icono.startsWith('bx:')) {
-                    iconoCategoria = `<i class="bx ${cat.icono.split(':')[1]}" style="color:${colorCategoria};font-size:1.2em;"></i>`;
-                } else if (cat.icono && cat.icono.startsWith('fa:')) {
-                    iconoCategoria = `<i class="fa-solid ${cat.icono.split(':')[1]}" style="color:${colorCategoria};font-size:1.2em;"></i>`;
-                } else {
-                    iconoCategoria = `<i class="fa-solid fa-tag" style="color:${colorCategoria};font-size:1.2em;"></i>`;
+        // Crear transacciones
+        transaccionesDelDia.forEach(tr => {
+            const div = document.createElement('div');
+            div.className = 'transaccion';
+            
+            // Buscar nombre de categoría y etiqueta
+            let nombreCat = '';
+            let nombreEt = '';
+            let iconoCategoria = '';
+            let colorCategoria = '#888';
+            
+            if (tr.idCategoria != null) {
+                const cat = categorias.find(c => c.id === tr.idCategoria);
+                if (cat) {
+                    nombreCat = cat.nombre;
+                    colorCategoria = cat.color || '#888';
+                    
+                    // Generar icono de categoría
+                    if (cat.icono && cat.icono.startsWith('bx:')) {
+                        iconoCategoria = `<i class="bx ${cat.icono.split(':')[1]}" style="color:${colorCategoria};font-size:1.2em;"></i>`;
+                    } else if (cat.icono && cat.icono.startsWith('fa:')) {
+                        iconoCategoria = `<i class="fa-solid ${cat.icono.split(':')[1]}" style="color:${colorCategoria};font-size:1.2em;"></i>`;
+                    } else {
+                        iconoCategoria = `<i class="fa-solid fa-tag" style="color:${colorCategoria};font-size:1.2em;"></i>`;
+                    }
                 }
             }
-        }
-        
-        if (tr.idEtiqueta != null) {
-            const et = etiquetas.find(e => e.id === tr.idEtiqueta);
-            if (et) nombreEt = et.nombre;
-        }
-        
-        div.innerHTML = `
-            <div class="fecha-monto">
-                <p>${tr.fecha || ''}</p>
-                <p>${tr.tipo === 'negativo' ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}</p>
-            </div>
-            <div class="descripcion">
-                <div class="icono-categoria" style="background-color: ${colorCategoria}20;">
-                    ${iconoCategoria}
+            
+            if (tr.idEtiqueta != null) {
+                const et = etiquetas.find(e => e.id === tr.idEtiqueta);
+                if (et) nombreEt = et.nombre;
+            }
+            
+            div.innerHTML = `
+                <div class="descripcion">
+                    <div class="icono-categoria" style="background-color: ${colorCategoria}20;">
+                        ${iconoCategoria}
+                    </div>
+                    <div class="detalle">
+                        <p class="categoria">${nombreCat}</p>
+                        <p class="descripcion">${tr.descripcion || ''}</p>
+                        <p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>
+                    </div>
+                    <div class="botones">
+                        <button class="btn-editar" title="${tr.tipo === 'negativo' ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}">editar</button>
+                    </div>
                 </div>
-                <div class="detalle">
-                    <p class="categoria">${nombreCat}</p>
-                    <p class="descripcion">${tr.descripcion || ''}</p>
-                    <p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>
-                </div>
-                <div class="botones">
-                    <button>editar</button>
-                </div>
-            </div>
-        `;
-        
-        div.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') e.stopPropagation();
-            window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
+            `;
+            
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') e.stopPropagation();
+                window.dispatchEvent(new CustomEvent('editarTransaccion', { detail: tr }));
+            });
+            
+            cont.appendChild(div);
         });
-        
-        cont.appendChild(div);
     });
     
     // Actualizar totales del dashboard
     actualizarTotalesFiltrados(transaccionesOrdenadas);
 }
 
+function actualizarTotalesFiltrados(transacciones) {
+    let totalPositivo = 0;
+    let totalNegativo = 0;
+    
+    transacciones.forEach(tr => {
+        if (tr.tipo === 'negativo') totalNegativo += Number(tr.monto);
+        if (tr.tipo === 'positivo') totalPositivo += Number(tr.monto);
+    });
+    
+    const total = totalPositivo - totalNegativo;
+    
+    // Actualizar botones principales del dashboard
+    const btnNegativo = document.querySelector('.main .tipo .negativo');
+    const btnPositivo = document.querySelector('.main .tipo .positivo');
+    const totalNumber = document.querySelector('.main .total-number');
+    
+    if (btnNegativo) btnNegativo.innerHTML = `- Bs ${totalNegativo.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    if (btnPositivo) btnPositivo.innerHTML = `+ Bs ${totalPositivo.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    if (totalNumber) {
+        totalNumber.innerHTML = `${total > 0 ? '+' : ''}${total.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} <span>Bs</span>`;
+        totalNumber.dataset.raw = total;
+    }
+}
 
-/* ===== EVENTOS ===== */
 window.addEventListener('transaccionEliminadaUI', (event) => {
     const tr = event.detail;
     const cont = document.querySelector('.transacciones-container');
@@ -442,14 +580,17 @@ window.addEventListener('transaccionEliminadaUI', (event) => {
     }
     
     // Actualizar totales si hay filtro activo
-    if (filtroActivo) {
+    if (filtroActivo || categoriaFiltroActiva) {
         setTimeout(() => {
             if (filtroActivo) {
                 buscarTransacciones(filtroActivo);
+            } else {
+                renderTransacciones(categoriaFiltroActiva);
             }
         }, 400);
     }
 });
+
 window.addEventListener('transaccionRestauradaUI', (event) => {
     const tr = event.detail;
     const cont = document.querySelector('.transacciones-container');
@@ -458,24 +599,34 @@ window.addEventListener('transaccionRestauradaUI', (event) => {
     // Crear el div de la transacción restaurada
     const div = document.createElement('div');
     div.className = 'transaccion';
-    let esNegativo = tr.tipo === 'negativo';
-    const icon = esNegativo ? '<i class="fa-solid fa-arrow-up negativo"></i>' : '<i class="fa-solid fa-arrow-down positivo"></i>';
+    
+    // Buscar nombre de categoría y etiqueta
     let nombreCat = tr.categoriaNombre || (tr.idCategoria ? 'Categoría ' + tr.idCategoria : '');
     let nombreEt = tr.etiquetaNombre || (tr.idEtiqueta ? 'Etiqueta ' + tr.idEtiqueta : '');
+    let iconoCategoria = '';
+    let colorCategoria = '#888';
+    
+    // Generar icono de categoría
+    if (tr.categoriaIcono && tr.categoriaIcono.startsWith('bx:')) {
+        iconoCategoria = `<i class="bx ${tr.categoriaIcono.split(':')[1]}" style="color:${tr.categoriaColor || '#888'};font-size:1.2em;"></i>`;
+    } else if (tr.categoriaIcono && tr.categoriaIcono.startsWith('fa:')) {
+        iconoCategoria = `<i class="fa-solid ${tr.categoriaIcono.split(':')[1]}" style="color:${tr.categoriaColor || '#888'};font-size:1.2em;"></i>`;
+    } else {
+        iconoCategoria = `<i class="fa-solid fa-tag" style="color:${tr.categoriaColor || '#888'};font-size:1.2em;"></i>`;
+    }
+    
     div.innerHTML = `
-        <div class="fecha-monto">
-            <p>${tr.fecha || ''}</p>
-            <p>${esNegativo ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}</p>
-        </div>
         <div class="descripcion">
-            ${icon}
+            <div class="icono-categoria" style="background-color: ${(tr.categoriaColor || '#888')}20;">
+                ${iconoCategoria}
+            </div>
             <div class="detalle">
                 <p class="categoria">${nombreCat}</p>
                 <p class="descripcion">${tr.descripcion || ''}</p>
                 <p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>
             </div>
             <div class="botones">
-                <button>editar</button>
+                <button class="btn-editar" title="${tr.tipo === 'negativo' ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}">editar</button>
             </div>
         </div>
     `;
@@ -494,27 +645,11 @@ window.addEventListener('transaccionRestauradaUI', (event) => {
     const transDivs = Array.from(cont.querySelectorAll('.transaccion'));
     
     for (let i = 0; i < transDivs.length; i++) {
-        const fechaDiv = transDivs[i].querySelector('.fecha-monto p');
-        if (fechaDiv) {
-            const fechaExistente = fechaDiv.textContent;
-            const fechaExistenteParsed = parseFecha(fechaExistente);
-            
-            // Si la fecha nueva es más reciente, insertar antes
-            if (nuevaFecha > fechaExistenteParsed) {
-                cont.insertBefore(div, transDivs[i]);
-                insertado = true;
-                break;
-            }
-            // Si las fechas son iguales, comparar por ID
-            else if (nuevaFecha === fechaExistenteParsed) {
-                // Buscar el ID de la transacción existente (esto es aproximado)
-                const descExistente = transDivs[i].querySelector('.descripcion .detalle .descripcion');
-                if (descExistente && nuevoId > (transDivs[i].dataset.transactionId || 0)) {
-                    cont.insertBefore(div, transDivs[i]);
-                    insertado = true;
-                    break;
-                }
-            }
+        const descExistente = transDivs[i].querySelector('.descripcion .detalle .descripcion');
+        if (descExistente && nuevoId > (transDivs[i].dataset.transactionId || 0)) {
+            cont.insertBefore(div, transDivs[i]);
+            insertado = true;
+            break;
         }
     }
     
@@ -537,19 +672,32 @@ window.addEventListener('transaccionRestauradaUI', (event) => {
     });
     
     // Actualizar totales si hay filtro activo
-    if (filtroActivo) {
+    if (filtroActivo || categoriaFiltroActiva) {
         setTimeout(() => {
             if (filtroActivo) {
                 buscarTransacciones(filtroActivo);
+            } else {
+                renderTransacciones(categoriaFiltroActiva);
             }
         }, 400);
     }
 });
+
 window.addEventListener('transaccionEditadaUI', () => {
     // Mantener filtros activos al editar
     if (filtroActivo) {
         buscarTransacciones(filtroActivo);
     } else {
-        renderTransacciones();
+        renderTransacciones(categoriaFiltroActiva);
     }
 });
+
+// Función específica para actualizar pilares
+export function actualizarPilares() {
+    if (typeof window.actualizarDashboard === 'function') {
+        window.actualizarDashboard();
+    }
+}
+
+// Exportar funciones de IndexedDB
+export { obtenerCategoriasBuscar, obtenerEtiquetasBuscar };

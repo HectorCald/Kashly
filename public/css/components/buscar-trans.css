@@ -156,12 +156,37 @@
         gap: 10px;
         width: 100%;
         margin: 0;
-        padding: 10px 20px;
+        padding: 0 20px;
         flex: 1 1 auto;
         height: auto;
         max-height: none;
         box-sizing: border-box;
         overflow-y: auto;
+
+        .fecha-subtitulo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 15px 0 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+            h3 {
+                font-size: var(--text-size-lg);
+                font-weight: var(--font-weight-bold);
+                color: var(--text-white);
+                margin: 0;
+            }
+
+            .total-dia {
+                font-size: var(--text-size-sm);
+                font-weight: var(--font-weight-bold);
+                color: var(--text-white);
+                background-color: rgba(255, 255, 255, 0.1);
+                padding: 5px 10px;
+                border-radius: var(--border-radius-xl);
+            }
+        }
 
         .transaccion {
             display: flex;
@@ -169,8 +194,8 @@
             justify-content: center;
             flex-direction: column;
             width: 100%;
-            min-height: 80px;
-            height: 80px;
+            min-height: 60px;
+            height: 60px;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             opacity: 0;
@@ -189,13 +214,7 @@
             &:nth-child(10) { animation-delay: 1.0s; }
 
             .fecha-monto {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                width: 100%;
-                color: gray;
-                font-size: 10px;
-                margin-bottom: 3px;
+                display: none;
             }
             .descripcion {
                 display: flex;
@@ -254,10 +273,7 @@
                         color: var(--text-white);
                         font-size: var(--text-size-xs);
                         transition: all 0.3s ease;
-                    }
-                    button:hover {
-                        background-color: rgb(68, 68, 68);
-                        transform: scale(1.05);
+                        position: relative;
                     }
                 }
             }
