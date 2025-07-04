@@ -306,7 +306,15 @@ async function renderCategoriasEntrada() {
     const categorias = await obtenerCategoriasEntrada();
     categorias.forEach(cat => {
         const btn = document.createElement('button');
-        btn.innerHTML = `<i class="fa-solid fa-tag"></i> ${cat.nombre}`;
+        let iconHtml = '';
+        if (cat.icono && cat.icono.startsWith('bx:')) {
+            iconHtml = `<i class="bx ${cat.icono.split(':')[1]}" style="color:${cat.color || '#888'}"></i>`;
+        } else if (cat.icono && cat.icono.startsWith('fa:')) {
+            iconHtml = `<i class="fa-solid ${cat.icono.split(':')[1]}" style="color:${cat.color || '#888'}"></i>`;
+        } else {
+            iconHtml = `<i class="fa-solid fa-tag" style="color:${cat.color || '#888'}"></i>`;
+        }
+        btn.innerHTML = `${iconHtml} ${cat.nombre}`;
         categoriasDiv.appendChild(btn);
     });
     // Resetear variable y handler

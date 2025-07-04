@@ -64,20 +64,45 @@
             color: var(--text-white);
             font-size: var(--text-size-sm);
             padding: 15px 15px;
+            padding-left: 55px;
             margin-bottom: 10px;
         }
         input:focus {
             outline: none;
         }
-        button {
-            background: none;
+        button.icono-categoria {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--aux-color);
             border: none;
             cursor: pointer;
             color: var(--text-white);
             position: absolute;
-            top: 26px;
-            right: 35px;
+            top: 16px;
+            left: 25px; 
+            font-size: var(--text-size-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        button.btn-agregar-categoria {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgb(74, 74, 74);
+            border: none;
+            cursor: pointer;
+            color: var(--text-white);
+            position: absolute;
+            top: 16px;
+            right: 25px; 
+            font-size: var(--text-size-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
     }
     .categorias-content {
         width: 100%;
@@ -127,6 +152,10 @@
     justify-content: center;
     text-align: center;
     transition: all 0.3s cubic-bezier(0.4,0,0.2,1), width 0.3s cubic-bezier(0.4,0,0.2,1);
+
+    i{
+        color: #fff !important;
+    }
 }
 .categoria.delete-pending p {
     color: #fff !important;
@@ -152,3 +181,166 @@
         transform: translateX(0) scale(1);
     }
 }
+
+
+
+
+/* Modal de selección de icono y color */
+.modal-iconos-popover {
+    position: absolute;
+    z-index: 99999;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    width: 340px;
+    max-width: 95vw;
+    max-height: 90vh;
+    min-height: 300px;
+    background:rgb(46, 46, 46);
+    border-radius: var(--border-radius-2xl);
+    box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    overflow: hidden;
+}
+
+.modal-iconos-popover .modal-step-title {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 18px 24px 8px 24px;
+    background: none;
+    border-top-left-radius: var(--border-radius-2xl);
+    border-top-right-radius: var(--border-radius-2xl);
+}
+
+
+.modal-iconos-popover .preview-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 60px;
+    margin-bottom: 15px;
+}
+
+.modal-iconos-popover .iconos-grupos {
+    width: 100%;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 16px 8px 16px;
+}
+
+.modal-iconos-popover .icono-group {
+    margin-bottom: 10px;
+    background: var(--aux-color);
+    border-radius: var(--border-radius-xl);
+    padding: 8px 8px 4px 8px;
+}
+
+.modal-iconos-popover .icono-group-title {
+    color: #fff;
+    font-weight: bold;
+    margin-bottom:10px;
+    margin-left: 10px;
+    font-size: 0.98em;
+}
+
+.modal-iconos-popover .iconos-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 8px;
+    background: transparent;
+    border-radius: 8px;
+    padding: 0 0 8px 0;
+}
+
+.modal-iconos-popover .icono-btn {
+    background: none;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 1.6em;
+    transition: border 0.2s, background 0.2s;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-iconos-popover .icono-btn.seleccionado {
+    border: 2px solid #e6c400;
+    background: #4b4b2e;
+}
+
+.modal-iconos-popover .colores-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px !important;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-iconos-popover .color-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    cursor: pointer;
+    transition: border 0.2s;
+}
+
+.modal-iconos-popover .color-btn.seleccionado {
+    border: 2px solid #00e676;
+}
+
+.modal-iconos-popover .btn-confirmar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid red;
+    max-width: 100%;
+}
+
+.modal-iconos-popover .btn-siguiente,
+.modal-iconos-popover .btn-confirmar {
+    background: var(--secondary-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    max-width: 100%;
+    transition: background 0.2s;
+    margin: 10px;
+    margin-bottom: 0;
+}
+.modal-iconos-popover .btn-cerrar {
+    background: var(--aux-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    max-width: 100%;
+    transition: background 0.2s;
+    margin: 10px;
+}
+
+.modal-iconos-popover .btn-siguiente:disabled,
+.modal-iconos-popover .btn-confirmar:disabled {
+    background: #888;
+    color: #fff;
+    cursor: not-allowed;
+}
+

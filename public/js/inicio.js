@@ -68,10 +68,18 @@ async function renderPilaresCategorias() {
         // Agregar data-categoria para identificar el pilar
         pilar.dataset.categoriaId = cat.id;
         pilar.dataset.categoriaNombre = cat.nombre;
-        // Etiqueta
+        // Etiqueta: solo icono con color
         const label = document.createElement('span');
         label.className = 'pilar-label';
-        label.textContent = cat.nombre;
+        let iconHtml = '';
+        if (cat.icono && cat.icono.startsWith('bx:')) {
+            iconHtml = `<i class="bx ${cat.icono.split(':')[1]}" style="color:${cat.color || '#888'};font-size:2em;"></i>`;
+        } else if (cat.icono && cat.icono.startsWith('fa:')) {
+            iconHtml = `<i class="fa-solid ${cat.icono.split(':')[1]}" style="color:${cat.color || '#888'};font-size:2em;"></i>`;
+        } else {
+            iconHtml = `<i class="fa-solid fa-tag" style="color:${cat.color || '#888'};font-size:2em;"></i>`;
+        }
+        label.innerHTML = iconHtml;
         pilar.appendChild(label);
         pilar.appendChild(montoElement);
         transDiv.appendChild(pilar);
@@ -81,7 +89,6 @@ async function renderPilaresCategorias() {
             // No cambiar color
         }, 50);
     });
-    
     // Agregar event listeners a los pilares
     const pilares = document.querySelectorAll('.tag-pilar');
     pilares.forEach(pilar => {
