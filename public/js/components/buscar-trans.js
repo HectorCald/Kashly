@@ -116,7 +116,7 @@ function ordenarTransacciones(transacciones) {
     });
 }
 
-/* ===== BUSCAR TRANSACCIONES ===== */
+/* ===== CARGAR TRANSACCIONES ===== */
 async function renderTransacciones(categoriaId = null) {
     const cont = document.querySelector('.transacciones-container');
     if (!cont) return;
@@ -323,7 +323,7 @@ export function mostrarBuscarTrans() {
     ascensorAjustes(buscarTransContainer);
 }
 
-
+/* ===== BUSCAR TRANSACCIONES ===== */
 async function buscarTransacciones(termino) {
     const cont = document.querySelector('.transacciones-container');
     if (!cont) return;
@@ -417,7 +417,7 @@ async function buscarTransacciones(termino) {
 }
 
 
-
+/* ===== EVENTOS ===== */
 window.addEventListener('transaccionEliminadaUI', (event) => {
     const tr = event.detail;
     const cont = document.querySelector('.transacciones-container');
