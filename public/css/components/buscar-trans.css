@@ -194,8 +194,8 @@
             justify-content: center;
             flex-direction: column;
             width: 100%;
-            min-height: 60px;
-            height: 60px;
+            min-height: 65px;
+            height: 65px;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             opacity: 0;
@@ -239,22 +239,25 @@
                     justify-content: center;
                     flex-direction: column;
                     color: var(--text-white);
+                    gap: 3px;
 
                     .categoria {
-                        font-size: 12px;
+                        font-size: 10px;
                         color: gray;
+                        padding: 0;
+                        line-height: 1;
                     }
                     .descripcion {
                         font-size: var(--text-size-xs);
                         font-weight: var(--font-weight-bold);
-                        margin-bottom: 3px;
+                        line-height: 1;
                     }
                     .etiqueta {
                         font-size: 10px;
                         background-color: rgba(128, 128, 128, 0.158);
                         color: var(--text-white);
                         padding: 3px 8px;
-                        border-radius: var(--border-radius-2xl);
+                        border-radius: 5px;
                     }
                 }
                 .botones {
