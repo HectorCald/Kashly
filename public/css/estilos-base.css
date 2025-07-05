@@ -173,11 +173,12 @@ body {
     width: 95%;
     background-color: rgb(51, 51, 51);
     color: var(--text-white);
-    padding: 15px;
+    padding: 10px;
     border-radius: 10px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     font-size: var(--text-size-sm);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
     z-index: 9999;
     opacity: 0;
     pointer-events: none;
@@ -186,19 +187,17 @@ body {
 }
 
 .notificacion-toast.mostrar {
-    top: 10px;
+    top: 5px;
     opacity: 1;
     pointer-events: auto;
 }
 
 .notificacion-toast.error {
     background-color: #c0392b;
-    border-left: 4px solid #e74c3c;
 }
 
 .notificacion-toast.success {
     background-color: #27ae60;
-    border-left: 4px solid #2ecc71;
 }
 
 
