@@ -216,6 +216,26 @@
         <div class="overlay"></div>
         <div class="overlay2"></div>
         <div class="overlay3"></div>
+
+        <!-- Modal de actualización -->
+        <div class="update-modal" id="updateModal">
+            <div class="modal-content">
+                <h3><i class="fa-solid fa-download"></i> Actualización Disponible</h3>
+                <p>Hay una nueva versión de Kashly disponible. ¿Deseas actualizar ahora?</p>
+                <div class="version-info" id="versionInfo">
+                    <strong>Versión actual:</strong> <span id="currentVersion">-</span><br>
+                    <strong>Nueva versión:</strong> <span id="newVersion">-</span>
+                </div>
+                <div class="modal-buttons">
+                    <button class="update-btn" id="updateBtn">
+                        <i class="fa-solid fa-download"></i> Actualizar
+                    </button>
+                    <button class="cancel-btn" id="cancelBtn">
+                        <i class="fa-solid fa-times"></i> Más tarde
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="notificacion-toast">Comida Mensual -10</div>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -309,6 +329,36 @@
                     const keys = await cache.keys();
                     console.log(`📁 ${cacheName}:`, keys.length, 'archivos');
                 }
+            }
+        };
+
+        // Función para verificar actualizaciones manualmente
+        window.checkForUpdates = () => {
+            if (window.checkForUpdates) {
+                window.checkForUpdates();
+            } else {
+                console.log('⚠️ Función de verificación no disponible aún');
+            }
+        };
+
+        // Función para forzar actualización
+        window.forceUpdate = async () => {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                const messageChannel = new MessageChannel();
+                
+                messageChannel.port1.onmessage = (event) => {
+                    if (event.data.success) {
+                        console.log('✅ Actualización forzada completada:', event.data.result);
+                        window.location.reload();
+                    } else {
+                        console.error('❌ Error en actualización forzada:', event.data.error);
+                    }
+                };
+                
+                navigator.serviceWorker.controller.postMessage(
+                    { type: 'UPDATE_FROM_VERCEL' },
+                    [messageChannel.port2]
+                );
             }
         };
     </script>

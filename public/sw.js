@@ -1,5 +1,5 @@
-const CACHE_NAME = 'kashly-v3';
-const STATIC_CACHE = 'kashly-static-v3';
+const CACHE_NAME = 'kashly-v4';
+const STATIC_CACHE = 'kashly-static-v4';
 
 // Recursos críticos que se cachean inmediatamente
 const STATIC_RESOURCES = [
@@ -146,10 +146,29 @@ async function cacheFirst(request) {
   }
 }
 
-// Estrategia Network First - Para páginas principales
+// Estrategia Cache First - Para páginas principales también
 async function networkFirst(request) {
   try {
-    // Intentar red primero
+    // Buscar en cache primero
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      console.log('⚡ Sirviendo página desde cache:', request.url);
+      
+      // En segundo plano, verificar si hay actualización
+      fetch(request).then(async (networkResponse) => {
+        if (networkResponse.ok) {
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(request, networkResponse.clone());
+          console.log('🔄 Página actualizada en segundo plano');
+        }
+      }).catch(() => {
+        console.log('🌐 No se pudo verificar actualización en segundo plano');
+      });
+      
+      return cachedResponse;
+    }
+
+    // Si no está en cache, buscar en red
     const networkResponse = await fetch(request);
     
     // Cachear la respuesta exitosa
@@ -202,8 +221,61 @@ async function cacheOrNetwork(request) {
   }
 }
 
-// Mensaje para actualizar cache manualmente
+// Mensajes del Service Worker
 self.addEventListener('message', (event) => {
+  // Verificar versión en Vercel
+  if (event.data && event.data.type === 'CHECK_VERSION') {
+    console.log('🔍 Verificando versión en Vercel...');
+    event.waitUntil(
+      checkVersionInVercel()
+        .then((versionInfo) => {
+          console.log('📋 Información de versión:', versionInfo);
+          if (event.ports && event.ports[0]) {
+            event.ports[0].postMessage({ 
+              success: true, 
+              versionInfo: versionInfo 
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('❌ Error verificando versión:', error);
+          if (event.ports && event.ports[0]) {
+            event.ports[0].postMessage({ 
+              success: false, 
+              error: error.message 
+            });
+          }
+        })
+    );
+  }
+
+  // Actualizar desde Vercel
+  if (event.data && event.data.type === 'UPDATE_FROM_VERCEL') {
+    console.log('🔄 Actualizando desde Vercel...');
+    event.waitUntil(
+      updateFromVercel()
+        .then((result) => {
+          console.log('✅ Actualización completada:', result);
+          if (event.ports && event.ports[0]) {
+            event.ports[0].postMessage({ 
+              success: true, 
+              result: result 
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('❌ Error en actualización:', error);
+          if (event.ports && event.ports[0]) {
+            event.ports[0].postMessage({ 
+              success: false, 
+              error: error.message 
+            });
+          }
+        })
+    );
+  }
+
+  // Actualizar cache manualmente (mantener compatibilidad)
   if (event.data && event.data.type === 'UPDATE_CACHE') {
     console.log('🔄 Actualizando cache manualmente...');
     event.waitUntil(
@@ -219,4 +291,77 @@ self.addEventListener('message', (event) => {
         })
     );
   }
-}); 
+});
+
+// Función para verificar versión en Vercel
+async function checkVersionInVercel() {
+  try {
+    // Verificar versión del Service Worker actual
+    const currentVersion = CACHE_NAME;
+    
+    // Intentar obtener información de versión desde Vercel
+    let serverVersion = null;
+    let hasUpdate = false;
+    
+    try {
+      const response = await fetch('/?version-check=' + Date.now());
+      if (response.ok) {
+        const text = await response.text();
+        // Buscar versión en el HTML
+        const versionMatch = text.match(/kashly-v(\d+)/);
+        if (versionMatch) {
+          serverVersion = `kashly-v${versionMatch[1]}`;
+          hasUpdate = serverVersion !== currentVersion;
+        }
+      }
+    } catch (error) {
+      console.log('🌐 No se pudo verificar versión del servidor');
+    }
+    
+    return {
+      currentVersion: currentVersion,
+      serverVersion: serverVersion,
+      hasUpdate: hasUpdate,
+      lastCheck: new Date().toISOString()
+    };
+  } catch (error) {
+    throw new Error(`Error verificando versión: ${error.message}`);
+  }
+}
+
+// Función para actualizar desde Vercel
+async function updateFromVercel() {
+  const results = {
+    updated: [],
+    failed: [],
+    version: CACHE_NAME
+  };
+  
+  try {
+    // Actualizar recursos estáticos
+    const cache = await caches.open(STATIC_CACHE);
+    
+    for (const resource of STATIC_RESOURCES) {
+      try {
+        console.log('🔄 Actualizando:', resource);
+        const response = await fetch(resource);
+        
+        if (response.ok) {
+          await cache.put(resource, response);
+          results.updated.push(resource);
+          console.log('✅ Actualizado:', resource);
+        } else {
+          results.failed.push({ resource, error: `HTTP ${response.status}` });
+          console.warn('⚠️ Falló actualización:', resource, response.status);
+        }
+      } catch (error) {
+        results.failed.push({ resource, error: error.message });
+        console.warn('⚠️ Error actualizando:', resource, error.message);
+      }
+    }
+    
+    return results;
+  } catch (error) {
+    throw new Error(`Error en actualización: ${error.message}`);
+  }
+}

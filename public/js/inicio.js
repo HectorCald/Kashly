@@ -218,5 +218,135 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarBuscarTrans();
     mostrarEntradaManual();
 
+    // Inicializar verificación de versiones
+    initVersionCheck();
+
     // Listeners para botones de tipo
 });
+
+// Función para inicializar verificación de versiones
+function initVersionCheck() {
+    // Verificar versión después de 3 segundos para no interrumpir la carga inicial
+    setTimeout(() => {
+        checkForUpdates();
+    }, 3000);
+
+    // Configurar listeners del modal
+    setupUpdateModal();
+}
+
+// Función para verificar actualizaciones
+async function checkForUpdates() {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        try {
+            const messageChannel = new MessageChannel();
+            
+            messageChannel.port1.onmessage = (event) => {
+                if (event.data.success && event.data.versionInfo) {
+                    const versionInfo = event.data.versionInfo;
+                    console.log('📋 Información de versión:', versionInfo);
+                    
+                    if (versionInfo.hasUpdate) {
+                        console.log('🔄 Nueva versión disponible:', versionInfo.serverVersion);
+                        showUpdateModal(versionInfo);
+                    } else {
+                        console.log('✅ Aplicación actualizada');
+                    }
+                } else {
+                    console.log('❌ No se pudo verificar versión');
+                }
+            };
+            
+            navigator.serviceWorker.controller.postMessage(
+                { type: 'CHECK_VERSION' },
+                [messageChannel.port2]
+            );
+        } catch (error) {
+            console.error('❌ Error verificando actualizaciones:', error);
+        }
+    }
+}
+
+// Función para mostrar modal de actualización
+function showUpdateModal(versionInfo) {
+    const modal = document.getElementById('updateModal');
+    const currentVersionSpan = document.getElementById('currentVersion');
+    const newVersionSpan = document.getElementById('newVersion');
+    
+    // Actualizar información de versiones
+    currentVersionSpan.textContent = versionInfo.currentVersion;
+    newVersionSpan.textContent = versionInfo.serverVersion || 'Nueva versión';
+    
+    // Mostrar modal
+    modal.classList.add('show');
+}
+
+// Función para configurar listeners del modal
+function setupUpdateModal() {
+    const modal = document.getElementById('updateModal');
+    const updateBtn = document.getElementById('updateBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    
+    // Botón actualizar
+    updateBtn.addEventListener('click', async () => {
+        updateBtn.disabled = true;
+        updateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
+        
+        try {
+            await performUpdate();
+            modal.classList.remove('show');
+            // Recargar página después de actualizar
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch (error) {
+            console.error('❌ Error en actualización:', error);
+            updateBtn.innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i> Error';
+            setTimeout(() => {
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = '<i class="fa-solid fa-download"></i> Actualizar';
+            }, 2000);
+        }
+    });
+    
+    // Botón cancelar
+    cancelBtn.addEventListener('click', () => {
+        modal.classList.remove('show');
+    });
+    
+    // Cerrar modal al hacer clic fuera
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('show');
+        }
+    });
+}
+
+// Función para realizar la actualización
+async function performUpdate() {
+    return new Promise((resolve, reject) => {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            const messageChannel = new MessageChannel();
+            
+            messageChannel.port1.onmessage = (event) => {
+                if (event.data.success) {
+                    console.log('✅ Actualización completada:', event.data.result);
+                    resolve(event.data.result);
+                } else {
+                    console.error('❌ Error en actualización:', event.data.error);
+                    reject(new Error(event.data.error));
+                }
+            };
+            
+            navigator.serviceWorker.controller.postMessage(
+                { type: 'UPDATE_FROM_VERCEL' },
+                [messageChannel.port2]
+            );
+        } else {
+            reject(new Error('Service Worker no disponible'));
+        }
+    });
+}
+
+// Función global para verificar actualizaciones manualmente
+window.checkForUpdates = checkForUpdates;
