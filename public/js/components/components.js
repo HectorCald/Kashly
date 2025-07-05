@@ -6,6 +6,7 @@ export function ocultarContenedores() {
     const entradasContainer = document.querySelector('.entrada-manual');
     const buscarTransContainer = document.querySelector('.buscador-transacciones');
     const overlay = document.querySelector('.overlay');
+    const overlay2 = document.querySelector('.overlay2');
 
     overlay.addEventListener('click', () => {
         ajustesContainer.style.transform = 'translateY(100%)';
@@ -21,16 +22,18 @@ export function ocultarContenedores() {
             const contenedor = btn.closest('.ajustes-container, .entrada-manual, .buscador-transacciones');
             if (contenedor) {
                 contenedor.style.transform = 'translateY(100%)';
-                // Solo quita el overlay si es el de ajustes o buscar trans
                 if (contenedor.classList.contains('ajustes-container') || contenedor.classList.contains('buscador-transacciones')) {
                     overlay.classList.remove('active');
                 }
                 if (contenedor.classList.contains('entrada-manual')) {
+                    overlay2.classList.remove('active');
+                }
+                if (contenedor.classList.contains('entrada-manual')) {
                     resetearEntradaManual();
                 }
+
             }
             window.dispatchEvent(new Event('transaccionGuardada'));
-            overlay.classList.remove('active');
         });
     });
 }

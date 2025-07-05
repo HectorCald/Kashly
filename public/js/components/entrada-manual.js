@@ -65,13 +65,13 @@ function openDB(requiredStores = []) {
 export function mostrarEntradaManual() {
     const btnEntradaManual = document.querySelector('.entradas button:nth-child(2)');
     const entradaManualContainer = document.querySelector('.entrada-manual');
-    const overlay = document.querySelector('.overlay');
+    const overlay2 = document.querySelector('.overlay2');
 
     btnEntradaManual.addEventListener('click', () => {
         entradaManualContainer.style.transform = 'translateY(0)';
         renderCategoriasEntrada();
         renderEtiquetasEntrada();
-        overlay.classList.add('active');
+        overlay2.classList.add('active');
     });
 
     eventosEntradaManual();
@@ -466,15 +466,13 @@ window.addEventListener('editarTransaccion', async (event) => {
     const tipoMonto = document.querySelector('.entrada-manual .content-entrada .monto .tipo-monto-container');
     const tr = event.detail;
     const entradaManualContainer = document.querySelector('.entrada-manual');
-    const overlay = document.querySelector('.overlay');
-    if (!entradaManualContainer || !overlay) {
+    if (!entradaManualContainer) {
         alert('No se encontró el contenedor de entrada manual u overlay');
         return;
     }
     modoEdicion = true;
     transaccionEditando = tr;
     entradaManualContainer.style.transform = 'translateY(0)';
-    overlay.classList.add('active');
     await renderCategoriasEntrada();
     await renderEtiquetasEntrada();
     // Cargar datos en los campos
@@ -668,7 +666,6 @@ async function guardarEdicionTransaccion() {
     mostrarToast('Transacción actualizada', 'success');
     document.querySelector('.entrada-manual').style.transform = 'translateY(100%)';
     ocultarBotonesEdicion();
-    document.querySelector('.overlay').classList.remove('active');
     window.dispatchEvent(new Event('transaccionGuardada'));
     window.dispatchEvent(new CustomEvent('transaccionEditadaUI', { detail: transEditada }));
     resetearEntradaManual();
@@ -679,7 +676,6 @@ async function eliminarTransaccion() {
     await borrarTransaccion(transaccionEditando.id);
     document.querySelector('.entrada-manual').style.transform = 'translateY(100%)';
     ocultarBotonesEdicion();
-    document.querySelector('.overlay').classList.remove('active');
     // Emitir evento para animar eliminación en el buscador
     window.dispatchEvent(new CustomEvent('transaccionEliminadaUI', { detail: transEliminada }));
     // Mostrar snackbar visual
