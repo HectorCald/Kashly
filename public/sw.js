@@ -1,5 +1,5 @@
-const CACHE_NAME = 'kashly-v15';
-const STATIC_CACHE = 'kashly-static-v15';
+const CACHE_NAME = 'kashly-v16';
+const STATIC_CACHE = 'kashly-static-v16';
 
 // Recursos críticos que se cachean inmediatamente
 const STATIC_RESOURCES = [

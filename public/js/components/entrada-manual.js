@@ -621,6 +621,7 @@ async function guardarEdicionTransaccion() {
     const descripcionVal = document.querySelector('.entrada-manual .content-entrada .monto .descripcion').value.trim();
     const montoInput = document.querySelector('.entrada-manual .content-entrada .monto .monto-input');
     const montoVal = parseFloat(montoInput.dataset.raw || '0');
+    const overlay2 = document.querySelector('.overlay2');
     // Buscar categoría y etiqueta activas
     const catBtn = document.querySelector('.entrada-manual .categorias button.muestra-categoria');
     const etBtn = document.querySelector('.entrada-manual .etiquetas button.muestra-categoria');
@@ -666,6 +667,7 @@ async function guardarEdicionTransaccion() {
     await actualizarTransaccion(transEditada);
     // Notificación - Verde para edición exitosa
     mostrarToast('Transacción actualizada', 'success');
+    overlay2.classList.remove('active');
     document.querySelector('.entrada-manual').style.transform = 'translateY(100%)';
     ocultarBotonesEdicion();
     window.dispatchEvent(new Event('transaccionGuardada'));
@@ -675,9 +677,11 @@ async function guardarEdicionTransaccion() {
 async function eliminarTransaccion() {
     if (!transaccionEditando) return;
     const transEliminada = { ...transaccionEditando };
+    const overlay2 = document.querySelector('.overlay2');
     await borrarTransaccion(transaccionEditando.id);
     document.querySelector('.entrada-manual').style.transform = 'translateY(100%)';
     ocultarBotonesEdicion();
+    overlay2.classList.remove('active');
     // Emitir evento para animar eliminación en el buscador
     window.dispatchEvent(new CustomEvent('transaccionEliminadaUI', { detail: transEliminada }));
     // Mostrar snackbar visual
