@@ -201,6 +201,10 @@ body {
 }
 
 
+
+
+
+
 /* ====== SNACKBAR ELIMINADA ====== */
 .snackbar-eliminada {
     position: fixed;
@@ -216,7 +220,7 @@ body {
     display: flex;
     align-items: center;
     gap: 5px;
-    padding: 15px;
+    padding: 10px;
     z-index: 9999;
     opacity: 0;
     transition: transform 0.3s, opacity 0.3s;
@@ -244,7 +248,7 @@ body {
     font-weight: var(--font-weight-medium);
     white-space: nowrap;
     font-size: var(--text-size-sm);
-    line-height: 1.5;
+    line-height: 1;
 }
 
 .snackbar-eliminada .nombre {
