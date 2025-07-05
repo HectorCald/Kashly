@@ -33,7 +33,7 @@
         }
 
         p.total-number {
-            font-size: var(--text-size-7xl);
+            font-size: var(--text-size-7xl) !important;
             font-family: 'Baloo 2', sans-serif;
             font-weight: var(--font-weight-bold);
             color: var(--text);

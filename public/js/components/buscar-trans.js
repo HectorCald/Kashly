@@ -342,6 +342,9 @@ export function mostrarBuscarTrans() {
             renderTransacciones(categoriaFiltroActiva);
         }
     });
+    input.addEventListener('focus', () => {
+        input.select();
+    });    
     
     // Botón cerrar
     btnCerrar.addEventListener('click', () => {
