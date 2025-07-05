@@ -23,9 +23,12 @@ app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 app.use(express.static(join(__dirname, 'public')));
 
+/* ===== CONFIGURACIÓN DE VERSIÓN ===== */
+const APP_VERSION = 'kashly v18';
+
 /* ===== RUTAS DE VISTAS ===== */
 app.get('/', (req, res) => {
-    res.render('inicio');
+    res.render('inicio', { version: APP_VERSION });
 });
 
 /* ===== RUTAS PWA ===== */
@@ -37,6 +40,11 @@ app.get('/manifest.json', (req, res) => {
 app.get('/sw.js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
     res.sendFile(join(__dirname, 'public', 'sw.js'));
+});
+
+// Ruta para obtener la versión del servidor
+app.get('/api/version', (req, res) => {
+    res.json({ version: APP_VERSION });
 });
 
 
