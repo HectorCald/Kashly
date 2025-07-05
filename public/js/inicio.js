@@ -28,7 +28,7 @@ function animarTotal(finalTotal) {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                     useGrouping: true
-                })} <span>Bs</span>`;
+                })}<span>Bs</span>`;
             totalNumber.dataset.raw = actual;
             frame++;
             requestAnimationFrame(animate);
@@ -38,7 +38,7 @@ function animarTotal(finalTotal) {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                     useGrouping: true
-                })} <span>Bs</span>`;
+                })}<span>Bs</span>`;
             totalNumber.dataset.raw = target;
         }
     }
@@ -100,7 +100,7 @@ async function renderPilaresCategorias() {
         pilar.className = 'tag-pilar';
         pilar.style.height = '0%';
         pilar.style.transition = 'height 0.7s cubic-bezier(0.4,0,0.2,1)';
-        pilar.title = `${cat.nombre}: ${monto > 0 ? '+' : ''}${monto.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs`;
+        pilar.title = `${cat.nombre}: ${monto > 0 ? '+' : ''}${monto.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}Bs`;
         // Agregar data-categoria para identificar el pilar
         pilar.dataset.categoriaId = cat.id;
         pilar.dataset.categoriaNombre = cat.nombre;

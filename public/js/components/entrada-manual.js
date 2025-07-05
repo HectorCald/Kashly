@@ -252,7 +252,7 @@ function eventosEntradaManual() {
         // Despacha evento para actualizar dashboard
         console.log('📤 Disparando evento transaccionGuardada');
         window.dispatchEvent(new Event('transaccionGuardada'));
-        document.querySelector('.overlay').classList.remove('active');
+        document.querySelector('.overlay2').classList.remove('active');
         resetearEntradaManual();
     });
 
