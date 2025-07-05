@@ -22,9 +22,10 @@
         padding-inline: 20px;
 
         p {
-            font-size: var(--text-size-2xl);
+            font-size: var(--text-size-3xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
+            line-height: 1;
         }
 
         button {
@@ -69,8 +70,8 @@
             border-radius: var(--border-radius-xl);
             border: none;
             color: var(--text-white);
-            font-size: var(--text-size-base);
-            padding: 15px 15px;
+            font-size: var(--text-size-xl);
+            padding: 10px 15px;
             padding-left: 45px;
             margin-bottom: 10px;
         }
@@ -130,7 +131,7 @@
             white-space: nowrap;
             border-radius: 10px;
             background-color: var(--aux-color);
-            padding: 7px 12px;
+            padding: 5px 12px;
             color: var(--text-white);
             font-size: var(--text-size-sm);
             font-weight: var(--font-weight-normal);

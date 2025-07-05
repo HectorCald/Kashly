@@ -80,7 +80,7 @@
                 color: var(--text-white);
                 font-size: var(--text-size-sm);
                 background-color: var(--aux-color);
-                padding: 7px 12px;
+                padding: 5px 12px;
                 border-radius: 10px;
                 font-weight: var(--font-weight-normal);
                 -webkit-appearance: none;
@@ -124,9 +124,8 @@
                 background: none;
                 border: none;
                 color: var(--text-white);
-                padding: 5px 0px;
                 font-size: var(--text-size-4xl);
-                font-weight: var(--font-weight-bold);
+                font-weight: var(--font-weight-semibold);
                 text-decoration: none;
             }
 
@@ -174,9 +173,12 @@
                         color: var(--text-white);
                         font-size: var(--text-size-lg);
                         font-weight: var(--font-weight-bold);
-                        padding: 5px 10px;
-                        border-radius: var(--border-radius-2xl);
+                        padding: 7px 10px;
+                        border-radius: 15px;
                         transition: all 0.3s ease-in-out;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                     }
 
                     button.active.negativo {
@@ -209,9 +211,9 @@
                 cursor: pointer;
                 color: var(--text-white);
                 font-size: var(--text-size-sm);
-                padding: 7px 12px;
+                padding: 5px 12px;
                 border-radius: 10px;
-                font-weight: var(--font-weight-normal);
+                font-weight: var(--font-weight-semibold);
                 white-space: nowrap;
             }
         }
@@ -230,7 +232,7 @@
                 cursor: pointer;
                 color: var(--text-white);
                 font-size: var(--text-size-sm);
-                padding: 7px 12px;
+                padding: 5px 12px;
                 border-radius: 10px;
                 font-weight: var(--font-weight-normal);
                 white-space: nowrap;
@@ -250,7 +252,7 @@
             padding: 15px;
             background-color: var(--aux-color);
             border-radius: var(--border-radius-lg);
-            font-weight: var(--font-weight-bold);
+            font-weight: var(--font-weight-semibold);
             font-size: var(--text-size-base);
             border: none;
             color: var(--text-white);

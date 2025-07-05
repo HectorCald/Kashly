@@ -22,9 +22,10 @@
         padding-inline: 20px;
 
         p {
-            font-size: var(--text-size-2xl);
+            font-size: var(--text-size-3xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
+            line-height: 1;
         }
 
         button {
@@ -58,7 +59,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        gap: 20px;
+        gap: 10px;
         padding: 7px 15px;
         background: none;
         margin-top: 10px;
@@ -78,14 +79,14 @@
         p {
             font-size: var(--text-size-xl);
             color: var(--text-white);
-            font-weight: var(--font-weight-medium);
+            font-weight: var(--font-weight-semibold);
         }
     }
     .opcion.etiquetas {
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        gap: 20px;
+        gap: 10px;
         padding: 7px 15px;
         background: none;
 
@@ -104,14 +105,14 @@
         p {
             font-size: var(--text-size-xl);
             color: var(--text-white);
-            font-weight: var(--font-weight-medium);
+            font-weight: var(--font-weight-semibold);
         }
     }
     .opcion.listas {
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        gap: 20px;
+        gap: 10px;
         padding: 7px 15px;
         background: none;
 
@@ -130,7 +131,7 @@
         p {
             font-size: var(--text-size-xl);
             color: var(--text-white);
-            font-weight: var(--font-weight-medium);
+            font-weight: var(--font-weight-semibold);
         }
     }
 }

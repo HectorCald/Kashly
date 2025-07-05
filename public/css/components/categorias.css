@@ -21,8 +21,9 @@
         padding-inline: 20px;
 
         p {
-            font-size: var(--text-size-2xl);
+            font-size: var(--text-size-3xl);
             font-weight: var(--font-weight-bold);
+            line-height: 1;
             color: var(--text-white);
         }
 
@@ -69,8 +70,8 @@
             border-radius: var(--border-radius-xl);
             border: none;
             color: var(--text-white);
-            font-size: var(--text-size-base);
-            padding: 15px 15px;
+            font-size: var(--text-size-xl);
+            padding: 10px 15px;
             padding-left: 55px;
             margin-bottom: 10px;
         }
@@ -131,10 +132,10 @@
             white-space: nowrap;
             border-radius: 10px;
             background-color: var(--aux-color);
-            padding: 7px 12px;
+            padding: 5px 12px;
             color: var(--text-white);
             font-size: var(--text-size-sm);
-            font-weight: var(--font-weight-normal);
+            font-weight: var(--font-weight-semibold);
             gap: 5px;
 
             i{
@@ -222,7 +223,7 @@
 
 .modal-iconos-popover .modal-step-title {
     color: #fff;
-    font-weight: bold;
+    font-weight: var(--font-weight-semibold);
     font-size: 1.1em;
     padding: 18px 24px 8px 24px;
     background: none;
@@ -329,7 +330,7 @@
     border: none;
     border-radius: 8px;
     padding: 12px 0;
-    font-weight: bold;
+    font-weight: var(--font-weight-semibold);
     font-size: 1em;
     cursor: pointer;
     max-width: 100%;
