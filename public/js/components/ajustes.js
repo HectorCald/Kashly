@@ -16,13 +16,13 @@ let colorCategoriaSeleccionado = '#fff';
 function getCurrentVersion() {
     return new Promise((resolve, reject) => {
         const req = indexedDB.open(DB_NAME);
-        req.onsuccess = function(e) {
+        req.onsuccess = function (e) {
             const db = e.target.result;
             resolve(db.version);
             db.close();
         };
         req.onerror = () => resolve(BASE_VERSION);
-        req.onupgradeneeded = function(e) {
+        req.onupgradeneeded = function (e) {
             // Si la base no existe, devolverá BASE_VERSION
             resolve(e.target.result.version);
         };
@@ -35,7 +35,7 @@ function openDB(requiredStores = []) {
             let newVersion = currentVersion;
             // Abrir para ver si faltan stores
             const req = indexedDB.open(DB_NAME);
-            req.onsuccess = function(e) {
+            req.onsuccess = function (e) {
                 const db = e.target.result;
                 const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
                 db.close();
@@ -46,7 +46,7 @@ function openDB(requiredStores = []) {
                 if (needsUpgrade) {
                     // Reabrir con nueva versión para crear los stores faltantes
                     const upgradeReq = indexedDB.open(DB_NAME, newVersion);
-                    upgradeReq.onupgradeneeded = function(ev) {
+                    upgradeReq.onupgradeneeded = function (ev) {
                         const db2 = ev.target.result;
                         requiredStores.forEach(store => {
                             if (!db2.objectStoreNames.contains(store)) {
@@ -63,7 +63,7 @@ function openDB(requiredStores = []) {
                     // Ya existen todos los stores
                     // ¡OJO! Reabrir la conexión para usarla, no uses la que acabas de cerrar
                     const finalReq = indexedDB.open(DB_NAME, currentVersion);
-                    finalReq.onsuccess = function(ev) {
+                    finalReq.onsuccess = function (ev) {
                         resolve(finalReq.result);
                     };
                     finalReq.onerror = () => reject(finalReq.error);
@@ -77,46 +77,37 @@ function openDB(requiredStores = []) {
 /* ===== CATEGORIAS ===== */
 // Paleta de colores para categorías
 export const CATEGORIA_COLORES = [
-    '#FF7043', // naranja
-    '#29B6F6', // azul
-    '#66BB6A', // verde
-    '#AB47BC', // morado
-    '#FFA726', // naranja claro
-    '#EC407A', // rosa
-    '#26A69A', // turquesa
-    '#FFCA28', // amarillo
-    '#8D6E63', // marrón
-    '#78909C', // gris azulado
-    '#42A5F5', // azul medio
-    '#7E57C2', // violeta
-  
-    '#FFAD8A', // naranja claro
-    '#6ECFF9', // azul claro
-    '#98D89E', // verde claro
-    '#C88ED3', // morado claro
-    '#FFCA7F', // naranja aún más claro
-    '#F279A3', // rosa claro
-    '#5CD0C7', // turquesa claro
-    '#FFE066', // amarillo claro
-    '#B39B94', // marrón claro
-    '#A7B6C0', // gris azulado claro
-    '#7AB9F7', // azul medio claro
-    '#A18CCF', // violeta claro
-  
-    '#CC5734', // naranja oscuro
-    '#1C82AC', // azul oscuro
-    '#4A8C4D', // verde oscuro
-    '#873995', // morado oscuro
     '#CC831F', // naranja más oscuro
+    '#CC5734', // naranja oscuro
+    '#FF7043', // naranja
+    '#FFAD8A', // naranja claro
+    '#FFCA7F', // naranja aún más claro
+    '#1C82AC', // azul oscuro
+    '#29B6F6', // azul
+    '#6ECFF9', // azul claro
+    '#4A8C4D', // verde oscuro
+    '#66BB6A', // verde
+    '#98D89E', // verde claro
+    '#873995', // morado oscuro
+    '#AB47BC', // morado
+    '#C88ED3', // morado claro
     '#B93161', // rosa oscuro
+    '#EC407A', // rosa
+    '#F279A3', // rosa claro
     '#1D7E76', // turquesa oscuro
+    '#26A69A', // turquesa
+    '#5CD0C7', // turquesa claro
     '#CC9F20', // amarillo oscuro
+    '#FFCA28', // amarillo
+    '#FFE066', // amarillo claro
     '#6F554E', // marrón oscuro
+    '#8D6E63', // marrón
+    '#B39B94', // marrón claro
     '#5C6D78', // gris azulado oscuro
-    '#317AC0', // azul medio oscuro
-    '#6046A0', // violeta oscuro
-  ];
-  
+    '#78909C', // gris azulado
+    '#A7B6C0', // gris azulado claro
+];
+
 
 
 
@@ -188,7 +179,7 @@ function mostrarNotificacion(mensaje, tipo = 'error') {
         notificacion.textContent = mensaje;
         notificacion.className = `notificacion-toast ${tipo}`;
         notificacion.classList.add('mostrar');
-        
+
         // Ocultar después de 3 segundos
         setTimeout(() => {
             notificacion.classList.remove('mostrar');
@@ -215,22 +206,22 @@ function categorias() {
     const btnIcono = document.querySelector('.icono-categoria');
     const btnAgregar = document.querySelector('.btn-agregar-categoria');
     const inputCategoria = document.querySelector('.agregar-categoria input');
-    
+
     if (btnIcono) {
         const btnIconoClone = btnIcono.cloneNode(true);
         btnIcono.parentNode.replaceChild(btnIconoClone, btnIcono);
     }
-    
+
     if (btnAgregar) {
         const btnAgregarClone = btnAgregar.cloneNode(true);
         btnAgregar.parentNode.replaceChild(btnAgregarClone, btnAgregar);
     }
-    
+
     function agregarCategoria() {
         const inputCategoria = document.querySelector('.agregar-categoria input');
         const btnIconoActual = document.querySelector('.icono-categoria');
         const btnAgregarActual = document.querySelector('.btn-agregar-categoria');
-        
+
         // Función para agregar categoría
         async function agregarCategoriaFunc() {
             let nombre = inputCategoria.value.trim();
@@ -255,7 +246,7 @@ function categorias() {
             colorCategoriaSeleccionado = '#fff';
             btnIconoActual.innerHTML = `<i class="fa-solid fa-tag" style="color:#fff"></i>`;
         }
-        
+
         // Modal solo se abre al pulsar el botón de icono
         btnIconoActual.addEventListener('click', (e) => {
             e.preventDefault();
@@ -272,15 +263,15 @@ function categorias() {
                 }
             }, null, null, inputCategoria);
         });
-        
 
-        
+
+
         // Agregar categoría con el botón
         btnAgregarActual.addEventListener('click', async (e) => {
             e.preventDefault();
             await agregarCategoriaFunc();
         });
-        
+
         window.dispatchEvent(new Event('transaccionGuardada'));
     }
     agregarCategoria();
@@ -430,12 +421,12 @@ function etiquetas() {
     function agregarEtiqueta() {
         const inputEtiqueta = document.querySelector('.agregar-etiqueta input');
         const btnAgregar = document.querySelector('.btn-agregar-etiqueta');
-        
+
         // Función para agregar etiqueta
         async function agregarEtiquetaFunc() {
             let nombre = inputEtiqueta.value.trim().toLowerCase();
             if (!nombre) return;
-            
+
             // Verifica duplicados (ignorando mayúsculas/minúsculas)
             const existentes = await obtenerEtiquetas();
             if (existentes.some(et => et.nombre.toLowerCase() === nombre)) {
@@ -443,15 +434,15 @@ function etiquetas() {
                 inputEtiqueta.blur(); // Forzar blur para limpiar autocompletado
                 return;
             }
-            
+
             await guardarEtiqueta(nombre);
             inputEtiqueta.value = '';
             inputEtiqueta.blur(); // Forzar blur para limpiar autocompletado
             mostrarEtiquetasContent(nombre); // Pasa el nombre para animar
         }
-        
 
-        
+
+
         // Agregar etiqueta con el botón
         btnAgregar.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -681,19 +672,19 @@ const ICON_GROUPS_BASE = [
     },
     {
         nombre: 'Limpieza',
-    iconos: [
-        { type: 'bx', name: 'bx-shower' },
-        { type: 'fa', name: 'fa-shower' },
-        { type: 'bx', name: 'bx-bath' },
-        { type: 'fa', name: 'fa-bath' },
-        { type: 'fa', name: 'fa-bucket' },
-        { type: 'bx', name: 'bx-brush' },
-        { type: 'fa', name: 'fa-broom' },
-        { type: 'bx', name: 'bx-droplet' },
-        { type: 'fa', name: 'fa-tint' },
-        { type: 'bx', name: 'bx-recycle' },
-        { type: 'fa', name: 'fa-recycle' },
-    ]
+        iconos: [
+            { type: 'bx', name: 'bx-shower' },
+            { type: 'fa', name: 'fa-shower' },
+            { type: 'bx', name: 'bx-bath' },
+            { type: 'fa', name: 'fa-bath' },
+            { type: 'fa', name: 'fa-bucket' },
+            { type: 'bx', name: 'bx-brush' },
+            { type: 'fa', name: 'fa-broom' },
+            { type: 'bx', name: 'bx-droplet' },
+            { type: 'fa', name: 'fa-tint' },
+            { type: 'bx', name: 'bx-recycle' },
+            { type: 'fa', name: 'fa-recycle' },
+        ]
     },
     {
         nombre: 'Deporte',
@@ -779,7 +770,7 @@ const ICON_GROUPS_BASE = [
             { type: 'bx', name: 'bxs-drink' },
             { type: 'fa', name: 'fa-cocktail' }
         ]
-    },  
+    },
     {
         nombre: 'Naturaleza',
         iconos: [
@@ -851,7 +842,7 @@ const ICON_GROUPS_BASE = [
             { type: 'bx', name: 'bx-pound' },
         ]
     }
-    
+
 ];
 const ICON_GROUPS = ICON_GROUPS_BASE;
 
@@ -976,7 +967,7 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
         document.removeEventListener('keydown', escapeModalHandler);
     });
     // Cerrar al hacer click fuera
-    const cerrarModalHandler = function(e) {
+    const cerrarModalHandler = function (e) {
         if (!modal.contains(e.target) && !e.target.closest('.icono-categoria')) {
             modal.remove();
             document.querySelector('.overlay2').classList.remove('active');
@@ -984,9 +975,9 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
             document.removeEventListener('keydown', escapeModalHandler);
         }
     };
-    
+
     // Cerrar con Escape
-    const escapeModalHandler = function(e) {
+    const escapeModalHandler = function (e) {
         if (e.key === 'Escape') {
             e.stopPropagation();
             modal.remove();
@@ -995,7 +986,7 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
             document.removeEventListener('keydown', escapeModalHandler);
         }
     };
-    
+
     document.addEventListener('click', cerrarModalHandler);
     document.addEventListener('keydown', escapeModalHandler);
 }

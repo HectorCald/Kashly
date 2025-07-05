@@ -299,19 +299,21 @@
     gap: 8px !important;
     justify-content: center;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .modal-iconos-popover .color-btn {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    border: 2px solid #fff;
+    border: 1px solid #fff;
     cursor: pointer;
-    transition: border 0.2s;
+    transition: all 0.3s ease-in-out;
 }
 
 .modal-iconos-popover .color-btn.seleccionado {
-    border: 2px solid #00e676;
+    transform: scale(1.2);
+    border: 4px solid #fff;
 }
 
 .modal-iconos-popover .btn-confirmar-container {
