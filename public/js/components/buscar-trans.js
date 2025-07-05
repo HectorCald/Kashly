@@ -438,8 +438,6 @@ export function mostrarBuscarTrans() {
         
         renderTransacciones(categoriaId);
     });
-    
-    ascensorAjustes(buscarTransContainer);
 }
 
 async function buscarTransacciones(termino) {

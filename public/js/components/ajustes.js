@@ -208,7 +208,6 @@ function mostrarCategorias() {
     }
     ocultarEtiquetas();
     ocultarCategorias();
-    ascensorAjustes(categoriasContainer);
     categorias();
 }
 function categorias() {
@@ -423,7 +422,6 @@ function mostrarEtiquetas() {
         listenersEtiquetas = true;
     }
     ocultarCategorias();
-    ascensorAjustes(etiquetasContainer);
     etiquetas();
 }
 function etiquetas() {
@@ -545,7 +543,6 @@ export function mostrarAjustes() {
         mostrarEtiquetas();
         overlay.classList.add('active');
     });
-    ascensorAjustes(ajustesContainer);
 }
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

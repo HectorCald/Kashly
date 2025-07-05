@@ -1,5 +1,5 @@
 /* ===== IMPORTACIÓN ===== */
-import { ocultarContenedores, ascensorAjustes } from './components/components.js';
+import { ocultarContenedores } from './components/components.js';
 import { mostrarAjustes } from './components/ajustes.js';
 import { mostrarBuscarTrans } from './components/buscar-trans.js';
 import { mostrarEntradaManual, obtenerCategoriasEntrada, obtenerTransacciones } from './components/entrada-manual.js';
@@ -9,7 +9,6 @@ window.mostrarAjustes = mostrarAjustes;
 window.ocultarContenedores = ocultarContenedores;
 window.mostrarBuscarTrans = mostrarBuscarTrans;
 window.mostrarEntradaManual = mostrarEntradaManual;
-window.ascensorAjustes = ascensorAjustes;
 
 let tipoDashboard = 'negativo';
 let listenersInicializados = false;
@@ -218,6 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ocultarContenedores();
     mostrarBuscarTrans();
     mostrarEntradaManual();
-    ascensorAjustes();
+
     // Listeners para botones de tipo
 });

@@ -26,7 +26,7 @@
         padding-inline: 20px;
 
         p {
-            font-size: var(--text-size-2xl);
+            font-size: var(--text-size-3xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
         }
@@ -75,8 +75,8 @@
             border-radius: var(--border-radius-xl);
             border: none;
             color: var(--text-white);
-            font-size: var(--text-size-sm);
-            padding: 15px 15px;
+            font-size: var(--text-size-base);
+            padding: 10px 15px;
             padding-left: 45px;
             padding-right: 80px;
             transition: all 0.3s ease;
@@ -97,7 +97,7 @@
             cursor: pointer;
             color: var(--text-white);
             position: absolute;
-            top: 16px;
+            top: 15px;
             left: 25px; 
             font-size: var(--text-size-xl);
             display: flex;
@@ -142,7 +142,7 @@
 
         button {
             background: rgb(58, 58, 58);
-            padding: 7px 12px;
+            padding: 5px 12px;
             border-radius: 10px;
             border: none;
             cursor: pointer;
@@ -180,17 +180,17 @@
 
             h3 {
                 font-size: var(--text-size-lg);
-                font-weight: var(--font-weight-bold);
+                font-weight: var(--font-weight-semibold);
                 color: var(--text-white);
                 margin: 0;
             }
 
             .total-dia {
                 font-size: var(--text-size-sm);
-                font-weight: var(--font-weight-bold);
+                font-weight: var(--font-weight-semibold);
                 color: var(--text-white);
                 background-color: rgba(255, 255, 255, 0.1);
-                padding: 7px 12px;
+                padding: 5px 12px;
                 border-radius: 10px;
             }
         }
@@ -249,21 +249,21 @@
                     gap: 3px;
 
                     .categoria {
-                        font-size: 10px;
+                        font-size: var(--text-size-sm);
                         color: gray;
                         padding: 0;
                         line-height: 1;
                     }
                     .descripcion {
                         font-size: var(--text-size-base);
-                        font-weight: var(--font-weight-normal);
+                        font-weight: var(--font-weight-semibold);
                         line-height: 1;
                     }
                     .etiqueta {
-                        font-size: 10px;
+                        font-size: var(--text-size-xs);
                         background-color: rgba(128, 128, 128, 0.158);
                         color: var(--text-white);
-                        padding: 3px 8px;
+                        padding: 2px 8px;
                         border-radius: 5px;
                     }
                 }
@@ -276,7 +276,7 @@
 
                     button {
                         background-color: rgb(30, 30, 30);
-                        padding: 7px 12px;
+                        padding: 5px 10px;
                         border-radius: 10px;
                         border: none;
                         cursor: pointer;

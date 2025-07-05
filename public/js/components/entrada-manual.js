@@ -73,7 +73,7 @@ export function mostrarEntradaManual() {
         renderEtiquetasEntrada();
         overlay.classList.add('active');
     });
-    ascensorAjustes(entradaManualContainer);
+
     eventosEntradaManual();
 }
 function eventosEntradaManual() {
