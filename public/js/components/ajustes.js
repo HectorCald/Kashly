@@ -876,7 +876,7 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
         <button class="btn-cerrar">Cancelar</button>
     `;
     document.body.appendChild(modal);
-    document.querySelector('.overlay2').classList.add('active');
+    document.querySelector('.overlay3').classList.add('active');
     const iconosGrupos = modal.querySelector('.iconos-grupos');
     const coloresList = modal.querySelector('.colores-list');
     const preview = modal.querySelector('.preview-icono');
@@ -959,7 +959,7 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
         if (iconoSeleccionado && colorSeleccionado) {
             onSelect(`${iconoSeleccionadoTipo}:${iconoSeleccionado}`, colorSeleccionado);
             modal.remove();
-            document.querySelector('.overlay2').classList.remove('active');
+            document.querySelector('.overlay3').classList.remove('active');
             document.removeEventListener('click', cerrarModalHandler);
             document.removeEventListener('keydown', escapeModalHandler);
         }
@@ -967,7 +967,7 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
     // Cancelar
     modal.querySelector('.btn-cerrar').addEventListener('click', () => {
         modal.remove();
-        document.querySelector('.overlay2').classList.remove('active');
+        document.querySelector('.overlay3').classList.remove('active');
         document.removeEventListener('click', cerrarModalHandler);
         document.removeEventListener('keydown', escapeModalHandler);
     });
@@ -975,7 +975,7 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
     const cerrarModalHandler = function (e) {
         if (!modal.contains(e.target) && !e.target.closest('.icono-categoria')) {
             modal.remove();
-            document.querySelector('.overlay2').classList.remove('active');
+            document.querySelector('.overlay3').classList.remove('active');
             document.removeEventListener('click', cerrarModalHandler);
             document.removeEventListener('keydown', escapeModalHandler);
         }
@@ -986,7 +986,7 @@ function mostrarModalIconos(onSelect, sugerenciaIcono = null, sugerenciaColor = 
         if (e.key === 'Escape') {
             e.stopPropagation();
             modal.remove();
-            document.querySelector('.overlay2').classList.remove('active');
+            document.querySelector('.overlay3').classList.remove('active');
             document.removeEventListener('click', cerrarModalHandler);
             document.removeEventListener('keydown', escapeModalHandler);
         }
