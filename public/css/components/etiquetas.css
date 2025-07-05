@@ -1,6 +1,6 @@
 .etiquetas-container {
     width: 100%;
-    height: 98%;
+    height: 91%;
     background-color: var(--fondo-color);
     border-radius: var(--border-radius-2xl);
     overflow: hidden;
@@ -28,12 +28,19 @@
         }
 
         button {
+            width: 40px;
+            height: 40px;
             background-color: transparent;
             border: none;
             cursor: pointer;
             font-size: var(--text-size-2xl);
             font-weight: var(--font-weight-bold);
             color: var(--text-white);
+            border: 1px solid rgb(70, 70, 70);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .ascensor {
             position: absolute;

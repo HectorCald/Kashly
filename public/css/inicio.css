@@ -34,7 +34,7 @@
 
         p.total-number {
             font-size: var(--text-size-6xl);
-            font-family: 'Archivo Black', sans-serif;
+            font-family: 'Fredoka', sans-serif;
             font-weight: var(--font-weight-bold);
             color: var(--text);
         }
@@ -87,8 +87,8 @@
             background-color: var(--aux-color);
             color: var(--quaternary-color);
             border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: var(--border-radius-xl);
+            padding: 7px 12px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: var(--text-size-xs);
             font-weight: var(--font-weight-medium);
