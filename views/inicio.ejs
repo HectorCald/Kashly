@@ -227,16 +227,34 @@
 
     <!-- Service Worker Registration -->
     <script>
-        // Registrar el Service Worker básico
+        // Registrar el Service Worker optimizado
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('✅ Service Worker básico registrado');
-                    })
-                    .catch((error) => {
-                        console.error('❌ Error al registrar el Service Worker:', error);
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('✅ Service Worker optimizado registrado:', registration);
+                    
+                    // Verificar si hay actualizaciones
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('🔄 Nueva versión disponible');
+                                // Aquí podrías mostrar una notificación al usuario
+                            }
+                        });
                     });
+                    
+                    // Escuchar mensajes del Service Worker
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        if (event.data && event.data.type === 'CACHE_UPDATED') {
+                            console.log('✅ Cache actualizado automáticamente');
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Error al registrar el Service Worker:', error);
+                }
             });
         }
 
@@ -244,6 +262,26 @@
         window.addEventListener('appinstalled', () => {
             console.log('🎉 PWA instalada exitosamente');
         });
+
+        // Función para actualizar cache manualmente
+        window.updateCache = async () => {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                const messageChannel = new MessageChannel();
+                
+                messageChannel.port1.onmessage = (event) => {
+                    if (event.data.success) {
+                        console.log('✅ Cache actualizado manualmente');
+                    } else {
+                        console.error('❌ Error actualizando cache:', event.data.error);
+                    }
+                };
+                
+                navigator.serviceWorker.controller.postMessage(
+                    { type: 'UPDATE_CACHE' },
+                    [messageChannel.port2]
+                );
+            }
+        };
 
         // Función para limpiar todo (desarrollo)
         window.clearCache = async () => {
@@ -262,6 +300,20 @@
             }
 
             window.location.reload();
+        };
+
+        // Función para verificar estado del cache
+        window.checkCacheStatus = async () => {
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                console.log('📦 Caches disponibles:', cacheNames);
+                
+                for (const cacheName of cacheNames) {
+                    const cache = await caches.open(cacheName);
+                    const keys = await cache.keys();
+                    console.log(`📁 ${cacheName}:`, keys.length, 'archivos');
+                }
+            }
         };
     </script>
 </body>
