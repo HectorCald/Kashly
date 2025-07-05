@@ -76,9 +76,9 @@
             background-color: rgba(255, 166, 0, 0.181);
         }
         p {
-            font-size: var(--text-size-base);
+            font-size: var(--text-size-xl);
             color: var(--text-white);
-            font-weight: var(--font-weight-bold);
+            font-weight: var(--font-weight-medium);
         }
     }
     .opcion.etiquetas {
@@ -102,9 +102,9 @@
             background-color: rgba(26, 255, 0, 0.145);
         }
         p {
-            font-size: var(--text-size-base);
+            font-size: var(--text-size-xl);
             color: var(--text-white);
-            font-weight: var(--font-weight-bold);
+            font-weight: var(--font-weight-medium);
         }
     }
     .opcion.listas {
@@ -128,9 +128,9 @@
             background-color: rgba(0, 140, 255, 0.145);
         }
         p {
-            font-size: var(--text-size-base);
+            font-size: var(--text-size-xl);
             color: var(--text-white);
-            font-weight: var(--font-weight-bold);
+            font-weight: var(--font-weight-medium);
         }
     }
 }

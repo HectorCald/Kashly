@@ -42,6 +42,7 @@
         span {
             font-size: var(--text-size-2xl) !important;
             color: gray;
+            font-weight: var(--font-weight-medium);
         }
     }
     .tipo {
@@ -60,7 +61,7 @@
             border-radius: 13px;
             cursor: pointer;
             color: var(--text-white);
-            font-weight: var(--font-weight-bold);
+            font-weight: var(--font-weight-medium);
             transition: all 0.5s ease-in-out;
         }
         button.positivo.active{
@@ -123,7 +124,7 @@
         transition: height 0.7s cubic-bezier(0.4,0,0.2,1), background 0.3s;
         position: relative;
         margin-bottom: 0;
-        padding: 5px;
+        padding: 8px;
         cursor: pointer;
         transition: background 0.3s;
         
@@ -140,7 +141,7 @@
         word-break: break-word;
     }
     .monto-pilar {
-        font-size: var(--text-size-xs);
+        font-size: var(--text-size-sm);
         font-weight: var(--font-weight-bold);
         color: white;
         text-align: center;
@@ -149,12 +150,12 @@
     .buscar {
         border: none;
         border-radius: var(--border-radius-lg);
-        padding: 4px 10px;
+        padding: 7px 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        font-size: var(--text-size-xs);
+        font-size: var(--text-size-sm);
         cursor: pointer;
         background-color: var(--aux-color);
         color: var(--quaternary-color);
@@ -201,7 +202,7 @@
         }
         button:last-child {
             background: none;
-            border: 1px solid gray;
+            border: 2px solid rgb(40, 40, 40);
             border-radius: 50%;
             cursor: pointer;
             color: var(--text);

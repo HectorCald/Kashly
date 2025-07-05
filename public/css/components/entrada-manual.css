@@ -82,7 +82,7 @@
                 background-color: var(--aux-color);
                 padding: 7px 12px;
                 border-radius: 10px;
-                font-weight: var(--font-weight-medium);
+                font-weight: var(--font-weight-bold);
                 -webkit-appearance: none;
                 -moz-appearance: none;
                 appearance: none;
