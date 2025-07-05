@@ -173,7 +173,7 @@ body {
     width: 95%;
     background-color: rgb(51, 51, 51);
     color: var(--text-white);
-    padding: 10px;
+    padding: 13px;
     border-radius: 10px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     font-size: var(--text-size-sm);
@@ -220,7 +220,7 @@ body {
     display: flex;
     align-items: center;
     gap: 5px;
-    padding: 10px;
+    padding: 13px;
     z-index: 9999;
     opacity: 0;
     transition: transform 0.3s, opacity 0.3s;
@@ -245,14 +245,14 @@ body {
 }
 
 .snackbar-eliminada .titulo {
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     white-space: nowrap;
-    font-size: var(--text-size-sm);
+    font-size: var(--text-size-base);
     line-height: 1;
 }
 
 .snackbar-eliminada .nombre {
-    font-size: var(--text-size-sm);
+    font-size: var(--text-size-base);
     color: var(--text-white);
     opacity: 0.8;
     line-height: 1;
