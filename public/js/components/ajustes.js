@@ -189,10 +189,12 @@ function mostrarNotificacion(mensaje, tipo = 'error') {
 function mostrarCategorias() {
     const btnCategorias = document.querySelector('.categorias');
     const categoriasContainer = document.querySelector('.categorias-container');
+    const overlay2 = document.querySelector('.overlay2');
 
     if (!listenersCategorias) {
         btnCategorias.addEventListener('click', () => {
             categoriasContainer.style.transform = 'translateY(0)';
+            overlay2.classList.add('active');
             mostrarCategoriasContent(); // Cargar categorías guardadas
         });
         listenersCategorias = true;
@@ -361,9 +363,10 @@ async function mostrarCategoriasContent(nombreAnimada = null) {
 function ocultarCategorias() {
     const btnCerrarCategorias = document.querySelector('.categorias-container .cerrar-categorias');
     const categoriasContainer = document.querySelector('.categorias-container');
-
+    const overlay2 = document.querySelector('.overlay2');   
     btnCerrarCategorias.addEventListener('click', () => {
         categoriasContainer.style.transform = 'translateY(100%)';
+        overlay2.classList.remove('active');
     });
 }
 
@@ -404,10 +407,11 @@ function obtenerEtiquetas() {
 function mostrarEtiquetas() {
     const btnEtiquetas = document.querySelector('.etiquetas');
     const etiquetasContainer = document.querySelector('.etiquetas-container');
-
+    const overlay2 = document.querySelector('.overlay2');
     if (!listenersEtiquetas) {
         btnEtiquetas.addEventListener('click', () => {
             etiquetasContainer.style.transform = 'translateY(0)';
+            overlay2.classList.add('active');
             mostrarEtiquetasContent(); // Cargar etiquetas guardadas
         });
         listenersEtiquetas = true;
@@ -515,9 +519,10 @@ async function mostrarEtiquetasContent(nombreAnimada = null) {
 function ocultarEtiquetas() {
     const btnCerrarEtiquetas = document.querySelector('.etiquetas-container .cerrar-etiquetas');
     const etiquetasContainer = document.querySelector('.etiquetas-container');
-
+    const overlay2 = document.querySelector('.overlay2');
     btnCerrarEtiquetas.addEventListener('click', () => {
         etiquetasContainer.style.transform = 'translateY(100%)';
+        overlay2.classList.remove('active');
     });
 }
 

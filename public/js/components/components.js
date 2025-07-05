@@ -4,6 +4,8 @@ export function ocultarContenedores() {
     const btnCerrar = document.querySelectorAll('.cerrar');
     const ajustesContainer = document.querySelector('.ajustes-container');
     const entradasContainer = document.querySelector('.entrada-manual');
+    const categoriasContainer = document.querySelector('.categorias-container');
+    const etiquetasContainer = document.querySelector('.etiquetas-container');
     const buscarTransContainer = document.querySelector('.buscador-transacciones');
     const overlay = document.querySelector('.overlay');
     const overlay2 = document.querySelector('.overlay2');
@@ -15,6 +17,8 @@ export function ocultarContenedores() {
     });
     overlay2.addEventListener('click', () => {
         entradasContainer.style.transform = 'translateY(100%)';
+        categoriasContainer.style.transform = 'translateY(100%)';
+        etiquetasContainer.style.transform = 'translateY(100%)';
         overlay2.classList.remove('active');
         resetearEntradaManual();
     });
