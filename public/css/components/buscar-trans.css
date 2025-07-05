@@ -255,8 +255,8 @@
                         line-height: 1;
                     }
                     .descripcion {
-                        font-size: var(--text-size-sm);
-                        font-weight: var(--font-weight-medium);
+                        font-size: var(--text-size-base);
+                        font-weight: var(--font-weight-normal);
                         line-height: 1;
                     }
                     .etiqueta {

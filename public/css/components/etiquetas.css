@@ -86,7 +86,7 @@
             cursor: pointer;
             color: var(--text-white);
             position: absolute;
-            top: 16px;
+            top: 15px;
             left: 25px; 
             font-size: var(--text-size-xl);
             display: flex;
@@ -102,7 +102,7 @@
             cursor: pointer;
             color: var(--text-white);
             position: absolute;
-            top: 16px;
+            top: 15px;
             right: 25px; 
             font-size: var(--text-size-xl);
             display: flex;
@@ -133,6 +133,7 @@
             padding: 7px 12px;
             color: var(--text-white);
             font-size: var(--text-size-sm);
+            font-weight: var(--font-weight-normal);
         }
     }
 }
