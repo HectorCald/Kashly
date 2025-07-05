@@ -546,10 +546,10 @@ async function buscarTransacciones(termino) {
                     <div class="detalle">
                         <p class="categoria">${nombreCat}</p>
                         <p class="descripcion">${tr.descripcion || ''}</p>
-                        <p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>
+                        ${nombreEt ? `<p class="etiqueta">${nombreEt ? '#' + nombreEt : ''}</p>` : ''}
                     </div>
                     <div class="botones">
-                        <button class="btn-editar" title="${tr.tipo === 'negativo' ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}">editar</button>
+                        <button class="btn-editar">${tr.tipo === 'negativo' ? '-' : '+'} Bs ${Number(tr.monto).toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})}</button>
                     </div>
                 </div>
             `;
