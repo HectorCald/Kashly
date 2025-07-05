@@ -28,7 +28,7 @@
         color: var(--text-white);
 
         p {
-            font-size: var(--text-size-xs);
+            font-size: var(--text-size-sm);
             color: gray;
         }
 

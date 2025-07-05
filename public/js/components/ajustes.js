@@ -537,8 +537,69 @@ export function mostrarAjustes() {
         ajustesContainer.style.transform = 'translateY(0)';
         mostrarCategorias();
         mostrarEtiquetas();
+        mostrarVersionCache();
         overlay.classList.add('active');
     });
+}
+
+// Función para mostrar la versión del cache
+async function mostrarVersionCache() {
+    const ajustesContainer = document.querySelector('.ajustes-container');
+    
+    // Remover versión anterior si existe
+    const versionAnterior = ajustesContainer.querySelector('.version-cache');
+    if (versionAnterior) {
+        versionAnterior.remove();
+    }
+    
+    // Crear elemento de versión
+    const versionDiv = document.createElement('div');
+    versionDiv.className = 'opcion version-cache';
+    
+    // Mostrar loading inicial
+    versionDiv.innerHTML = `
+        <i class="fa-solid fa-database"></i>
+        <p>Obteniendo versión...</p>
+    `;
+    
+    // Agregar al final del contenedor de ajustes
+    ajustesContainer.appendChild(versionDiv);
+    
+    try {
+        // Obtener versión del cache del navegador
+        let currentVersion = 'Desconocida';
+        
+        if ('caches' in window) {
+            try {
+                const cacheNames = await caches.keys();
+                console.log('📦 Caches disponibles:', cacheNames);
+                
+                // Buscar el cache principal (kashly-v*)
+                const mainCache = cacheNames.find(name => name.startsWith('kashly-v'));
+                if (mainCache) {
+                    currentVersion = mainCache;
+                    console.log('✅ Versión del cache encontrada:', currentVersion);
+                } else {
+                    console.log('⚠️ No se encontró cache principal');
+                }
+            } catch (error) {
+                console.error('❌ Error obteniendo caches:', error);
+            }
+        }
+        
+        // Actualizar el elemento con la versión encontrada
+        versionDiv.innerHTML = `
+            <i class="fa-solid fa-database"></i>
+            <p>Cache: ${currentVersion}</p>
+        `;
+        
+    } catch (error) {
+        console.error('❌ Error obteniendo versión:', error);
+        versionDiv.innerHTML = `
+            <i class="fa-solid fa-database"></i>
+            <p>Cache: Error</p>
+        `;
+    }
 }
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

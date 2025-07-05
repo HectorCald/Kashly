@@ -361,6 +361,40 @@
                 );
             }
         };
+
+        // Función para obtener versión del cache
+        window.getCacheVersion = async () => {
+            console.log('🔍 Obteniendo versión del cache...');
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    console.log('📦 Todos los caches:', cacheNames);
+                    
+                    const mainCaches = cacheNames.filter(name => name.startsWith('kashly-v'));
+                    console.log('📋 Caches principales:', mainCaches);
+                    
+                    if (mainCaches.length > 0) {
+                        const sortedCaches = mainCaches.sort((a, b) => {
+                            const aNum = parseInt(a.match(/kashly-v(\d+)/)?.[1] || '0');
+                            const bNum = parseInt(b.match(/kashly-v(\d+)/)?.[1] || '0');
+                            return bNum - aNum;
+                        });
+                        
+                        console.log('✅ Versión más reciente:', sortedCaches[0]);
+                        return sortedCaches[0];
+                    } else {
+                        console.log('⚠️ No se encontraron caches principales');
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('❌ Error obteniendo caches:', error);
+                    return null;
+                }
+            } else {
+                console.log('⚠️ Cache API no disponible');
+                return null;
+            }
+        };
     </script>
 </body>
 

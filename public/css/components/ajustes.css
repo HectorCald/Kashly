@@ -134,4 +134,34 @@
             font-weight: var(--font-weight-semibold);
         }
     }
+
+    .opcion.version-cache {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 15px;
+        background: none;
+        margin-top: auto;
+        border-top: 1px solid var(--aux-color);
+        color: gray;
+        font-size: var(--text-size-xs);
+
+        i {
+            font-size: var(--text-size-base);
+            color: gray;
+            min-width: 50px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(128, 128, 128, 0.1);
+        }
+        p {
+            font-size: var(--text-size-sm);
+            color: gray;
+            font-weight: var(--font-weight-medium);
+        }
+    }
 }
