@@ -11,10 +11,14 @@ export function ocultarContenedores() {
     overlay.addEventListener('click', () => {
         ajustesContainer.style.transform = 'translateY(100%)';
         buscarTransContainer.style.transform = 'translateY(100%)';
-        entradasContainer.style.transform = 'translateY(100%)';
         overlay.classList.remove('active');
+    });
+    overlay2.addEventListener('click', () => {
+        entradasContainer.style.transform = 'translateY(100%)';
+        overlay2.classList.remove('active');
         resetearEntradaManual();
     });
+    
 
     btnCerrar.forEach(btn => {
         btn.addEventListener('click', () => {

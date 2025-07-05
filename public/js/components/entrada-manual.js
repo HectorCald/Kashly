@@ -465,6 +465,7 @@ let transaccionEditando = null;
 window.addEventListener('editarTransaccion', async (event) => {
     const tipoMonto = document.querySelector('.entrada-manual .content-entrada .monto .tipo-monto-container');
     const tr = event.detail;
+    const overlay2 = document.querySelector('.overlay2');
     const entradaManualContainer = document.querySelector('.entrada-manual');
     if (!entradaManualContainer) {
         alert('No se encontró el contenedor de entrada manual u overlay');
@@ -473,6 +474,7 @@ window.addEventListener('editarTransaccion', async (event) => {
     modoEdicion = true;
     transaccionEditando = tr;
     entradaManualContainer.style.transform = 'translateY(0)';
+    overlay2.classList.add('active');
     await renderCategoriasEntrada();
     await renderEtiquetasEntrada();
     // Cargar datos en los campos
