@@ -24,7 +24,7 @@ app.set('views', join(__dirname, 'views'));
 app.use(express.static(join(__dirname, 'public')));
 
 /* ===== CONFIGURACIÓN DE VERSIÓN ===== */
-const APP_VERSION = 'kashly v4';
+const APP_VERSION = 'kashly v1';
 
 /* ===== RUTAS DE VISTAS ===== */
 app.get('/', (req, res) => {

@@ -193,7 +193,7 @@
         }
 
         button:first-child {
-            background-color: orange;
+            background-color: #FF7043;
             border: none;
             border-radius: 50%;
             cursor: pointer;
