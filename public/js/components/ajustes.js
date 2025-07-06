@@ -555,11 +555,6 @@ async function mostrarVersionCache() {
     // Crear elemento de versión
     const versionDiv = document.createElement('div');
     versionDiv.className = 'opcion version-cache';
-    versionDiv.style.position = 'absolute';
-    versionDiv.style.bottom = '20px';
-    versionDiv.style.left = '20px';
-    versionDiv.style.color = 'gray';
-    versionDiv.style.fontSize = '0.8em';
     
     // Mostrar loading inicial
     versionDiv.innerHTML = `<p>Obteniendo versión...</p>`;

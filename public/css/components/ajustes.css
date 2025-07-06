@@ -146,18 +146,10 @@
         border-top: 1px solid var(--aux-color);
         color: gray;
         font-size: var(--text-size-xs);
+        position: absolute;
+        bottom: 0;
+        width: 100%;
 
-        i {
-            font-size: var(--text-size-base);
-            color: gray;
-            min-width: 50px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background-color: rgba(128, 128, 128, 0.1);
-        }
         p {
             font-size: var(--text-size-sm);
             color: gray;
