@@ -326,45 +326,26 @@ async function renderCategoriasEntrada() {
         const btn = e.target.closest('button');
         if (!btn) return;
         const categoriaBtns = Array.from(categoriasDiv.querySelectorAll('button'));
-        
-        // Si el botón ya está activo, deseleccionar todo
-        if (btn === categoriaActiva) {
+        if (btn === categoriaActiva || (btn.classList.contains('muestra-categoria') && categoriaBtns.filter(b=>b.classList.contains('muestra-categoria')).length === 1)) {
             categoriaBtns.forEach(b => {
                 b.classList.remove('oculta-categoria');
                 b.classList.add('muestra-categoria');
             });
             categoriaActiva = null;
-            return;
-        }
-        
-        // Si hay solo una categoría visible y es la que se está clickeando, deseleccionar
-        const categoriasVisibles = categoriaBtns.filter(b => b.classList.contains('muestra-categoria'));
-        if (categoriasVisibles.length === 1 && categoriasVisibles[0] === btn) {
+        } else {
             categoriaBtns.forEach(b => {
-                b.classList.remove('oculta-categoria');
-                b.classList.add('muestra-categoria');
+                if (b !== btn) {
+                    b.classList.remove('muestra-categoria');
+                    b.classList.add('oculta-categoria');
+                } else {
+                    b.classList.remove('oculta-categoria');
+                    b.classList.add('muestra-categoria');
+                }
             });
-            categoriaActiva = null;
-            return;
-        }
-        
-        // Seleccionar la nueva categoría
-        categoriaBtns.forEach(b => {
-            if (b !== btn) {
-                b.classList.remove('muestra-categoria');
-                b.classList.add('oculta-categoria');
-            } else {
-                b.classList.remove('oculta-categoria');
-                b.classList.add('muestra-categoria');
-            }
-        });
-        
-        // Mover al inicio y hacer scroll
-        categoriasDiv.insertBefore(btn, categoriasDiv.firstChild);
-        setTimeout(() => {
+            categoriasDiv.insertBefore(btn, categoriasDiv.firstChild);
             btn.scrollIntoView({behavior: 'smooth', inline: 'start', block: 'nearest'});
-        }, 10);
-        categoriaActiva = btn;
+            categoriaActiva = btn;
+        }
     };
     categoriasDiv.addEventListener('click', handlerCategorias);
     categoriasDiv.addEventListener('pointerdown', e => {
@@ -388,45 +369,26 @@ async function renderEtiquetasEntrada() {
         const btn = e.target.closest('button');
         if (!btn) return;
         const etiquetaBtns = Array.from(etiquetasDiv.querySelectorAll('button'));
-        
-        // Si el botón ya está activo, deseleccionar todo
-        if (btn === etiquetaActiva) {
+        if (btn === etiquetaActiva || (btn.classList.contains('muestra-categoria') && etiquetaBtns.filter(b=>b.classList.contains('muestra-categoria')).length === 1)) {
             etiquetaBtns.forEach(b => {
                 b.classList.remove('oculta-categoria');
                 b.classList.add('muestra-categoria');
             });
             etiquetaActiva = null;
-            return;
-        }
-        
-        // Si hay solo una etiqueta visible y es la que se está clickeando, deseleccionar
-        const etiquetasVisibles = etiquetaBtns.filter(b => b.classList.contains('muestra-categoria'));
-        if (etiquetasVisibles.length === 1 && etiquetasVisibles[0] === btn) {
+        } else {
             etiquetaBtns.forEach(b => {
-                b.classList.remove('oculta-categoria');
-                b.classList.add('muestra-categoria');
+                if (b !== btn) {
+                    b.classList.remove('muestra-categoria');
+                    b.classList.add('oculta-categoria');
+                } else {
+                    b.classList.remove('oculta-categoria');
+                    b.classList.add('muestra-categoria');
+                }
             });
-            etiquetaActiva = null;
-            return;
-        }
-        
-        // Seleccionar la nueva etiqueta
-        etiquetaBtns.forEach(b => {
-            if (b !== btn) {
-                b.classList.remove('muestra-categoria');
-                b.classList.add('oculta-categoria');
-            } else {
-                b.classList.remove('oculta-categoria');
-                b.classList.add('muestra-categoria');
-            }
-        });
-        
-        // Mover al inicio y hacer scroll
-        etiquetasDiv.insertBefore(btn, etiquetasDiv.firstChild);
-        setTimeout(() => {
+            etiquetasDiv.insertBefore(btn, etiquetasDiv.firstChild);
             btn.scrollIntoView({behavior: 'smooth', inline: 'start', block: 'nearest'});
-        }, 10);
-        etiquetaActiva = btn;
+            etiquetaActiva = btn;
+        }
     };
     etiquetasDiv.addEventListener('click', handlerEtiquetas);
     etiquetasDiv.addEventListener('pointerdown', e => {
