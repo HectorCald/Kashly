@@ -203,6 +203,7 @@
             justify-content: flex-start;
             gap: 5px;
             overflow-x: auto;
+            flex-wrap: nowrap;
 
             button {
                 width: fit-content;
@@ -225,6 +226,7 @@
             justify-content: flex-start;
             gap: 5px;
             overflow-x: auto;
+            flex-wrap: nowrap;
 
             button {
                 background: none;
@@ -306,18 +308,6 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Asegurar que el primer botón (seleccionado) siempre esté visible */
-.categorias button:first-child.muestra-categoria {
-    transform: translateX(0) scale(1) !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
-
-/* Prevenir que el primer botón se oculte */
-.categorias button:first-child {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 .etiquetas button.oculta-categoria {
     opacity: 0;
     transform: translateX(-80px) scale(0.8);
@@ -329,18 +319,6 @@
     opacity: 1;
     transform: translateX(0) scale(1);
     pointer-events: auto;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Asegurar que el primer botón (seleccionado) siempre esté visible */
-.etiquetas button:first-child.muestra-categoria {
-    transform: translateX(0) scale(1) !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
-
-/* Prevenir que el primer botón se oculte */
-.etiquetas button:first-child {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
