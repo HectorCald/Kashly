@@ -142,12 +142,10 @@
         gap: 10px;
         padding: 10px 15px;
         background: none;
-        margin-top: auto;
-        border-top: 1px solid var(--aux-color);
         color: gray;
         font-size: var(--text-size-xs);
         position: absolute;
-        bottom: 0;
+        bottom: 20px;
         width: 100%;
 
         p {
