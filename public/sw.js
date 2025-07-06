@@ -1,5 +1,5 @@
-const CACHE_NAME = 'kashly-v3';
-const STATIC_CACHE = 'kashly-static-v3';
+const CACHE_NAME = 'kashly-v1';
+const STATIC_CACHE = 'kashly-static-v1';
 
 // Recursos críticos que se cachean inmediatamente
 const STATIC_RESOURCES = [
@@ -17,7 +17,7 @@ const STATIC_RESOURCES = [
   '/js/components/buscar-trans.js',
   '/js/components/components.js',
   '/manifest.json',
-  '/img/img-inicio/logo-trans.webp',
+  '/img/img-inicio/logo-trans.webp',  
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css',
   'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
