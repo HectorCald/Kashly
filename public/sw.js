@@ -1,5 +1,5 @@
-const CACHE_NAME = 'kashly-v7';
-const STATIC_CACHE = 'kashly-static-v7';
+const CACHE_NAME = 'kashly-v1';
+const STATIC_CACHE = 'kashly-static-v1';
 
 // Recursos críticos que se cachean inmediatamente
 const STATIC_RESOURCES = [
@@ -184,7 +184,7 @@ async function networkFirst(request) {
     }
     
     // Si no hay cache, mostrar página offline
-    return caches.match('/');
+          return caches.match('/');
   }
 }
 
