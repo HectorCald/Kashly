@@ -6,8 +6,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
     <title>Kashly</title>
-    <!-- Versión de la aplicación -->
-    <meta name="app-version" content="<%= version %>">
+
     <!-- Favicon -->
     <link rel="icon" type="image/webp" href="./img/img-inicio/logo-trans.webp">
     <link rel="shortcut icon" type="image/webp" href="./img/img-inicio/logo-trans.webp">
@@ -219,25 +218,7 @@
         <div class="overlay2"></div>
         <div class="overlay3"></div>
 
-        <!-- Modal de actualización -->
-        <div class="update-modal" id="updateModal">
-            <div class="modal-content">
-                <h3><i class="fa-solid fa-download"></i> Actualización Disponible</h3>
-                <p>Hay una nueva versión de Kashly disponible. ¿Deseas actualizar ahora?</p>
-                <div class="version-info" id="versionInfo">
-                    <strong>Versión actual:</strong> <span id="currentVersion">-</span><br>
-                    <strong>Nueva versión:</strong> <span id="newVersion">-</span>
-                </div>
-                <div class="modal-buttons">
-                    <button class="update-btn" id="updateBtn">
-                        <i class="fa-solid fa-download"></i> Actualizar
-                    </button>
-                    <button class="cancel-btn" id="cancelBtn">
-                        <i class="fa-solid fa-times"></i> Más tarde
-                    </button>
-                </div>
-            </div>
-        </div>
+
     </div>
     <div class="notificacion-toast">Comida Mensual -10</div>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -245,33 +226,14 @@
 
     <!-- Service Worker Registration -->
     <script>
-        // Registrar el Service Worker optimizado
+        // Registrar el Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
                     const registration = await navigator.serviceWorker.register('/sw.js');
-                    console.log('✅ Service Worker optimizado registrado:', registration);
-                    
-                    // Verificar si hay actualizaciones
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                console.log('🔄 Nueva versión disponible');
-                                // Aquí podrías mostrar una notificación al usuario
-                            }
-                        });
-                    });
-                    
-                    // Escuchar mensajes del Service Worker
-                    navigator.serviceWorker.addEventListener('message', (event) => {
-                        if (event.data && event.data.type === 'CACHE_UPDATED') {
-                            console.log('✅ Cache actualizado automáticamente');
-                        }
-                    });
-                    
+                    console.log('✅ Service Worker registrado:', registration);
                 } catch (error) {
-                        console.error('❌ Error al registrar el Service Worker:', error);
+                    console.error('❌ Error al registrar el Service Worker:', error);
                 }
             });
         }
@@ -280,289 +242,6 @@
         window.addEventListener('appinstalled', () => {
             console.log('🎉 PWA instalada exitosamente');
         });
-
-        // Función para actualizar cache manualmente
-        window.updateCache = async () => {
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                const messageChannel = new MessageChannel();
-                
-                messageChannel.port1.onmessage = (event) => {
-                    if (event.data.success) {
-                        console.log('✅ Cache actualizado manualmente');
-                    } else {
-                        console.error('❌ Error actualizando cache:', event.data.error);
-                    }
-                };
-                
-                navigator.serviceWorker.controller.postMessage(
-                    { type: 'UPDATE_CACHE' },
-                    [messageChannel.port2]
-                );
-            }
-        };
-
-        // Función para limpiar todo (desarrollo)
-        window.clearCache = async () => {
-            if ('caches' in window) {
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
-                console.log('🧹 Cache limpiado');
-            }
-
-            if ('serviceWorker' in navigator) {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                for (let registration of registrations) {
-                    await registration.unregister();
-                    console.log('🗑️ Service Worker desinstalado');
-                }
-            }
-
-            window.location.reload();
-        };
-
-        // Función para verificar estado del cache
-        window.checkCacheStatus = async () => {
-            if ('caches' in window) {
-                const cacheNames = await caches.keys();
-                console.log('📦 Caches disponibles:', cacheNames);
-                
-                for (const cacheName of cacheNames) {
-                    const cache = await caches.open(cacheName);
-                    const keys = await cache.keys();
-                    console.log(`📁 ${cacheName}:`, keys.length, 'archivos');
-                }
-            }
-        };
-
-        // Función para verificar actualizaciones manualmente
-        window.checkForUpdates = () => {
-            if (window.checkForUpdates) {
-                window.checkForUpdates();
-            } else {
-                console.log('⚠️ Función de verificación no disponible aún');
-            }
-        };
-
-        // Función para forzar actualización
-        window.forceUpdate = async () => {
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                const messageChannel = new MessageChannel();
-                
-                messageChannel.port1.onmessage = (event) => {
-                    if (event.data.success) {
-                        console.log('✅ Actualización forzada completada:', event.data.result);
-                        window.location.reload();
-                    } else {
-                        console.error('❌ Error en actualización forzada:', event.data.error);
-                    }
-                };
-                
-                navigator.serviceWorker.controller.postMessage(
-                    { type: 'UPDATE_FROM_VERCEL' },
-                    [messageChannel.port2]
-                );
-            }
-        };
-
-        // Función para obtener versión del cache
-        window.getCacheVersion = async () => {
-            console.log('🔍 Obteniendo versión del cache...');
-            if ('caches' in window) {
-                try {
-                    const cachedResponse = await caches.match('/');
-                    if (cachedResponse) {
-                        const text = await cachedResponse.text();
-                        const metaMatch = text.match(/<meta name="app-version" content="([^"]+)"/i);
-                        if (metaMatch) {
-                            console.log('📱 Versión en cache:', metaMatch[1]);
-                            return metaMatch[1];
-                        } else {
-                            console.log('⚠️ No se encontró versión en el cache');
-                            return null;
-                        }
-                    } else {
-                        console.log('⚠️ No hay cache de la página principal');
-                        return null;
-                    }
-                } catch (error) {
-                    console.error('❌ Error obteniendo versión del cache:', error);
-                    return null;
-                }
-            } else {
-                console.log('⚠️ Cache API no disponible');
-                return null;
-            }
-        };
-
-        // Función para obtener versión del servidor
-        window.getServerVersion = async () => {
-            console.log('🌐 Obteniendo versión del servidor...');
-            try {
-                const response = await fetch('/api/version?t=' + Date.now());
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📋 Versión del servidor:', data.version);
-                    return data.version;
-                } else {
-                    console.log('❌ Error obteniendo versión del servidor:', response.status);
-                    return null;
-                }
-            } catch (error) {
-                console.error('❌ Error en getServerVersion:', error);
-                return null;
-            }
-        };
-
-        // Función para verificar versión desde ajustes
-        window.checkVersionFromSettings = () => {
-            console.log('🔍 Verificando versión desde ajustes...');
-            const ajustesBtn = document.querySelector('.ajustes');
-            if (ajustesBtn) {
-                ajustesBtn.click();
-                setTimeout(() => {
-                    console.log('✅ Ajustes abiertos, verificación iniciada');
-                }, 100);
-            } else {
-                console.log('❌ Botón de ajustes no encontrado');
-            }
-        };
-
-        // Función para simular apertura de ajustes sin verificación
-        window.openSettingsOnly = () => {
-            console.log('🔧 Abriendo ajustes (solo visualización)...');
-            const ajustesBtn = document.querySelector('.ajustes');
-            if (ajustesBtn) {
-                ajustesBtn.click();
-                console.log('✅ Ajustes abiertos - solo muestra versión actual');
-            } else {
-                console.log('❌ Botón de ajustes no encontrado');
-            }
-        };
-
-        // Función para limpiar cache y forzar verificación
-        window.forceVersionCheck = async () => {
-            console.log('🧹 Limpiando cache y forzando verificación...');
-            if ('caches' in window) {
-                try {
-                    const cacheNames = await caches.keys();
-                    console.log('📦 Caches encontrados:', cacheNames);
-                    
-                    const mainCache = cacheNames.find(name => name.startsWith('kashly-v'));
-                    if (mainCache) {
-                        await caches.delete(mainCache);
-                        console.log('🗑️ Cache eliminado:', mainCache);
-                    }
-                    
-                    window.location.reload();
-                } catch (error) {
-                    console.error('❌ Error limpiando cache:', error);
-                }
-            } else {
-                console.log('⚠️ Cache API no disponible');
-            }
-        };
-
-        // Función para verificar versión inmediatamente
-        window.checkVersionNow = () => {
-            console.log('🔍 Verificación inmediata de versión...');
-            checkForUpdates();
-        };
-
-        // Función para verificar estado del cache
-        window.checkCacheStatus = async () => {
-            console.log('🔍 Verificando estado del cache...');
-            
-            const cacheVersion = await getCacheVersion();
-            const serverVersion = await getServerVersion();
-            
-            console.log('📊 Estado actual:');
-            console.log('📱 Cache:', cacheVersion);
-            console.log('🌐 Servidor:', serverVersion);
-            console.log('🔄 ¿Hay diferencia?', cacheVersion !== serverVersion);
-            
-            if (cacheVersion === serverVersion) {
-                console.log('✅ Cache actualizado correctamente');
-            } else {
-                console.log('⚠️ Cache necesita actualización');
-            }
-        };
-
-        // Función para verificar después de actualizar
-        window.checkAfterUpdate = async () => {
-            console.log('🔍 Verificando después de actualizar...');
-            
-            // Esperar un poco para que se complete la actualización
-            setTimeout(async () => {
-                const cacheVersion = await getCacheVersion();
-                const serverVersion = await getServerVersion();
-                
-                console.log('📊 Estado después de actualizar:');
-                console.log('📱 Cache:', cacheVersion);
-                console.log('🌐 Servidor:', serverVersion);
-                
-                if (cacheVersion === serverVersion) {
-                    console.log('✅ Actualización exitosa - versiones coinciden');
-                } else {
-                    console.log('❌ Error en actualización - versiones diferentes');
-                    console.log('💡 Probablemente el cache no se actualizó correctamente');
-                }
-            }, 2000);
-        };
-
-        // Función para forzar actualización completa
-        window.forceCompleteUpdate = async () => {
-            console.log('🔄 Forzando actualización completa...');
-            
-            // Limpiar cache primero
-            if ('caches' in window) {
-                try {
-                    const cacheNames = await caches.keys();
-                    console.log('📦 Caches encontrados:', cacheNames);
-                    
-                    for (const cacheName of cacheNames) {
-                        await caches.delete(cacheName);
-                        console.log('🗑️ Cache eliminado:', cacheName);
-                    }
-                    
-                    console.log('✅ Todos los caches eliminados');
-                    
-                    // Recargar página para forzar nueva instalación
-                    window.location.reload(true);
-                } catch (error) {
-                    console.error('❌ Error limpiando caches:', error);
-                }
-            } else {
-                console.log('⚠️ Cache API no disponible');
-            }
-        };
-
-        // Función para verificar estado del servidor
-        window.checkServerStatus = async () => {
-            console.log('🔍 Verificando estado del servidor...');
-            
-            try {
-                const response = await fetch('/api/version?t=' + Date.now());
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📋 Versión del servidor:', data.version);
-                    
-                    // Verificar también el HTML
-                    const htmlResponse = await fetch('/?t=' + Date.now());
-                    if (htmlResponse.ok) {
-                        const html = await htmlResponse.text();
-                        const metaMatch = html.match(/<meta name="app-version" content="([^"]+)"/i);
-                        if (metaMatch) {
-                            console.log('📄 Versión en HTML:', metaMatch[1]);
-                            console.log('🔄 ¿Coinciden?', data.version === metaMatch[1]);
-                        }
-                    }
-                } else {
-                    console.log('❌ Error obteniendo versión del servidor:', response.status);
-                }
-            } catch (error) {
-                console.error('❌ Error verificando servidor:', error);
-            }
-        };
     </script>
 </body>
 

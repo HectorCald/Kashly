@@ -555,83 +555,74 @@ async function mostrarVersionCache() {
     // Crear elemento de versión
     const versionDiv = document.createElement('div');
     versionDiv.className = 'opcion version-cache';
+    versionDiv.style.position = 'absolute';
+    versionDiv.style.bottom = '20px';
+    versionDiv.style.left = '20px';
+    versionDiv.style.color = 'gray';
+    versionDiv.style.fontSize = '0.8em';
     
     // Mostrar loading inicial
-    versionDiv.innerHTML = `
-        <i class="fa-solid fa-database"></i>
-        <p>Obteniendo versión...</p>
-    `;
+    versionDiv.innerHTML = `<p>Obteniendo versión...</p>`;
     
     // Agregar al final del contenedor de ajustes
     ajustesContainer.appendChild(versionDiv);
     
     try {
-        // Obtener versión del cache (la que está usando el usuario)
-        let currentVersion = 'kashly v1'; // Versión por defecto
-        let serverVersion = null;
-        let hasUpdate = false;
+        // Obtener versión del cache actual del Service Worker
+        let currentVersion = null;
         
-        // 1. Obtener versión del cache
+        // Obtener versión desde el cache del SW
         if ('caches' in window) {
             try {
-                const cachedResponse = await caches.match('/');
-                if (cachedResponse) {
-                    const text = await cachedResponse.text();
-                    const metaMatch = text.match(/<meta name="app-version" content="([^"]+)"/i);
-                    if (metaMatch) {
-                        currentVersion = metaMatch[1];
-                        console.log('📱 Versión del cache (usuario):', currentVersion);
+                // Buscar en los caches del SW
+                const cacheNames = await caches.keys();
+                console.log('📦 Caches disponibles:', cacheNames);
+                
+                // Buscar en el cache principal de Kashly
+                for (const cacheName of cacheNames) {
+                    if (cacheName.includes('kashly')) {
+                        const cache = await caches.open(cacheName);
+                        console.log('🔍 Revisando cache:', cacheName);
+                        
+                        // Intentar obtener la versión desde el cache
+                        const versionResponse = await cache.match('/api/version');
+                        if (versionResponse) {
+                            const versionData = await versionResponse.json();
+                            currentVersion = versionData.version;
+                            console.log('📱 Versión encontrada en cache:', currentVersion);
+                            break;
+                        }
+                        
+                        // Si no hay /api/version, usar el nombre del cache como versión
+                        if (cacheName.includes('kashly-v')) {
+                            const versionMatch = cacheName.match(/kashly-v(\d+)/);
+                            if (versionMatch) {
+                                currentVersion = `kashly(Beta) v-${versionMatch[1]}`;
+                                console.log('📱 Versión del cache SW:', currentVersion);
+                                break;
+                            }
+                        }
                     }
                 }
             } catch (error) {
-                console.log('⚠️ Error obteniendo versión del cache:', error.message);
+                console.log('⚠️ Error obteniendo versión del cache SW:', error.message);
             }
         }
         
-        // 2. Obtener versión del servidor
-        try {
-            const serverResponse = await fetch('/api/version?t=' + Date.now());
-            if (serverResponse.ok) {
-                const serverData = await serverResponse.json();
-                serverVersion = serverData.version;
-                console.log('🌐 Versión del servidor:', serverVersion);
-            }
-        } catch (error) {
-            console.log('⚠️ Error obteniendo versión del servidor:', error.message);
-        }
-        
-        // 3. Comparar versiones
-        hasUpdate = serverVersion && currentVersion !== serverVersion;
-        console.log('🔄 ¿Hay actualización?', hasUpdate);
-        
-        // 4. Actualizar visualización
-        versionDiv.innerHTML = `
-            <i class="fa-solid fa-database"></i>
-            <p>Versión: ${currentVersion}</p>
-        `;
-        
-        if (hasUpdate && serverVersion) {
-            versionDiv.innerHTML += `
-                <span style="color: var(--success-color); font-size: 0.8em; margin-left: 0.5rem;">
-                    <i class="fa-solid fa-arrow-up"></i> Nueva versión: ${serverVersion}
-                </span>
-            `;
-            
-            // NO mostrar modal automáticamente en ajustes
-            // Solo mostrar indicador visual
-            console.log('📋 Versión diferente detectada en ajustes (solo indicador visual)');
-            console.log('📱 Cache:', currentVersion);
-            console.log('🌐 Servidor:', serverVersion);
+        // Actualizar visualización
+        if (currentVersion) {
+            versionDiv.innerHTML = `<p>${currentVersion}</p>`;
+        } else {
+            versionDiv.innerHTML = `<p>No disponible</p>`;
         }
         
     } catch (error) {
         console.error('❌ Error obteniendo versión:', error);
-        versionDiv.innerHTML = `
-            <i class="fa-solid fa-database"></i>
-            <p>Versión: Error</p>
-        `;
+        versionDiv.innerHTML = `<p>Error</p>`;
     }
 }
+
+
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
