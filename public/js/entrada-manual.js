@@ -190,7 +190,17 @@ function eventosEntradaManual() {
 
     btnGuardar.addEventListener('click', async () => {
         // Obtener datos
-        const fecha = document.querySelector('.entrada-manual .input-fecha').value || new Date().toLocaleDateString('es-ES');
+        const fechaInput = document.querySelector('.entrada-manual .input-fecha').value;
+        let fecha;
+        if (fechaInput) {
+            // Si hay fecha del input, formatear a d/m/yyyy sin ceros
+            const [d, m, y] = fechaInput.split(/[\\/]/).map(Number);
+            fecha = `${d}/${m}/${y}`;
+        } else {
+            // Si no hay fecha, usar hoy con formato d/m/yyyy sin ceros
+            const hoy = new Date();
+            fecha = `${hoy.getDate()}/${hoy.getMonth() + 1}/${hoy.getFullYear()}`;
+        }
         const descripcionVal = descripcion.value.trim();
         const montoVal = parseFloat(monto.dataset.raw || '0');
         // Buscar categoría y etiqueta activas
@@ -624,22 +634,28 @@ window.addEventListener('editarTransaccion', async (event) => {
 function mostrarBotonesEdicion() {
     // Ocultar botón guardar y mostrar check+basurero
     const btnGuardar = document.querySelector('.entrada-manual .guardar');
-    if (!document.querySelector('.entrada-manual .botones-edicion')) {
-        const cont = document.createElement('div');
-        cont.className = 'botones-edicion';
-        cont.style.position = 'absolute';
-        cont.style.right = '20px';
-        cont.style.bottom = '20px';
-        cont.style.display = 'flex';
-        cont.style.gap = '5px';
-        cont.innerHTML = `
-            <button class="btn-check" title="Guardar cambios"><i class="bx bx-check"></i></button>
-            <button class="btn-borrar" title="Eliminar"><i class="bx bx-trash"></i></button>
-        `;
-        document.querySelector('.entrada-manual').appendChild(cont);
-        cont.querySelector('.btn-check').addEventListener('click', guardarEdicionTransaccion);
-        cont.querySelector('.btn-borrar').addEventListener('click', eliminarTransaccion);
-    }
+    const contEdicion = document.querySelector('.entrada-manual .botones-edicion');
+    
+    // Remover botones de edición existentes para evitar duplicados
+    if (contEdicion) contEdicion.remove();
+    
+    const cont = document.createElement('div');
+    cont.className = 'botones-edicion';
+    cont.style.position = 'absolute';
+    cont.style.right = '20px';
+    cont.style.bottom = '20px';
+    cont.style.display = 'flex';
+    cont.style.gap = '5px';
+    cont.innerHTML = `
+        <button class="btn-check" title="Guardar cambios"><i class="bx bx-check"></i></button>
+        <button class="btn-borrar" title="Eliminar"><i class="bx bx-trash"></i></button>
+    `;
+    document.querySelector('.entrada-manual').appendChild(cont);
+    
+    // Agregar event listeners
+    cont.querySelector('.btn-check').addEventListener('click', guardarEdicionTransaccion);
+    cont.querySelector('.btn-borrar').addEventListener('click', eliminarTransaccion);
+    
     if (btnGuardar) btnGuardar.style.display = 'none';
 }
 function ocultarBotonesEdicion() {
@@ -655,7 +671,17 @@ function ocultarBotonesEdicion() {
 async function guardarEdicionTransaccion() {
     if (!transaccionEditando) return;
     // Obtener datos igual que en btnGuardar
-    const fecha = document.querySelector('.entrada-manual .input-fecha').value || new Date().toLocaleDateString('es-ES');
+    const fechaInput = document.querySelector('.entrada-manual .input-fecha').value;
+    let fecha;
+    if (fechaInput) {
+        // Si hay fecha del input, formatear a d/m/yyyy sin ceros
+        const [d, m, y] = fechaInput.split(/[\\/]/).map(Number);
+        fecha = `${d}/${m}/${y}`;
+    } else {
+        // Si no hay fecha, usar hoy con formato d/m/yyyy sin ceros
+        const hoy = new Date();
+        fecha = `${hoy.getDate()}/${hoy.getMonth() + 1}/${hoy.getFullYear()}`;
+    }
     const descripcionVal = document.querySelector('.entrada-manual .content-entrada .monto .descripcion').value.trim();
     const montoInput = document.querySelector('.entrada-manual .content-entrada .monto .monto-input');
     const montoVal = parseFloat(montoInput.dataset.raw || '0');
