@@ -1,5 +1,5 @@
-const CACHE_NAME = 'kashly-v6';
-const STATIC_CACHE = 'kashly-static-v6';
+const CACHE_NAME = 'kashly-v15';
+const STATIC_CACHE = 'kashly-static-v15';
 
 // Recursos críticos que se cachean inmediatamente
 const STATIC_RESOURCES = [
@@ -121,7 +121,6 @@ async function cacheFirst(request) {
     // Buscar en cache primero
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
-      console.log('⚡ Sirviendo desde cache:', request.url);
       return cachedResponse;
     }
 

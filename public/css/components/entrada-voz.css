@@ -1,0 +1,58 @@
+.entrada-voz-flotante {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 90%;
+    width: 90%;
+    background: #222;
+    color: #fff;
+    border-radius: 15px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 2000;
+    font-size: 1.1rem;
+    pointer-events: auto;
+    opacity: 0;
+    transition: all 0.5s ease;
+
+    input{
+        width: 100%;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.1em;
+        text-align: center;
+        word-break: break-word;
+    }
+    input:focus{
+        outline: none;
+    }
+}
+.entrada-voz-flotante.active{
+    top: -90%;
+    opacity: 1;
+}
+
+.entrada-voz-trash {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 25px;
+    margin: 0;
+    position: relative;
+    background: none;
+    color: var(--quaternary-color);
+    border: 2px solid rgb(40, 40, 40);
+    width: 50px;
+    height: 50px;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+.entrada-voz-trash.active{
+    opacity: 1;
+    display: flex;
+}

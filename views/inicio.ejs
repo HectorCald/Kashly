@@ -53,8 +53,12 @@
         </div>
         <button class="buscar"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
         <div class="entradas">
-            <button><i class="fa-solid fa-microphone"></i></button>
-            <button><i class="fa-solid fa-plus"></i></button>
+            <button class="entrada-voz-btn"><i class="bx bx-microphone"></i></button>
+            <button class="entrada-manual-btn"><i class="bx bx-plus"></i></button>
+            <div class="entrada-voz-flotante">
+                <input type="text" class="voz-texto" placeholder="Te estoy escuchando...">
+            </div>
+            <button class="entrada-voz-trash"><i class="bx bx-trash"></i></button>
         </div>
         <button class="ajustes"><i class="bx bx-cog"></i></button>
 
@@ -135,9 +139,8 @@
                 <button class="icono-buscador"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             <div class="filtros">
-                <button>Este mes</button>
-                <button>Lista</button>
-                <button>tipo</button>
+                <button class="btn-mes">Este mes</button>
+                <button class="btn-tipo">Ingresos/Salidas</button>
             </div>
             <div class="transacciones-container">
                 <div class="transaccion">
@@ -231,7 +234,6 @@
             window.addEventListener('load', async () => {
                 try {
                     const registration = await navigator.serviceWorker.register('/sw.js');
-                    console.log('✅ Service Worker registrado:', registration);
                 } catch (error) {
                     console.error('❌ Error al registrar el Service Worker:', error);
                 }

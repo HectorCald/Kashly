@@ -1,4 +1,4 @@
-import { resetearEntradaManual } from './entrada-manual.js';
+import { resetearEntradaManual } from '../entrada-manual.js';
 
 export function ocultarContenedores() {
     const btnCerrar = document.querySelectorAll('.cerrar');

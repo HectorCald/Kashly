@@ -292,6 +292,9 @@ async function renderTransacciones(categoriaId = null) {
 // Variable para controlar si ya se inicializaron los listeners
 let listenersBuscarTransInicializados = false;
 
+import { renderFiltrosBuscar, onCambioFiltros } from './components/transacciones/filtros.js';
+import { buscarYRenderizarTransacciones, inicializarBuscarInputYFiltros, setCategoriaFiltroActiva } from './components/transacciones/buscar.js';
+
 export function mostrarBuscarTrans() {
     // Evitar inicialización múltiple
     if (listenersBuscarTransInicializados) return;
@@ -303,125 +306,24 @@ export function mostrarBuscarTrans() {
     const input = document.querySelector('.search input');
     const btnCerrar = document.querySelector('.buscador-transacciones .cerrar');
 
-    btnBuscarTrans.addEventListener('click', () => {
+    btnBuscarTrans.addEventListener('click', async () => {
         buscarTransContainer.style.transform = 'translateY(0)';
         overlay.classList.add('active');
-        
         // Restaurar título por defecto
         const titulo = buscarTransContainer.querySelector('.titulo p');
         if (titulo) titulo.textContent = 'Todas las transacciones';
-        
         // Limpiar filtros
-        filtroActivo = '';
-        categoriaFiltroActiva = null;
         input.value = '';
-        
-        renderTransacciones();
-        
+        // Renderizar filtros y transacciones
+        await renderFiltrosBuscar();
+        buscarYRenderizarTransacciones();
+        inicializarBuscarInputYFiltros();
+        // Callback para cambios de filtros
+        onCambioFiltros(() => {
+            buscarYRenderizarTransacciones();
+        });
         // Agregar escape handler cuando se abre
         agregarEscapeHandler();
-    });
-    
-    function normalizarTexto(texto) {
-        return texto
-          .toLowerCase()                                  
-          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-          .trim()                                         
-          .replace(/\s+/g, "-")                           
-          .replace(/-+/g, "-");                           
-      }
-      
-    // Búsqueda en tiempo real
-    input.addEventListener('input', (e) => {
-        const busqueda = normalizarTexto(e.target.value.trim());
-        filtroActivo = busqueda;
-        
-        if (busqueda) {
-            buscarTransacciones(busqueda);
-        } else {
-            renderTransacciones(categoriaFiltroActiva);
-        }
-    });
-    input.addEventListener('focus', () => {
-        input.select();
-    });    
-    
-    // Botón cerrar
-    btnCerrar.addEventListener('click', () => {
-        // Limpiar filtros y restaurar normalidad
-        filtroActivo = '';
-        categoriaFiltroActiva = null;
-        input.value = '';
-        
-        // Restaurar totales originales
-        if (typeof window.actualizarDashboard === 'function') {
-            window.actualizarDashboard();
-        }
-        
-        buscarTransContainer.style.transform = 'translateY(100%)';
-        overlay.classList.remove('active');
-    });
-    
-    // Cerrar con overlay
-    overlay.addEventListener('click', () => {
-        if (buscarTransContainer.style.transform === 'translateY(0px)') {
-            // Limpiar filtros y restaurar normalidad
-            filtroActivo = '';
-            categoriaFiltroActiva = null;
-            input.value = '';
-            
-            // Restaurar totales originales
-            if (typeof window.actualizarDashboard === 'function') {
-                window.actualizarDashboard();
-            }
-            
-            buscarTransContainer.style.transform = 'translateY(100%)';
-            overlay.classList.remove('active');
-        }
-    });
-    
-    // Cerrar con Escape key - Solo cuando el buscador está abierto
-    const escapeHandler = (e) => {
-        if (e.key === 'Escape' && buscarTransContainer.style.transform === 'translateY(0px)') {
-            // Limpiar filtros y restaurar normalidad
-            filtroActivo = '';
-            categoriaFiltroActiva = null;
-            input.value = '';
-            
-            // Restaurar totales originales
-            if (typeof window.actualizarDashboard === 'function') {
-                window.actualizarDashboard();
-            }
-            
-            buscarTransContainer.style.transform = 'translateY(100%)';
-            overlay.classList.remove('active');
-            
-            // Remover el escape handler cuando se cierra
-            removerEscapeHandler();
-        }
-    };
-    
-    // Función para agregar el escape handler
-    function agregarEscapeHandler() {
-        document.addEventListener('keydown', escapeHandler);
-    }
-    
-    // Función para remover el escape handler
-    function removerEscapeHandler() {
-        document.removeEventListener('keydown', escapeHandler);
-    }
-    
-
-    
-    // Remover el event listener cuando se cierra el buscador
-    btnCerrar.addEventListener('click', () => {
-        removerEscapeHandler();
-    });
-    
-    overlay.addEventListener('click', () => {
-        if (buscarTransContainer.style.transform === 'translateY(0px)') {
-            removerEscapeHandler();
-        }
     });
     
     // Escuchar evento para abrir con filtro de categoría
@@ -429,17 +331,31 @@ export function mostrarBuscarTrans() {
         const { categoriaId, categoriaNombre } = event.detail;
         buscarTransContainer.style.transform = 'translateY(0)';
         overlay.classList.add('active');
-        
         // Cambiar título al nombre de la categoría
         const titulo = buscarTransContainer.querySelector('.titulo p');
         if (titulo) titulo.textContent = categoriaNombre;
-        
-        // Establecer filtro de categoría persistente
-        categoriaFiltroActiva = categoriaId;
-        filtroActivo = '';
+        // Limpiar input y filtros
         input.value = '';
-        
-        renderTransacciones(categoriaId);
+        // Establecer filtro de categoría activo
+        setCategoriaFiltroActiva(categoriaId, categoriaNombre);
+        // Renderizar filtros y transacciones
+        renderFiltrosBuscar().then(() => {
+            buscarYRenderizarTransacciones();
+        });
+        inicializarBuscarInputYFiltros();
+        onCambioFiltros(() => {
+            buscarYRenderizarTransacciones();
+        });
+    });
+
+    // Remover el event listener cuando se cierra el buscador
+    btnCerrar.addEventListener('click', () => {
+        removerEscapeHandler();
+    });
+    overlay.addEventListener('click', () => {
+        if (buscarTransContainer.style.transform === 'translateY(0)') {
+            removerEscapeHandler();
+        }
     });
 }
 
@@ -634,3 +550,25 @@ export function actualizarPilares() {
 
 // Exportar funciones de IndexedDB
 export { obtenerCategoriasBuscar, obtenerEtiquetasBuscar };
+
+// Definir escape handler para cerrar el buscador con Escape
+let escapeHandlerBuscarTrans = null;
+function agregarEscapeHandler() {
+    if (escapeHandlerBuscarTrans) return;
+    escapeHandlerBuscarTrans = (e) => {
+        const buscarTransContainer = document.querySelector('.buscador-transacciones');
+        const overlay = document.querySelector('.overlay');
+        if (e.key === 'Escape' && buscarTransContainer.style.transform === 'translateY(0)') {
+            buscarTransContainer.style.transform = 'translateY(100%)';
+            overlay.classList.remove('active');
+            removerEscapeHandler();
+        }
+    };
+    document.addEventListener('keydown', escapeHandlerBuscarTrans);
+}
+function removerEscapeHandler() {
+    if (escapeHandlerBuscarTrans) {
+        document.removeEventListener('keydown', escapeHandlerBuscarTrans);
+        escapeHandlerBuscarTrans = null;
+    }
+}

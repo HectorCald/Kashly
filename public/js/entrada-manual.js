@@ -63,7 +63,7 @@ function openDB(requiredStores = []) {
 
 /* ===== ENTRADA MANUAL ===== */
 export function mostrarEntradaManual() {
-    const btnEntradaManual = document.querySelector('.entradas button:nth-child(2)');
+    const btnEntradaManual = document.querySelector('.entradas .entrada-manual-btn');
     const entradaManualContainer = document.querySelector('.entrada-manual');
     const overlay2 = document.querySelector('.overlay2');
 

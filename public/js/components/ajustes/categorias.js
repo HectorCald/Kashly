@@ -1,16 +1,12 @@
-// IndexedDB helpers con versión dinámica
-const DB_NAME = 'KashlyDB';
-const BASE_VERSION = 1;
-const STORE_CATEGORIAS = 'categorias';
-const STORE_ETIQUETAS = 'etiquetas';
-const STORE_TRANSACCIONES = 'transacciones';
+import { ocultarEtiquetas } from './etiquetas.js';
 
-let listenersCategorias = false;
-let listenersEtiquetas = false;
-
-// Variables para guardar icono/color seleccionados temporalmente
 let iconoCategoriaSeleccionado = 'fa:fa-tag';
 let colorCategoriaSeleccionado = '#fff';
+let listenersCategorias = false;
+const DB_NAME = 'KashlyDB';
+const BASE_VERSION = 1;
+const STORE_TRANSACCIONES = 'transacciones';
+const STORE_CATEGORIAS = 'categorias';
 
 /* ===== INDEXEDDB ===== */
 function getCurrentVersion() {
@@ -74,105 +70,6 @@ function openDB(requiredStores = []) {
     });
 }
 
-/* ===== CATEGORIAS ===== */
-// Paleta de colores para categorías
-export const CATEGORIA_COLORES = [
-    '#CC831F', // naranja más oscuro
-    '#CC5734', // naranja oscuro
-    '#FF7043', // naranja
-    '#FFAD8A', // naranja claro
-    '#FFCA7F', // naranja aún más claro
-    '#1C82AC', // azul oscuro
-    '#29B6F6', // azul
-    '#6ECFF9', // azul claro
-    '#4A8C4D', // verde oscuro
-    '#66BB6A', // verde
-    '#98D89E', // verde claro
-    '#873995', // morado oscuro
-    '#AB47BC', // morado
-    '#C88ED3', // morado claro
-    '#B93161', // rosa oscuro
-    '#EC407A', // rosa
-    '#F279A3', // rosa claro
-    '#1D7E76', // turquesa oscuro
-    '#26A69A', // turquesa
-    '#5CD0C7', // turquesa claro
-    '#CC9F20', // amarillo oscuro
-    '#FFCA28', // amarillo
-    '#FFE066', // amarillo claro
-    '#6F554E', // marrón oscuro
-    '#8D6E63', // marrón
-    '#B39B94', // marrón claro
-    '#5C6D78', // gris azulado oscuro
-    '#78909C', // gris azulado
-    '#A7B6C0', // gris azulado claro
-];
-
-
-
-
-// Obtener el siguiente color disponible
-export async function obtenerColorCategoria() {
-    const cats = await obtenerCategorias();
-    const usados = cats.map(c => c.color);
-    const libre = CATEGORIA_COLORES.find(c => !usados.includes(c));
-    if (libre) return libre;
-    // Si se acaban, asignar aleatorio
-    return CATEGORIA_COLORES[Math.floor(Math.random() * CATEGORIA_COLORES.length)];
-}
-
-function guardarCategoria(nombre, icono, color) {
-    return openDB([STORE_CATEGORIAS]).then(db => {
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_CATEGORIAS, 'readwrite');
-            const store = tx.objectStore(STORE_CATEGORIAS);
-            const req = store.add({ nombre, icono, color });
-            req.onsuccess = () => { resolve(req.result); db.close(); };
-            req.onerror = () => { reject(req.error); db.close(); };
-        });
-    });
-}
-async function borrarCategoriaPorId(id) {
-    const db = await openDB([STORE_CATEGORIAS]);
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_CATEGORIAS, 'readwrite');
-        const store = tx.objectStore(STORE_CATEGORIAS);
-        const req = store.delete(id);
-        req.onsuccess = () => { resolve(); db.close(); };
-        req.onerror = () => { reject(req.error); db.close(); };
-    });
-}
-function obtenerCategorias() {
-    return openDB([STORE_CATEGORIAS]).then(db => {
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_CATEGORIAS, 'readonly');
-            const store = tx.objectStore(STORE_CATEGORIAS);
-            const req = store.getAll();
-            req.onsuccess = () => { resolve(req.result); db.close(); };
-            req.onerror = () => { reject(req.error); db.close(); };
-        });
-    });
-}
-
-function obtenerTransacciones() {
-    return openDB([STORE_TRANSACCIONES]).then(db => {
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_TRANSACCIONES, 'readonly');
-            const store = tx.objectStore(STORE_TRANSACCIONES);
-            const req = store.getAll();
-            req.onsuccess = () => { resolve(req.result); db.close(); };
-            req.onerror = () => { reject(req.error); db.close(); };
-        });
-    });
-}
-
-async function verificarCategoriaEnUso(categoriaId) {
-    const transacciones = await obtenerTransacciones();
-    return transacciones.some(tr => tr.idCategoria === categoriaId);
-}
-
-
-
 function mostrarNotificacion(mensaje, tipo = 'error') {
     const notificacion = document.querySelector('.notificacion-toast');
     if (notificacion) {
@@ -186,7 +83,7 @@ function mostrarNotificacion(mensaje, tipo = 'error') {
         }, 3000);
     }
 }
-function mostrarCategorias() {
+export function mostrarCategorias() {
     const btnCategorias = document.querySelector('.categorias');
     const categoriasContainer = document.querySelector('.categorias-container');
     const overlay2 = document.querySelector('.overlay2');
@@ -360,7 +257,7 @@ async function mostrarCategoriasContent(nombreAnimada = null) {
         categoriasContent.insertBefore(div, categoriasContent.querySelector('.agregar-categoria'));
     });
 }
-function ocultarCategorias() {
+export function ocultarCategorias() {
     const btnCerrarCategorias = document.querySelector('.categorias-container .cerrar-categorias');
     const categoriasContainer = document.querySelector('.categorias-container');
     const overlay2 = document.querySelector('.overlay2');   
@@ -369,255 +266,94 @@ function ocultarCategorias() {
         overlay2.classList.remove('active');
     });
 }
-
-
-/* ===== ETIQUETAS ===== */
-function guardarEtiqueta(nombre) {
-    return openDB([STORE_ETIQUETAS]).then(db => {
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_ETIQUETAS, 'readwrite');
-            const store = tx.objectStore(STORE_ETIQUETAS);
-            const req = store.add({ nombre });
-            req.onsuccess = () => { resolve(req.result); db.close(); };
-            req.onerror = () => { reject(req.error); db.close(); };
-        });
-    });
+async function verificarCategoriaEnUso(categoriaId) {
+    const transacciones = await obtenerTransacciones();
+    return transacciones.some(tr => tr.idCategoria === categoriaId);
 }
-async function borrarEtiquetaPorId(id) {
-    const db = await openDB([STORE_ETIQUETAS]);
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_ETIQUETAS, 'readwrite');
-        const store = tx.objectStore(STORE_ETIQUETAS);
-        const req = store.delete(id);
-        req.onsuccess = () => { resolve(); db.close(); };
-        req.onerror = () => { reject(req.error); db.close(); };
-    });
-}
-function obtenerEtiquetas() {
-    return openDB([STORE_ETIQUETAS]).then(db => {
+function obtenerTransacciones() {
+    return openDB([STORE_TRANSACCIONES]).then(db => {
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_ETIQUETAS, 'readonly');
-            const store = tx.objectStore(STORE_ETIQUETAS);
+            const tx = db.transaction(STORE_TRANSACCIONES, 'readonly');
+            const store = tx.objectStore(STORE_TRANSACCIONES);
             const req = store.getAll();
             req.onsuccess = () => { resolve(req.result); db.close(); };
             req.onerror = () => { reject(req.error); db.close(); };
         });
     });
 }
-function mostrarEtiquetas() {
-    const btnEtiquetas = document.querySelector('.etiquetas');
-    const etiquetasContainer = document.querySelector('.etiquetas-container');
-    const overlay2 = document.querySelector('.overlay2');
-    if (!listenersEtiquetas) {
-        btnEtiquetas.addEventListener('click', () => {
-            etiquetasContainer.style.transform = 'translateY(0)';
-            overlay2.classList.add('active');
-            mostrarEtiquetasContent(); // Cargar etiquetas guardadas
-        });
-        listenersEtiquetas = true;
-    }
-    ocultarCategorias();
-    etiquetas();
+/* ===== CATEGORIAS ===== */
+export const CATEGORIA_COLORES = [
+    '#CC831F', // naranja más oscuro
+    '#CC5734', // naranja oscuro
+    '#FF7043', // naranja
+    '#FFAD8A', // naranja claro
+    '#FFCA7F', // naranja aún más claro
+    '#1C82AC', // azul oscuro
+    '#29B6F6', // azul
+    '#6ECFF9', // azul claro
+    '#4A8C4D', // verde oscuro
+    '#66BB6A', // verde
+    '#98D89E', // verde claro
+    '#873995', // morado oscuro
+    '#AB47BC', // morado
+    '#C88ED3', // morado claro
+    '#B93161', // rosa oscuro
+    '#EC407A', // rosa
+    '#F279A3', // rosa claro
+    '#1D7E76', // turquesa oscuro
+    '#26A69A', // turquesa
+    '#5CD0C7', // turquesa claro
+    '#CC9F20', // amarillo oscuro
+    '#FFCA28', // amarillo
+    '#FFE066', // amarillo claro
+    '#6F554E', // marrón oscuro
+    '#8D6E63', // marrón
+    '#B39B94', // marrón claro
+    '#5C6D78', // gris azulado oscuro
+    '#78909C', // gris azulado
+    '#A7B6C0', // gris azulado claro
+];
+export async function obtenerColorCategoria() {
+    const cats = await obtenerCategorias();
+    const usados = cats.map(c => c.color);
+    const libre = CATEGORIA_COLORES.find(c => !usados.includes(c));
+    if (libre) return libre;
+    // Si se acaban, asignar aleatorio
+    return CATEGORIA_COLORES[Math.floor(Math.random() * CATEGORIA_COLORES.length)];
 }
-function etiquetas() {
-    if (etiquetas._initialized) return;
-    etiquetas._initialized = true;
-    function agregarEtiqueta() {
-        const inputEtiqueta = document.querySelector('.agregar-etiqueta input');
-        const btnAgregar = document.querySelector('.btn-agregar-etiqueta');
 
-        // Función para agregar etiqueta
-        async function agregarEtiquetaFunc() {
-            let nombre = inputEtiqueta.value.trim().toLowerCase();
-            if (!nombre) return;
-
-            // Verifica duplicados (ignorando mayúsculas/minúsculas)
-            const existentes = await obtenerEtiquetas();
-            if (existentes.some(et => et.nombre.toLowerCase() === nombre)) {
-                inputEtiqueta.value = '';
-                inputEtiqueta.blur(); // Forzar blur para limpiar autocompletado
-                return;
-            }
-
-            await guardarEtiqueta(nombre);
-            inputEtiqueta.value = '';
-            inputEtiqueta.blur(); // Forzar blur para limpiar autocompletado
-            mostrarEtiquetasContent(nombre); // Pasa el nombre para animar
-        }
-
-
-
-        // Agregar etiqueta con el botón
-        btnAgregar.addEventListener('click', async (e) => {
-            e.preventDefault();
-            await agregarEtiquetaFunc();
+function guardarCategoria(nombre, icono, color) {
+    return openDB([STORE_CATEGORIAS]).then(db => {
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_CATEGORIAS, 'readwrite');
+            const store = tx.objectStore(STORE_CATEGORIAS);
+            const req = store.add({ nombre, icono, color });
+            req.onsuccess = () => { resolve(req.result); db.close(); };
+            req.onerror = () => { reject(req.error); db.close(); };
         });
-    }
-    agregarEtiqueta();
-}
-async function mostrarEtiquetasContent(nombreAnimada = null) {
-    const etiquetasContent = document.querySelector('.etiquetas-container .etiquetas-content');
-    Array.from(etiquetasContent.children).forEach(child => {
-        if (!child.classList.contains('agregar-etiqueta')) {
-            etiquetasContent.removeChild(child);
-        }
-    });
-    const etiquetas = await obtenerEtiquetas();
-    etiquetas.reverse();
-    etiquetas.forEach(et => {
-        const div = document.createElement('div');
-        div.classList.add('etiqueta');
-        div.innerHTML = `<p>#${et.nombre}</p>`;
-        if (nombreAnimada && et.nombre === nombreAnimada) {
-            div.classList.add('slide-in');
-        }
-        div.dataset.id = et.id;
-        div.dataset.nombre = et.nombre;
-        let deleteState = 0;
-        div._deleteState = 0;
-        div.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            // Resetear todas las demás
-            const allEtiquetas = document.querySelectorAll('.etiquetas-content .etiqueta');
-            allEtiquetas.forEach(other => {
-                if (other !== div) {
-                    other.classList.remove('delete-pending');
-                    other.querySelector('p').textContent = '#' + other.dataset.nombre;
-                    other._deleteState = 0;
-                }
-            });
-            if (deleteState === 0) {
-                div.classList.add('delete-pending');
-                div.querySelector('p').textContent = 'Eliminar?';
-                deleteState = 1;
-                div._deleteState = 1;
-            } else if (deleteState === 1) {
-                div.querySelector('p').textContent = 'Confirmar?';
-                deleteState = 2;
-                div._deleteState = 2;
-            } else if (deleteState === 2) {
-                div.classList.add('slide-out');
-                await borrarEtiquetaPorId(et.id);
-                setTimeout(() => {
-                    mostrarEtiquetasContent();
-                }, 300);
-            }
-        });
-        document.addEventListener('click', function resetEtiqueta(e) {
-            if (!div.contains(e.target)) {
-                if (deleteState > 0) {
-                    div.classList.remove('delete-pending');
-                    div.querySelector('p').textContent = '#' + div.dataset.nombre;
-                    deleteState = 0;
-                    div._deleteState = 0;
-                }
-            }
-        });
-        etiquetasContent.appendChild(div);
     });
 }
-function ocultarEtiquetas() {
-    const btnCerrarEtiquetas = document.querySelector('.etiquetas-container .cerrar-etiquetas');
-    const etiquetasContainer = document.querySelector('.etiquetas-container');
-    const overlay2 = document.querySelector('.overlay2');
-    btnCerrarEtiquetas.addEventListener('click', () => {
-        etiquetasContainer.style.transform = 'translateY(100%)';
-        overlay2.classList.remove('active');
+async function borrarCategoriaPorId(id) {
+    const db = await openDB([STORE_CATEGORIAS]);
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_CATEGORIAS, 'readwrite');
+        const store = tx.objectStore(STORE_CATEGORIAS);
+        const req = store.delete(id);
+        req.onsuccess = () => { resolve(); db.close(); };
+        req.onerror = () => { reject(req.error); db.close(); };
     });
 }
-
-
-/* ===== AJUSTES ===== */
-export function mostrarAjustes() {
-    const btnAjustes = document.querySelector('.ajustes');
-    const ajustesContainer = document.querySelector('.ajustes-container');
-    const overlay = document.querySelector('.overlay');
-
-    btnAjustes.addEventListener('click', () => {
-        ajustesContainer.style.transform = 'translateY(0)';
-        mostrarCategorias();
-        mostrarEtiquetas();
-        mostrarVersionCache();
-        overlay.classList.add('active');
+function obtenerCategorias() {
+    return openDB([STORE_CATEGORIAS]).then(db => {
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_CATEGORIAS, 'readonly');
+            const store = tx.objectStore(STORE_CATEGORIAS);
+            const req = store.getAll();
+            req.onsuccess = () => { resolve(req.result); db.close(); };
+            req.onerror = () => { reject(req.error); db.close(); };
+        });
     });
 }
-
-// Función para mostrar la versión del cache
-async function mostrarVersionCache() {
-    const ajustesContainer = document.querySelector('.ajustes-container');
-    
-    // Remover versión anterior si existe
-    const versionAnterior = ajustesContainer.querySelector('.version-cache');
-    if (versionAnterior) {
-        versionAnterior.remove();
-    }
-    
-    // Crear elemento de versión
-    const versionDiv = document.createElement('div');
-    versionDiv.className = 'opcion version-cache';
-    
-    // Mostrar loading inicial
-    versionDiv.innerHTML = `<p>Obteniendo versión...</p>`;
-    
-    // Agregar al final del contenedor de ajustes
-    ajustesContainer.appendChild(versionDiv);
-    
-    try {
-        // Obtener versión del cache actual del Service Worker
-        let currentVersion = null;
-        
-        // Obtener versión desde el cache del SW
-        if ('caches' in window) {
-            try {
-                // Buscar en los caches del SW
-                const cacheNames = await caches.keys();
-                console.log('📦 Caches disponibles:', cacheNames);
-                
-                // Buscar en el cache principal de Kashly
-                for (const cacheName of cacheNames) {
-                    if (cacheName.includes('kashly')) {
-                        const cache = await caches.open(cacheName);
-                        console.log('🔍 Revisando cache:', cacheName);
-                        
-                        // Intentar obtener la versión desde el cache
-                        const versionResponse = await cache.match('/api/version');
-                        if (versionResponse) {
-                            const versionData = await versionResponse.json();
-                            currentVersion = versionData.version;
-                            console.log('📱 Versión encontrada en cache:', currentVersion);
-                            break;
-                        }
-                        
-                        // Si no hay /api/version, usar el nombre del cache como versión
-                        if (cacheName.includes('kashly-v')) {
-                            const versionMatch = cacheName.match(/kashly-v(\d+)/);
-                            if (versionMatch) {
-                                currentVersion = `kashly(Beta) v-${versionMatch[1]}`;
-                                console.log('📱 Versión del cache SW:', currentVersion);
-                                break;
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                console.log('⚠️ Error obteniendo versión del cache SW:', error.message);
-            }
-        }
-        
-        // Actualizar visualización
-        if (currentVersion) {
-            versionDiv.innerHTML = `<p>${currentVersion}</p>`;
-        } else {
-            versionDiv.innerHTML = `<p>No disponible</p>`;
-        }
-        
-    } catch (error) {
-        console.error('❌ Error obteniendo versión:', error);
-        versionDiv.innerHTML = `<p>Error</p>`;
-    }
-}
-
-
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
