@@ -1,7 +1,7 @@
 /* ===== IMPORTACIÓN ===== */
 import { ocultarContenedores } from './components/components.js';
 import { mostrarAjustes } from './ajustes.js';
-import { mostrarBuscarTrans } from './buscar-trans.js';
+import { mostrarBuscarTrans, limpiarCategoriaFiltro, limpiarBusquedaInput } from './buscar-trans.js';
 import { mostrarEntradaManual, obtenerTransacciones } from './entrada-manual.js';
 
 
@@ -22,13 +22,61 @@ window.mostrarEntradaManual = mostrarEntradaManual;
 window.renderPilaresCategorias = renderPilaresCategorias;
 window.animarTotal = animarTotal;
 
+// Variables globales para sincronización
 export let tipoDashboard = 'negativo';
+export let mesDashboard = null;
+let isSyncingFromBuscar = false; // Flag para evitar bucles infinitos
+
+// Función para obtener el tipo actual del dashboard
+export function getTipoDashboard() {
+    return tipoDashboard;
+}
+
+// Función para obtener el mes actual del dashboard
+export function getMesDashboard() {
+    return mesDashboard;
+}
+
+// Función para sincronizar el tipo con el buscador
+export function sincronizarTipoConBuscador() {
+    if (typeof window.sincronizarFiltrosBuscador === 'function') {
+        window.sincronizarFiltrosBuscador();
+    }
+}
+
+export function setTipoDashboard(nuevoTipo) {
+    if (isSyncingFromBuscar) return; // Evitar bucle infinito
+    tipoDashboard = nuevoTipo;
+    actualizarDashboard();
+    sincronizarTipoConBuscador();
+}
+
+export function setTipoDashboardFromBuscar(nuevoTipo) {
+    isSyncingFromBuscar = true;
+    tipoDashboard = nuevoTipo;
+    actualizarDashboard();
+    setTimeout(() => { isSyncingFromBuscar = false; }, 100);
+}
+
+export function setMesDashboard(nuevoMes) {
+    if (isSyncingFromBuscar) return; // Evitar bucle infinito
+    mesDashboard = nuevoMes;
+    actualizarDashboard();
+    sincronizarTipoConBuscador();
+}
+
+export function setMesDashboardFromBuscar(nuevoMes) {
+    isSyncingFromBuscar = true;
+    mesDashboard = nuevoMes;
+    actualizarDashboard();
+    setTimeout(() => { isSyncingFromBuscar = false; }, 100);
+}
+
 let listenersInicializados = false;
-let mesFiltro = null;
 
 export async function actualizarDashboard() {
     // Obtener el mes seleccionado SIEMPRE desde el selector
-    mesFiltro = getMesSeleccionado();
+    mesDashboard = getMesSeleccionado();
     const transacciones = await obtenerTransacciones();
     // Filtrar por mes seleccionado (siempre hay uno)
     let transaccionesFiltradas = transacciones.filter(t => {
@@ -37,7 +85,7 @@ export async function actualizarDashboard() {
         if (!match) return false;
         const mes = match[2].padStart(2, '0');
         const anio = match[3];
-        return `${anio}-${mes}` === mesFiltro;
+        return `${anio}-${mes}` === mesDashboard;
     });
     // Calcular totales para los botones
     let totalPositivo = 0;
@@ -82,12 +130,16 @@ export async function actualizarDashboard() {
                     btnPositivo.classList.remove('active');
                     tipoDashboard = 'negativo';
                     actualizarDashboard();
+                    // Sincronizar con buscador
+                    sincronizarTipoConBuscador();
                 });
                 btnPositivo.addEventListener('click', () => {
                     btnPositivo.classList.add('active');
                     btnNegativo.classList.remove('active');
                     tipoDashboard = 'positivo';
                     actualizarDashboard();
+                    // Sincronizar con buscador
+                    sincronizarTipoConBuscador();
                 });
                 listenersInicializados = true;
             } else {
@@ -104,6 +156,8 @@ export async function actualizarDashboard() {
 // Hook de cambio de mes
 onCambioMes((nuevoMes) => {
     actualizarDashboard();
+    // Sincronizar con buscador cuando cambie el mes
+    sincronizarTipoConBuscador();
 });
 
 /* ===== INICIALIZACIÓN ===== */

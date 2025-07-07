@@ -7,6 +7,37 @@ let terminoBusqueda = '';
 let categoriaFiltroActiva = null;
 let categoriaFiltroNombre = '';
 
+// Función para formatear fechas (copiada de buscar-trans.js)
+function formatearFechaSubtitulo(fecha) {
+    if (!fecha) return 'Sin fecha';
+    
+    const [dia, mes, año] = fecha.split(/[\\/]/).map(Number);
+    const fechaObj = new Date(año, mes - 1, dia);
+    const hoy = new Date();
+    const ayer = new Date(hoy);
+    ayer.setDate(hoy.getDate() - 1);
+    const anteayer = new Date(hoy);
+    anteayer.setDate(hoy.getDate() - 2);
+    
+    // Comparar solo fecha (sin hora)
+    const fechaComparar = new Date(fechaObj.getFullYear(), fechaObj.getMonth(), fechaObj.getDate());
+    const hoyComparar = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    const ayerComparar = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate());
+    const anteayerComparar = new Date(anteayer.getFullYear(), anteayer.getMonth(), anteayer.getDate());
+    
+    if (fechaComparar.getTime() === hoyComparar.getTime()) {
+        return 'Hoy';
+    } else if (fechaComparar.getTime() === ayerComparar.getTime()) {
+        return 'Ayer';
+    } else if (fechaComparar.getTime() === anteayerComparar.getTime()) {
+        return 'Anteayer';
+    } else {
+        const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        return `${diasSemana[fechaObj.getDay()]} ${dia} de ${meses[fechaObj.getMonth()]}`;
+    }
+}
+
 function normalizarTexto(texto) {
     return texto
         .toLowerCase()
@@ -16,9 +47,31 @@ function normalizarTexto(texto) {
         .replace(/-+/g, '-');
 }
 
+// Función para calcular el total del día
+function calcularTotalDia(transacciones) {
+    let total = 0;
+    transacciones.forEach(tr => {
+        if (tr.tipo === 'positivo') {
+            total += Number(tr.monto);
+        } else if (tr.tipo === 'negativo') {
+            total -= Number(tr.monto);
+        }
+    });
+    return total;
+}
+
 export function setCategoriaFiltroActiva(id, nombre = '') {
     categoriaFiltroActiva = id;
     categoriaFiltroNombre = nombre;
+}
+
+export function limpiarCategoriaFiltro() {
+    categoriaFiltroActiva = null;
+    categoriaFiltroNombre = '';
+}
+
+export function limpiarBusquedaInput() {
+    terminoBusqueda = '';
 }
 
 export async function buscarYRenderizarTransacciones() {
@@ -80,21 +133,25 @@ export async function buscarYRenderizarTransacciones() {
         return (b.id || 0) - (a.id || 0);
     });
 
-    // Agrupar por fecha
+    // Agrupar por fecha usando formatearFechaSubtitulo
     const grupos = {};
     transaccionesFiltradas.forEach(tr => {
-        const fecha = tr.fecha || 'Sin fecha';
-        if (!grupos[fecha]) grupos[fecha] = [];
-        grupos[fecha].push(tr);
+        const fechaSubtitulo = formatearFechaSubtitulo(tr.fecha);
+        if (!grupos[fechaSubtitulo]) grupos[fechaSubtitulo] = [];
+        grupos[fechaSubtitulo].push(tr);
     });
 
     // Renderizar grupos
-    Object.keys(grupos).forEach(fecha => {
-        const transaccionesDelDia = grupos[fecha];
+    Object.keys(grupos).forEach(fechaSubtitulo => {
+        const transaccionesDelDia = grupos[fechaSubtitulo];
+        const totalDia = calcularTotalDia(transaccionesDelDia);
         // Subtítulo
         const subtituloDiv = document.createElement('div');
         subtituloDiv.className = 'fecha-subtitulo';
-        subtituloDiv.innerHTML = `<h3>${fecha}</h3>`;
+        subtituloDiv.innerHTML = `
+            <h3>${fechaSubtitulo}</h3>
+            <span class="total-dia">${totalDia > 0 ? '+' : ''}${totalDia.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} Bs</span>
+        `;
         cont.appendChild(subtituloDiv);
         // Transacciones
         transaccionesDelDia.forEach(tr => {

@@ -24,6 +24,58 @@ function getNombreMes(key) {
     return nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
 }
 
+// Función para sincronizar con el dashboard
+export function sincronizarConDashboard() {
+    // Importar dinámicamente para evitar dependencias circulares
+    import('../../inicio.js').then(module => {
+        const tipoDashboard = module.getTipoDashboard();
+        const mesDashboard = module.getMesDashboard();
+        
+        // Sincronizar tipo
+        if (tipoDashboard === 'negativo' || tipoDashboard === 'positivo') {
+            tipoSeleccionado = tipoDashboard;
+        }
+        
+        // Sincronizar mes
+        if (mesDashboard && mesesDisponibles.includes(mesDashboard)) {
+            mesSeleccionado = mesDashboard;
+        }
+        
+        // Actualizar UI
+        actualizarUI();
+    }).catch(err => {
+        console.log('Error al sincronizar con dashboard:', err);
+    });
+}
+
+// Función para actualizar la UI de los filtros
+function actualizarUI() {
+    const divFiltros = document.querySelector('.buscador-transacciones .filtros');
+    if (!divFiltros) return;
+    
+    const btnMes = divFiltros.querySelector('.btn-mes');
+    const btnTipo = divFiltros.querySelector('.btn-tipo');
+    if (!btnMes || !btnTipo) return;
+    
+    // Actualizar mes
+    const mesActualKey = getMesActualKey();
+    if (mesesDisponibles.length === 0) {
+        btnMes.textContent = 'Sin meses';
+        btnMes.disabled = true;
+    } else {
+        btnMes.disabled = false;
+        btnMes.textContent = (mesSeleccionado === mesActualKey) ? 'Este mes' : getNombreMes(mesSeleccionado);
+    }
+    
+    // Actualizar tipo
+    const opcionesTipo = [
+        { label: 'Ingresos/Salidas', value: 'ambos' },
+        { label: 'Ingresos', value: 'positivo' },
+        { label: 'Salidas', value: 'negativo' }
+    ];
+    btnTipo.textContent = opcionesTipo.find(o => o.value === tipoSeleccionado)?.label || 'Ingresos/Salidas';
+}
+
 export async function renderFiltrosBuscar() {
     // Meses
     const divFiltros = document.querySelector('.buscador-transacciones .filtros');
@@ -45,19 +97,34 @@ export async function renderFiltrosBuscar() {
         }
     });
     mesesDisponibles = Array.from(mesesSet).sort((a, b) => b.localeCompare(a));
-    // MES
+    
+    // Sincronizar con dashboard antes de establecer valores por defecto
+    sincronizarConDashboard();
+    
+    // MES - establecer valor por defecto solo si no hay sincronización
     const mesActualKey = getMesActualKey();
     if (!mesSeleccionado || !mesesDisponibles.includes(mesSeleccionado)) {
         mesSeleccionado = mesesDisponibles.includes(mesActualKey) ? mesActualKey : mesesDisponibles[0];
         if (callbackCambioFiltros) callbackCambioFiltros(mesSeleccionado, tipoSeleccionado);
     }
-    if (mesesDisponibles.length === 0) {
-        btnMes.textContent = 'Sin meses';
-        btnMes.disabled = true;
-    } else {
-        btnMes.disabled = false;
-        btnMes.textContent = (mesSeleccionado === mesActualKey) ? 'Este mes' : getNombreMes(mesSeleccionado);
+    
+    // TIPO - establecer valor por defecto solo si no hay sincronización
+    if (tipoSeleccionado === 'ambos') {
+        // Intentar sincronizar con dashboard
+        try {
+            const module = await import('../../inicio.js');
+            const tipoDashboard = module.getTipoDashboard();
+            if (tipoDashboard === 'negativo' || tipoDashboard === 'positivo') {
+                tipoSeleccionado = tipoDashboard;
+            }
+        } catch (err) {
+            console.log('Error al sincronizar tipo:', err);
+        }
     }
+    
+    // Actualizar UI
+    actualizarUI();
+    
     // Eliminar menú anterior
     let menuMes = divFiltros.querySelector('.mes-selector-menu');
     if (menuMes) menuMes.remove();
@@ -74,8 +141,15 @@ export async function renderFiltrosBuscar() {
             item.className = 'mes-selector-item';
             item.textContent = (m === mesActualKey) ? 'Este mes' : getNombreMes(m);
             if (m === mesSeleccionado) item.classList.add('selected');
-            item.onclick = () => {
+            item.onclick = async () => {
                 mesSeleccionado = m;
+                // Actualizar variable global en dashboard
+                try {
+                    const module = await import('../../inicio.js');
+                    if (typeof module.setMesDashboardFromBuscar === 'function') {
+                        module.setMesDashboardFromBuscar(mesSeleccionado);
+                    }
+                } catch (err) { console.log('No se pudo actualizar mes global:', err); }
                 if (callbackCambioFiltros) callbackCambioFiltros(mesSeleccionado, tipoSeleccionado);
                 btnMes.textContent = (mesSeleccionado === mesActualKey) ? 'Este mes' : getNombreMes(mesSeleccionado);
                 menuMes.remove();
@@ -92,6 +166,7 @@ export async function renderFiltrosBuscar() {
         };
         setTimeout(() => document.addEventListener('mousedown', close), 0);
     };
+    
     // TIPO
     const opcionesTipo = [
         { label: 'Ingresos/Salidas', value: 'ambos' },
@@ -114,9 +189,16 @@ export async function renderFiltrosBuscar() {
             item.className = 'mes-selector-item';
             item.textContent = opt.label;
             if (opt.value === tipoSeleccionado) item.classList.add('selected');
-            item.onclick = () => {
+            item.onclick = async () => {
                 tipoSeleccionado = opt.value;
                 btnTipo.textContent = opt.label;
+                // Actualizar variable global en dashboard
+                try {
+                    const module = await import('../../inicio.js');
+                    if (typeof module.setTipoDashboardFromBuscar === 'function') {
+                        module.setTipoDashboardFromBuscar(tipoSeleccionado);
+                    }
+                } catch (err) { console.log('No se pudo actualizar tipo global:', err); }
                 if (callbackCambioFiltros) callbackCambioFiltros(mesSeleccionado, tipoSeleccionado);
                 menuTipo.remove();
             };
