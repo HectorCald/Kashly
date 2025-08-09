@@ -6,7 +6,13 @@ import {
     FaGift, FaBirthdayCake, FaPaw, FaLeaf, FaSun, FaMoon,
     FaStar, FaGem, FaCrown, FaRocket, FaMagic, FaPalette,
     FaCode, FaCog, FaBolt, FaFire, FaWater, FaWind,
-    FaMountain, FaTree, FaSeedling, FaRecycle, FaGlobe, FaTag
+    FaMountain, FaTree, FaSeedling, FaRecycle, FaGlobe, FaTag,
+    // Iconos de finanzas
+    FaDollarSign, FaCreditCard, FaPiggyBank, FaChartLine, FaChartBar,
+    FaCoins, FaMoneyBillWave, FaUniversity, FaHandHoldingUsd,
+    FaCalculator, FaReceipt, FaWallet, FaShieldAlt, FaLock,
+    FaUnlock, FaKey, FaFileInvoiceDollar, FaPercent, FaBalanceScale,
+    FaHandshake, FaClipboardList
 } from 'react-icons/fa'
 
 export const ICON_CATEGORIES = {
@@ -18,7 +24,8 @@ export const ICON_CATEGORIES = {
     'Salud': [FaHeart, FaDumbbell, FaSun, FaMoon],
     'Naturaleza': [FaLeaf, FaTree, FaSeedling, FaMountain],
     'Símbolos': [FaStar, FaGem, FaCrown, FaGlobe, FaRecycle],
-    'Elementos': [FaFire, FaWater, FaWind, FaBolt]
+    'Elementos': [FaFire, FaWater, FaWind, FaBolt],
+    'Finanzas': [FaDollarSign, FaCreditCard, FaPiggyBank, FaChartLine, FaChartBar, FaCoins, FaMoneyBillWave, FaUniversity, FaHandHoldingUsd, FaCalculator, FaReceipt, FaWallet, FaShieldAlt, FaLock, FaUnlock, FaKey, FaFileInvoiceDollar, FaPercent, FaBalanceScale, FaHandshake, FaClipboardList]
 }
 
 // Crear un mapeo de nombres a componentes
@@ -63,7 +70,29 @@ const ICON_MAP = {
     'FaSeedling': FaSeedling,
     'FaRecycle': FaRecycle,
     'FaGlobe': FaGlobe,
-    'FaTag': FaTag
+    'FaTag': FaTag,
+    // Iconos de finanzas
+    'FaDollarSign': FaDollarSign,
+    'FaCreditCard': FaCreditCard,
+    'FaPiggyBank': FaPiggyBank,
+    'FaChartLine': FaChartLine,
+    'FaChartBar': FaChartBar,
+    'FaCoins': FaCoins,
+    'FaMoneyBillWave': FaMoneyBillWave,
+    'FaUniversity': FaUniversity,
+    'FaHandHoldingUsd': FaHandHoldingUsd,
+    'FaCalculator': FaCalculator,
+    'FaReceipt': FaReceipt,
+    'FaWallet': FaWallet,
+    'FaShieldAlt': FaShieldAlt,
+    'FaLock': FaLock,
+    'FaUnlock': FaUnlock,
+    'FaKey': FaKey,
+    'FaFileInvoiceDollar': FaFileInvoiceDollar,
+    'FaPercent': FaPercent,
+    'FaBalanceScale': FaBalanceScale,
+    'FaHandshake': FaHandshake,
+    'FaClipboardList': FaClipboardList
 }
 
 export const getIconName = (iconComponent) => {
