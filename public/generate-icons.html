@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generar Iconos</title>
+</head>
+<body>
+    <h1>Generando iconos...</h1>
+    <div id="output"></div>
+    
+    <script>
+        const sizes = [72, 96, 144, 192, 512];
+        const output = document.getElementById('output');
+        
+        async function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Crear imagen desde SVG
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+                
+                // Convertir a blob y descargar
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `icon-${size}x${size}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    output.innerHTML += `<p>Icono ${size}x${size} generado</p>`;
+                });
+            };
+            img.src = 'icons/icon.svg';
+        }
+        
+        // Generar todos los iconos
+        sizes.forEach(size => {
+            setTimeout(() => generateIcon(size), size * 10);
+        });
+    </script>
+</body>
+</html>

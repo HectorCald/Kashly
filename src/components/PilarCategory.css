@@ -1,0 +1,33 @@
+.pilar-category{
+  background-color: var(--bg-secondary);
+  min-width: 80px;
+  max-width: 80px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px;
+}
+.pilar-category-name{
+  background-color: var(--bg-secondary);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.pilar-amount{
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Animación de los pilares */
+.pilar-category {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pilar-category.animating {
+  transform: scale(1.02);
+}

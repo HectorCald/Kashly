@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#1a1a1a"/>
+  <rect x="40" y="40" width="1200" height="640" fill="#2a2a2a" rx="8"/>
+  <text x="640" y="360" text-anchor="middle" fill="#ff6b35" font-family="Arial" font-size="48">Kashly - Desktop</text>
+  <text x="640" y="420" text-anchor="middle" fill="#ffffff" font-family="Arial" font-size="24">Screenshot de la aplicación</text>
+</svg>

@@ -1,0 +1,195 @@
+.add-transaction-view{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: var(--bg-secondary);
+  border-radius: 15px;
+  padding: 10px;
+  width: 100%;
+  height: 98%;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  transform: translateY(100%);
+  &.active{
+    transform: translateY(0);
+  }
+}
+.add-transaction-view-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+
+  h1{
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .add-transaction-view-close{
+    width: 40px;
+    height: 40px;
+    font-size: 25px;
+    border-radius: 50%;
+    background-color: var(--bg-secondary);
+    border: none;
+    color: var(--text-primary);
+  }
+}
+.add-transaction-view-body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  height: calc(100% - 70px);
+}
+.add-transaction-view-categories{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  gap:5px;
+  overflow-x: auto;
+}
+.add-transaction-view-button{
+  min-width: 40px;
+  min-height: 40px;
+  font-size: 15px;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: none;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.monto{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.monto-tipo{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--border);
+  border-radius: 25px;
+  padding: 5px;
+}
+.monto-tipo-button.minus{
+  width: 35px;
+  height: 35px;
+  font-size: 15px;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: none;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.monto-tipo-button.minus.activo{
+  background-color: var(--danger);
+  color: var(--text-primary);
+}
+.monto-tipo-button.plus.activo{
+  background-color: var(--success);
+  color: var(--text-primary);
+}
+.monto-tipo-button.plus{
+  width: 35px;
+  height: 35px;
+  font-size: 15px;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: none;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.add-transaction-view-categories {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 5px;
+    margin: 20px 0;
+    position: relative;
+    overflow-x: auto;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+
+/* Animaciones para categorías */
+.category {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+/* Cuando hay una categoría seleccionada */
+.add-transaction-view-categories.has-selected .category:not(.selected) {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Ocultar también el botón de agregar categoría */
+.add-transaction-view-categories.has-selected .add-transaction-view-button {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Categoría seleccionada */
+.category.selected {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    position: absolute;
+    left: 0;
+    z-index: 10;
+}
+
+/* Animación de entrada para nuevas categorías */
+.category {
+    animation: slideInFromLeft 0.3s ease-out;
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.edit-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  position: absolute;
+  bottom: 40px;
+  right: 10px;
+}
+
+.edit-buttons button {
+  flex: 1;
+  max-width: 150px;
+}

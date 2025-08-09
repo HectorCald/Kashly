@@ -1,0 +1,30 @@
+.filters{
+  border: 1px solid rgb(76, 76, 76);
+  border-radius: 17px;
+  width: auto;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+.filter-button {
+  padding: 10px 20px;
+  border-radius: 15px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  
+  &.active.ingresos {
+    background: var(--success);
+    color: var(--text-primary);
+  }
+  &.active.gastos {
+    background: var(--danger);
+    color: var(--text-primary);
+  }
+}

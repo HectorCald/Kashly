@@ -1,0 +1,61 @@
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg-main);
+  position: relative;
+}
+
+.home-screen {
+  padding: 10px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: none;
+  height: none;
+}
+
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: none;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: none;
+}
+
+/* Selección de texto */
+::selection {
+  background: none;
+  color: none;
+}
+
+/* Focus visible para accesibilidad */
+*:focus-visible {
+  outline: 2px solid none;
+  outline-offset: 2px;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Para Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+

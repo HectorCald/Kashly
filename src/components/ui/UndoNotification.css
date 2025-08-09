@@ -1,0 +1,125 @@
+.undo-notification {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 16px 20px;
+    min-width: 320px;
+    max-width: 480px;
+    z-index: 1000;
+    transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.undo-notification.visible {
+    bottom: 20px;
+}
+
+.undo-notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.undo-notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: var(--danger);
+    color: white;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.undo-notification-icon svg {
+    font-size: 16px;
+}
+
+.undo-notification-message {
+    flex: 1;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.undo-notification-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.undo-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 40px;
+    transition: background-color 0.2s ease;
+}
+
+.undo-button:hover {
+    background-color: #0056b3;
+}
+
+.undo-button svg {
+    font-size: 12px;
+}
+
+.close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .undo-notification {
+        left: 10px;
+        right: 10px;
+        transform: none;
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .undo-notification-content {
+        gap: 8px;
+    }
+    
+    .undo-notification-message {
+        font-size: 13px;
+    }
+    
+    .undo-button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}

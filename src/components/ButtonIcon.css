@@ -1,0 +1,27 @@
+.button-icon{
+  min-width: 55px;
+  max-width: 55px;
+  width: 55px;
+  min-height: 55px;
+  max-height: 55px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+}
+
+.button-icon.red {
+  background-color: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.button-icon.gray {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
