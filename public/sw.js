@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kashly-cache-v6';
+const CACHE_NAME = 'kashly-cache-v7';
 
 // Archivos a cachear
 const FILES_TO_CACHE = [
@@ -72,7 +72,6 @@ self.addEventListener('install', (event) => {
             })
     );
 });
-
 // Activar y limpiar caches viejos
 self.addEventListener('activate', (event) => {
     event.waitUntil(
@@ -88,7 +87,6 @@ self.addEventListener('activate', (event) => {
         })
     );
 });
-
 // Interceptar peticiones y SIEMPRE devolver del cache primero
 self.addEventListener('fetch', (event) => {
     // Solo manejar peticiones GET

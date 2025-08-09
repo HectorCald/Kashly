@@ -21,7 +21,7 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
     const { showNotification } = useNotification();
     const descripcionRef = useRef(null);
     const montoRef = useRef(null);
-    
+
     // Cargar categorías cuando se abre la vista
     useEffect(() => {
         if (className === 'active') {
@@ -63,15 +63,15 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
         const handleFocusOut = (e) => {
             // Si el input de descripción o monto pierde el foco hacia un botón o categoría,
             // prevenir que se pierda el foco para mantener el teclado abierto
-            if ((e.target === descripcionRef.current || e.target === montoRef.current) && 
-                (e.relatedTarget?.closest('.monto-tipo-button') || 
-                 e.relatedTarget?.closest('.category') || 
-                 e.relatedTarget?.closest('.add-transaction-view-button'))) {
-                
+            if ((e.target === descripcionRef.current || e.target === montoRef.current) &&
+                (e.relatedTarget?.closest('.monto-tipo-button') ||
+                    e.relatedTarget?.closest('.category') ||
+                    e.relatedTarget?.closest('.add-transaction-view-button'))) {
+
                 // Prevenir que se pierda el foco
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                
+
                 // Mantener el foco en el input que lo tenía
                 if (e.target === descripcionRef.current) {
                     descripcionRef.current.focus();
@@ -103,7 +103,7 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
         } else {
             // Si es una categoría diferente, seleccionar
             setCategoriaSeleccionada(categoria.id);
-            
+
             // Hacer scroll al inicio del contenedor
             const container = document.querySelector('.add-transaction-view-categories');
             if (container) {
@@ -114,7 +114,7 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
             }
         }
     };
-    
+
     const handleAddCategory = () => {
         setAddCategoryView(true);
     }
@@ -153,7 +153,7 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
 
         try {
             // Crear objeto de transacción con hora de Bolivia
-            const fechaBolivia = new Date().toLocaleString("en-US", {timeZone: "America/La_Paz"});
+            const fechaBolivia = new Date().toLocaleString("en-US", { timeZone: "America/La_Paz" });
             const transaccionData = {
                 fecha: fechaBolivia,
                 descripcion: descripcion.trim(),
@@ -163,24 +163,24 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
 
             // Guardar la transacción
             const transaccionId = await addTransaccion(transaccionData);
-            
+
             // Crear la relación en la tabla intermedia
             const transactionCategoryData = {
                 transaccion_id: transaccionId,
                 categoria_id: categoriaSeleccionada
             };
-            
+
             await addTransactionCategory(transactionCategoryData);
-            
+
             // Mostrar mensaje de éxito
             showNotification('Transacción guardada exitosamente', 'success');
-            
+
             // Limpiar formulario
             limpiarFormulario();
-            
+
             // Cerrar la vista
             onClose();
-            
+
         } catch (error) {
             console.error('Error al guardar transacción:', error);
             showNotification('Error al guardar la transacción', 'error');
@@ -213,7 +213,7 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
             };
 
             await updateTransaccion(transaccionParaEditar.id, transaccionData);
-            
+
             // Actualizar la relación de categoría si cambió
             if (transaccionParaEditar.categoria && transaccionParaEditar.categoria.id !== categoriaSeleccionada) {
                 await updateTransactionCategory(transaccionParaEditar.id, categoriaSeleccionada);
@@ -221,10 +221,10 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
                 // Si no tenía categoría, crear la relación
                 await updateTransactionCategory(transaccionParaEditar.id, categoriaSeleccionada);
             }
-            
+
             showNotification('Cambios guardados exitosamente', 'success');
             onClose();
-            
+
         } catch (error) {
             console.error('Error al guardar cambios:', error);
             showNotification('Error al guardar los cambios', 'error');
@@ -235,15 +235,15 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
         try {
             // Eliminar la transacción y sus relaciones
             await deleteTransaccion(transaccionParaEditar.id);
-            
+
             // Notificar al componente padre sobre la transacción eliminada
             if (onTransactionDeleted) {
                 onTransactionDeleted(transaccionParaEditar);
             }
-            
+
             // Cerrar la vista inmediatamente después de eliminar
             onClose();
-            
+
         } catch (error) {
             console.error('Error al eliminar transacción:', error);
             showNotification('Error al eliminar la transacción', 'error');
@@ -267,16 +267,16 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
                 </button>
             </div>
             <div className="add-transaction-view-body">
-                <InputOne 
+                <InputOne
                     ref={descripcionRef}
-                    placeholder="Descripción" 
-                    type="text" 
+                    placeholder="Descripción"
+                    type="text"
                     value={descripcion}
                     onChange={(e) => setDescripcion(e.target.value)}
                 />
                 <div className="monto">
                     <div className="monto-tipo">
-                        <button 
+                        <button
                             className={`monto-tipo-button plus ${tipoTransaccion === 'plus' ? 'activo' : ''}`}
                             onClick={(e) => {
                                 e.preventDefault();
@@ -287,7 +287,7 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
                         >
                             <FaPlus />
                         </button>
-                        <button 
+                        <button
                             className={`monto-tipo-button minus ${tipoTransaccion === 'minus' ? 'activo' : ''}`}
                             onClick={(e) => {
                                 e.preventDefault();
@@ -299,18 +299,18 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
                             <FaMinus />
                         </button>
                     </div>
-                                                    <InputOne
-                                    ref={montoRef}
-                                    placeholder="Monto"
-                                    type="number"
-                                    value={monto}
-                                    onChange={(e) => setMonto(e.target.value)}
-                                />
+                    <InputOne
+                        ref={montoRef}
+                        placeholder="Monto"
+                        type="number"
+                        value={monto}
+                        onChange={(e) => setMonto(e.target.value)}
+                    />
                 </div>
 
                 <div className={`add-transaction-view-categories ${categoriaSeleccionada ? 'has-selected' : ''}`}>
-                    <button 
-                        className="add-transaction-view-button" 
+                    <button
+                        className="add-transaction-view-button"
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -322,8 +322,8 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
                     </button>
                     {categorias && categorias.length > 0 ? (
                         categorias.map((categoria) => (
-                            <Category 
-                                key={categoria.id} 
+                            <Category
+                                key={categoria.id}
                                 name={categoria.nombre}
                                 onClick={() => handleCategoryClick(categoria)}
                                 className={categoriaSeleccionada === categoria.id ? 'selected' : ''}
@@ -352,8 +352,8 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
                     </div>
                 )}
             </div>
-            
-            <AddCategoryView 
+
+            <AddCategoryView
                 className={addCategoryView ? 'active' : 'noActive'}
                 onClose={handleCloseCategory}
             />

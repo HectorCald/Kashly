@@ -369,7 +369,6 @@ function TransactionView({ className, onClose }) {
                                                         )}
                                                     </div>
                                                     <div className="transaction-item-text">
-                                                        <p className="transaction-item-date">{new Date(transaccion.fecha).toLocaleDateString('es-ES')}</p>
                                                         <h2 className="transaction-item-description">{transaccion.descripcion}</h2>
                                                         <p className="transaction-item-category">{transaccion.categoria ? transaccion.categoria.nombre : 'Sin categoría'}</p>
                                                     </div>
