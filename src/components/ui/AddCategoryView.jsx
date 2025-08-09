@@ -9,10 +9,6 @@ import { addCategoria, getCategorias, deleteCategoria } from '../../utils/databa
 import { useNotification } from '../../hooks/useNotification'
 import { getIconName } from '../../utils/icons'
 
-// Variables globales para icono y color seleccionados
-let globalSelectedIcon = 'FaTag'
-let globalSelectedColor = '#9e9e9e'
-
 function AddCategoryView({ className, onClose }) {
     const [categorias, setCategorias] = useState([])
     const [inputValue, setInputValue] = useState('')
@@ -20,7 +16,7 @@ function AddCategoryView({ className, onClose }) {
     const [estadoEliminacion, setEstadoEliminacion] = useState('normal')
     const [showIconModal, setShowIconModal] = useState(false)
     const [showColorModal, setShowColorModal] = useState(false)
-    const [selectedIcon, setSelectedIcon] = useState(FaTag)
+    const [selectedIcon, setSelectedIcon] = useState('FaTag')
     const [selectedColor, setSelectedColor] = useState('#9e9e9e')
     const { showNotification } = useNotification()
     
@@ -56,8 +52,8 @@ function AddCategoryView({ className, onClose }) {
         
         const nuevaCategoria = {
             nombre: nombreCategoria,
-            icon: globalSelectedIcon,
-            color: globalSelectedColor,
+            icon: selectedIcon,
+            color: selectedColor,
             background: '#f5f5f5'
         };
         
@@ -76,12 +72,8 @@ function AddCategoryView({ className, onClose }) {
             
             // Limpiar el input y restablecer icono y color
             setInputValue('');
-            setSelectedIcon(FaTag);
+            setSelectedIcon('FaTag');
             setSelectedColor('#9e9e9e');
-            
-            // Resetear variables globales
-            globalSelectedIcon = 'FaTag';
-            globalSelectedColor = '#9e9e9e';
             
         } catch (error) {
             console.error('Error al agregar categoría:', error);
@@ -178,10 +170,8 @@ function AddCategoryView({ className, onClose }) {
         // Obtener solo el nombre del icono
         const iconName = icon && icon.name ? icon.name : 'FaTag';
         
-        // Guardar en variable global
-        globalSelectedIcon = iconName;
-        
-        setSelectedIcon(icon);
+        // Guardar en estado local
+        setSelectedIcon(iconName);
         setShowIconModal(false);
         setShowColorModal(true);
     }
@@ -191,9 +181,7 @@ function AddCategoryView({ className, onClose }) {
     }
 
     const handleSelectColor = (color) => {
-        // Guardar en variable global
-        globalSelectedColor = color;
-        
+        // Guardar en estado local
         setSelectedColor(color);
         setShowColorModal(false);
     }

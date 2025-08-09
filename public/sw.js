@@ -52,8 +52,10 @@ const FILES_TO_CACHE = [
     // Fuentes de Google
     'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
     'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap',
-    // Assets
+    // Assets e iconos
     '/src/assets/react.svg',
+    '/src/assets/icon-192x192.png',
+    '/src/assets/icon-512x512.png',
     '/vite.svg'
 ];
 
