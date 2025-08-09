@@ -205,7 +205,7 @@ function TransactionView({ className, onClose }) {
             </div>
             <div className="transaction-view-body">
                 <InputNormal 
-                    placeholder="Buscar transacción" 
+                    placeholder="Buscar" 
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
                 />

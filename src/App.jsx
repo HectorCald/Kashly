@@ -118,7 +118,7 @@ function App() {
         <CustomSelect 
           options={mesesDisponibles}
           value={mesSeleccionado}
-          placeholder="Seleccionar mes"
+          placeholder="Mes"
           onChange={handleMesChange}
         />
         <Transactions key={`transactions-${updateTrigger}`} filterActivo={filterActivo} mesSeleccionado={mesSeleccionado} />

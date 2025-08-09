@@ -46,3 +46,16 @@
   padding: 10px;
   margin-top: 10px;
 }
+.no-categories{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  width: 100%;
+
+  p{
+    font-size: 16px;
+    font-weight: 500;
+    color:gray;
+  }
+}

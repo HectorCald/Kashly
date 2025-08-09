@@ -199,7 +199,7 @@ function AddCategoryView({ className, onClose }) {
             </div>
             <div className="add-category-view-body">
                 <Input 
-                    placeholder="Nombre" 
+                    placeholder="Categoria" 
                     type="text" 
                     value={inputValue}
                     onChange={handleInputChange}
@@ -222,7 +222,9 @@ function AddCategoryView({ className, onClose }) {
                         />
                     ))
                 ) : (
-                    <p>No hay categorías disponibles</p>
+                    <div className="no-categories">
+                        <p>No hay categorías disponibles</p>
+                    </div>
                 )}
             </div>
             

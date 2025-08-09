@@ -272,7 +272,9 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
                             />
                         ))
                     ) : (
-                        <p>No hay categorías disponibles</p>
+                        <div className="no-categories-add-transaction">
+                            <p>No hay categorías disponibles</p>
+                        </div>
                     )}
                 </div>
 
