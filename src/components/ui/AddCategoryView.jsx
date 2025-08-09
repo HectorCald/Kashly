@@ -171,10 +171,13 @@ function AddCategoryView({ className, onClose }) {
     const handleSelectIcon = (icon) => {
         console.log('Icono seleccionado:', icon);
         console.log('Tipo de icono:', typeof icon);
-        console.log('Nombre del icono:', icon?.name);
         
-        // Guardar solo el nombre del icono
-        setSelectedIconName(icon.name);
+        // Usar getIconName para obtener el nombre real del icono
+        const iconName = getIconName(icon);
+        console.log('Nombre del icono obtenido:', iconName);
+        
+        // Guardar el nombre real del icono
+        setSelectedIconName(iconName);
         setShowIconModal(false);
         setShowColorModal(true);
     }
