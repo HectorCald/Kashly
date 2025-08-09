@@ -14,7 +14,18 @@ function Category({ name, onClick, style, className, icon, color }) {
     };
 
     return (
-        <div className={`category ${className || ''}`} onClick={onClick}>
+        <div 
+            className={`category ${className || ''}`} 
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onClick();
+            }}
+            onTouchStart={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }}
+        >
             <h1 style={style}>
                 {renderIcon()}
                 <span>{name}</span>

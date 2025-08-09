@@ -14,7 +14,7 @@ function TransactionView({ className, onClose }) {
     const [transaccionesFiltradas, setTransaccionesFiltradas] = useState([])
     const [busqueda, setBusqueda] = useState('')
     const [mesSeleccionado, setMesSeleccionado] = useState('')
-    const [tipoSeleccionado, setTipoSeleccionado] = useState('Salidas')
+    const [tipoSeleccionado, setTipoSeleccionado] = useState('Todos')
     const [mesesDisponibles, setMesesDisponibles] = useState([])
     const [addTransactionView, setAddTransactionView] = useState(false)
     const [transaccionSeleccionada, setTransaccionSeleccionada] = useState(null)
@@ -35,8 +35,84 @@ function TransactionView({ className, onClose }) {
     ]
     
     const type = [
-        'Salidas', 'Ingresos'
+        'Todos', 'Salidas', 'Ingresos'
     ]
+
+    // Función para agrupar transacciones por fecha
+    const agruparTransaccionesPorFecha = (transacciones) => {
+        const grupos = {};
+        
+        transacciones.forEach(transaccion => {
+            const fecha = new Date(transaccion.fecha);
+            const hoy = new Date();
+            const ayer = new Date(hoy);
+            ayer.setDate(hoy.getDate() - 1);
+            const antesDeAyer = new Date(hoy);
+            antesDeAyer.setDate(hoy.getDate() - 2);
+            
+            let clave;
+            if (fecha.toDateString() === hoy.toDateString()) {
+                clave = 'Hoy';
+            } else if (fecha.toDateString() === ayer.toDateString()) {
+                clave = 'Ayer';
+            } else if (fecha.toDateString() === antesDeAyer.toDateString()) {
+                clave = 'Antes de ayer';
+            } else {
+                // Formato: "Lunes 23 de Julio 2025"
+                const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                const diaSemana = diasSemana[fecha.getDay()];
+                const dia = fecha.getDate();
+                const mes = months[fecha.getMonth()];
+                const año = fecha.getFullYear();
+                clave = `${diaSemana} ${dia} de ${mes} ${año}`;
+            }
+            
+            if (!grupos[clave]) {
+                grupos[clave] = {
+                    transacciones: [],
+                    totalIngresos: 0,
+                    totalSalidas: 0,
+                    balance: 0
+                };
+            }
+            
+            grupos[clave].transacciones.push(transaccion);
+            
+            if (transaccion.tipo === 'Ingreso') {
+                grupos[clave].totalIngresos += parseFloat(transaccion.monto);
+            } else {
+                grupos[clave].totalSalidas += parseFloat(transaccion.monto);
+            }
+            
+            grupos[clave].balance = grupos[clave].totalIngresos - grupos[clave].totalSalidas;
+        });
+        
+        // Ordenar los grupos: Hoy, Ayer, Antes de ayer, luego por fecha (más reciente primero)
+        const ordenGrupos = ['Hoy', 'Ayer', 'Antes de ayer'];
+        const gruposOrdenados = {};
+        
+        // Primero agregar los grupos especiales en orden
+        ordenGrupos.forEach(clave => {
+            if (grupos[clave]) {
+                gruposOrdenados[clave] = grupos[clave];
+            }
+        });
+        
+        // Luego agregar los demás grupos ordenados por fecha (más reciente primero)
+        const otrosGrupos = Object.entries(grupos)
+            .filter(([clave]) => !ordenGrupos.includes(clave))
+            .sort(([,a], [,b]) => {
+                const fechaA = new Date(a.transacciones[0].fecha);
+                const fechaB = new Date(b.transacciones[0].fecha);
+                return fechaB - fechaA;
+            });
+        
+        otrosGrupos.forEach(([clave, grupo]) => {
+            gruposOrdenados[clave] = grupo;
+        });
+        
+        return gruposOrdenados;
+    };
 
     // Cargar transacciones con categorías cuando se abre el componente
     useEffect(() => {
@@ -107,7 +183,7 @@ function TransactionView({ className, onClose }) {
         }
 
         // Filtro por tipo
-        if (tipoSeleccionado !== '') {
+        if (tipoSeleccionado !== '' && tipoSeleccionado !== 'Todos') {
             filtradas = filtradas.filter(transaccion => {
                 if (tipoSeleccionado === 'Salidas') {
                     return transaccion.tipo === 'Salida';
@@ -228,45 +304,87 @@ function TransactionView({ className, onClose }) {
                 </div>
                 <div className="transaction-container">
                     {transaccionesFiltradas.length > 0 ? (
-                        transaccionesFiltradas.map((transaccion, index) => {
-                            const shouldAnimate = isInitialLoad || isFiltering;
-                            const isDeleting = deletingTransactions.has(transaccion.id);
-                            const isRestoring = restoringTransactions.has(transaccion.id);
-                            
-                            return (
-                                <div 
-                                    key={transaccion.id} 
-                                    className={`transaction-item ${shouldAnimate ? 'cascade-enter' : ''} ${isDeleting ? 'deleting' : ''} ${isRestoring ? 'restoring' : ''}`}
-                                    onClick={() => handleTransactionClick(transaccion)}
-                                    style={{ cursor: 'pointer' }}
-                                    data-index={index}
-                                >
-                                    <div 
-                                        className="transaction-item-icon"
-                                        style={{
-                                            backgroundColor: transaccion.categoria ? `${transaccion.categoria.color}20` : 'var(--bg-card)',
-                                            color: transaccion.categoria ? transaccion.categoria.color : 'var(--text-primary)'
-                                        }}
-                                    >
-                                        {transaccion.categoria?.icon ? (
-                                            React.createElement(getIconComponent(transaccion.categoria.icon))
-                                        ) : (
-                                            <FaArrowUp />
-                                        )}
+                        (() => {
+                            const grupos = agruparTransaccionesPorFecha(transaccionesFiltradas);
+                            return Object.entries(grupos).map(([fecha, grupo]) => (
+                                <div key={fecha} className="transaction-group">
+                                    <div className="transaction-group-header">
+                                        <h3 className="transaction-group-title">{fecha}</h3>
+                                        <div className="transaction-group-totals">
+                                            {tipoSeleccionado === 'Todos' ? (
+                                                <>
+                                                    <div className="transaction-group-total-item">
+                                                        <span className="total-label">Ingresos:</span>
+                                                        <span className="total-value ingresos">+{grupo.totalIngresos.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="transaction-group-total-item">
+                                                        <span className="total-label">Salidas:</span>
+                                                        <span className="total-value salidas">-{grupo.totalSalidas.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="transaction-group-total-item">
+                                                        <span className="total-label">Balance:</span>
+                                                        <span className={`total-value balance ${grupo.balance >= 0 ? 'positivo' : 'negativo'}`}>
+                                                            {grupo.balance >= 0 ? '+' : ''}{grupo.balance.toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            ) : tipoSeleccionado === 'Ingresos' ? (
+                                                <div className="transaction-group-total-item">
+                                                    <span className="total-label">Total Ingresos:</span>
+                                                    <span className="total-value ingresos">+{grupo.totalIngresos.toFixed(2)}</span>
+                                                </div>
+                                            ) : (
+                                                <div className="transaction-group-total-item">
+                                                    <span className="total-label">Total Salidas:</span>
+                                                    <span className="total-value salidas">-{grupo.totalSalidas.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="transaction-item-text">
-                                        <p className="transaction-item-date">{new Date(transaccion.fecha).toLocaleDateString('es-ES')}</p>
-                                        <h2 className="transaction-item-description">{transaccion.descripcion}</h2>
-                                        <p className="transaction-item-category">{transaccion.categoria ? transaccion.categoria.nombre : 'Sin categoría'}</p>
-                                    </div>
-                                    <div className="transaction-item-amount">
-                                        <p className="transaction-item-amount-value">
-                                            {transaccion.tipo === 'Salida' ? '-' : '+'}Bs. {parseFloat(transaccion.monto).toFixed(2)}
-                                        </p>
+                                    <div className="transaction-group-items">
+                                        {grupo.transacciones.map((transaccion, index) => {
+                                            const shouldAnimate = isInitialLoad || isFiltering;
+                                            const isDeleting = deletingTransactions.has(transaccion.id);
+                                            const isRestoring = restoringTransactions.has(transaccion.id);
+                                            
+                                            return (
+                                                <div 
+                                                    key={transaccion.id} 
+                                                    className={`transaction-item ${shouldAnimate ? 'cascade-enter' : ''} ${isDeleting ? 'deleting' : ''} ${isRestoring ? 'restoring' : ''}`}
+                                                    onClick={() => handleTransactionClick(transaccion)}
+                                                    style={{ cursor: 'pointer' }}
+                                                    data-index={index}
+                                                >
+                                                    <div 
+                                                        className="transaction-item-icon"
+                                                        style={{
+                                                            backgroundColor: transaccion.categoria ? `${transaccion.categoria.color}20` : 'var(--bg-card)',
+                                                            color: transaccion.categoria ? transaccion.categoria.color : 'var(--text-primary)'
+                                                        }}
+                                                    >
+                                                        {transaccion.categoria?.icon ? (
+                                                            React.createElement(getIconComponent(transaccion.categoria.icon))
+                                                        ) : (
+                                                            <FaArrowUp />
+                                                        )}
+                                                    </div>
+                                                    <div className="transaction-item-text">
+                                                        <p className="transaction-item-date">{new Date(transaccion.fecha).toLocaleDateString('es-ES')}</p>
+                                                        <h2 className="transaction-item-description">{transaccion.descripcion}</h2>
+                                                        <p className="transaction-item-category">{transaccion.categoria ? transaccion.categoria.nombre : 'Sin categoría'}</p>
+                                                    </div>
+                                                    <div className="transaction-item-amount">
+                                                        <p className="transaction-item-amount-value">
+                                                            {transaccion.tipo === 'Salida' ? '-' : '+'}Bs. {parseFloat(transaccion.monto).toFixed(2)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
-                            );
-                        })
+                            ));
+                        })()
                     ) : (
                         <div className="no-transacciones">
                             <p>No hay transacciones disponibles</p>

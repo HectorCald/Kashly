@@ -133,9 +133,9 @@ function AddCategoryView({ className, onClose }) {
     const getCategoryStyle = (categoria) => {
         if (categoriaSeleccionada === categoria.id) {
             if (estadoEliminacion === 'eliminar') {
-                return { backgroundColor: '#ff4444', color: 'white' };
+                return { backgroundColor: '#ff4444', color: 'white', iconColor: 'white' };
             } else if (estadoEliminacion === 'confirmar') {
-                return { backgroundColor: '#ff0000', color: 'white' };
+                return { backgroundColor: '#ff0000', color: 'white', iconColor: 'white' };
             }
         }
         return {};
@@ -214,16 +214,19 @@ function AddCategoryView({ className, onClose }) {
             </div>
             <div className="content-container">
                 {categorias && categorias.length > 0 ? (
-                    categorias.map((categoria) => (
-                        <Category 
-                            key={categoria.id} 
-                            name={getCategoryText(categoria)}
-                            onClick={() => handleCategoryClick(categoria)}
-                            style={getCategoryStyle(categoria)}
-                            icon={categoria.icon}
-                            color={categoria.color}
-                        />
-                    ))
+                    categorias.map((categoria) => {
+                        const categoryStyle = getCategoryStyle(categoria);
+                        return (
+                            <Category 
+                                key={categoria.id} 
+                                name={getCategoryText(categoria)}
+                                onClick={() => handleCategoryClick(categoria)}
+                                style={categoryStyle}
+                                icon={categoria.icon}
+                                color={categoryStyle.iconColor || categoria.color}
+                            />
+                        );
+                    })
                 ) : (
                     <div className="no-categories">
                         <p>No hay categorías disponibles</p>

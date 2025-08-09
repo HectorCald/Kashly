@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import './AddTransactionView.css'
 import { FaTimes, FaPlus, FaMinus, FaSave, FaTag, FaTrash } from 'react-icons/fa'
 import InputOne from '../InputOne'
@@ -19,6 +19,8 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
     const [monto, setMonto] = useState('');
 
     const { showNotification } = useNotification();
+    const descripcionRef = useRef(null);
+    const montoRef = useRef(null);
     
     // Cargar categorías cuando se abre la vista
     useEffect(() => {
@@ -45,6 +47,45 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
             }
         }
     }, [modoEdicion, transaccionParaEditar, className]);
+
+    // Hacer focus automático al campo descripción cuando se abre la vista
+    useEffect(() => {
+        if (className === 'active' && descripcionRef.current) {
+            // Pequeño delay para asegurar que el DOM esté listo
+            setTimeout(() => {
+                descripcionRef.current.focus();
+            }, 100);
+        }
+    }, [className]);
+
+    // Prevenir que se pierda el foco cuando se interactúa con botones y categorías
+    useEffect(() => {
+        const handleFocusOut = (e) => {
+            // Si el input de descripción o monto pierde el foco hacia un botón o categoría,
+            // prevenir que se pierda el foco para mantener el teclado abierto
+            if ((e.target === descripcionRef.current || e.target === montoRef.current) && 
+                (e.relatedTarget?.closest('.monto-tipo-button') || 
+                 e.relatedTarget?.closest('.category') || 
+                 e.relatedTarget?.closest('.add-transaction-view-button'))) {
+                
+                // Prevenir que se pierda el foco
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                
+                // Mantener el foco en el input que lo tenía
+                if (e.target === descripcionRef.current) {
+                    descripcionRef.current.focus();
+                } else if (e.target === montoRef.current) {
+                    montoRef.current.focus();
+                }
+            }
+        };
+
+        if (className === 'active') {
+            document.addEventListener('focusout', handleFocusOut, true);
+            return () => document.removeEventListener('focusout', handleFocusOut, true);
+        }
+    }, [className]);
 
     const cargarCategorias = async () => {
         try {
@@ -227,6 +268,7 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
             </div>
             <div className="add-transaction-view-body">
                 <InputOne 
+                    ref={descripcionRef}
                     placeholder="Descripción" 
                     type="text" 
                     value={descripcion}
@@ -236,27 +278,46 @@ function AddTransactionView({ className, onClose, transaccionParaEditar = null, 
                     <div className="monto-tipo">
                         <button 
                             className={`monto-tipo-button plus ${tipoTransaccion === 'plus' ? 'activo' : ''}`}
-                            onClick={() => handleTipoChange('plus')}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleTipoChange('plus');
+                            }}
+                            type="button"
                         >
                             <FaPlus />
                         </button>
                         <button 
                             className={`monto-tipo-button minus ${tipoTransaccion === 'minus' ? 'activo' : ''}`}
-                            onClick={() => handleTipoChange('minus')}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleTipoChange('minus');
+                            }}
+                            type="button"
                         >
                             <FaMinus />
                         </button>
                     </div>
-                    <InputOne 
-                        placeholder="Monto" 
-                        type="number" 
-                        value={monto}
-                        onChange={(e) => setMonto(e.target.value)}
-                    />
+                                                    <InputOne
+                                    ref={montoRef}
+                                    placeholder="Monto"
+                                    type="number"
+                                    value={monto}
+                                    onChange={(e) => setMonto(e.target.value)}
+                                />
                 </div>
 
                 <div className={`add-transaction-view-categories ${categoriaSeleccionada ? 'has-selected' : ''}`}>
-                    <button className="add-transaction-view-button" onClick={handleAddCategory}>
+                    <button 
+                        className="add-transaction-view-button" 
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAddCategory();
+                        }}
+                        type="button"
+                    >
                         <FaPlus />
                     </button>
                     {categorias && categorias.length > 0 ? (

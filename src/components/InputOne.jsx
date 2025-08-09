@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import './InputOne.css'
 
-function InputOne({ placeholder, type, value, onChange }) {
+const InputOne = forwardRef(({ placeholder, type, value, onChange }, ref) => {
     return (
         <div className="input-one">
             <input 
+                ref={ref}
                 type={type} 
                 placeholder={placeholder} 
                 value={value || ''}
@@ -12,6 +13,6 @@ function InputOne({ placeholder, type, value, onChange }) {
             />
         </div>
     )
-}
+});
 
 export default InputOne;
