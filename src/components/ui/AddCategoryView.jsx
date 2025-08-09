@@ -7,7 +7,7 @@ import IconModal from './IconModal'
 import ColorModal from './ColorModal'
 import { addCategoria, getCategorias, deleteCategoria } from '../../utils/database'
 import { useNotification } from '../../hooks/useNotification'
-import { getIconName } from '../../utils/icons'
+import { getIconName, getIconComponent } from '../../utils/icons'
 
 function AddCategoryView({ className, onClose }) {
     const [categorias, setCategorias] = useState([])
@@ -16,7 +16,7 @@ function AddCategoryView({ className, onClose }) {
     const [estadoEliminacion, setEstadoEliminacion] = useState('normal')
     const [showIconModal, setShowIconModal] = useState(false)
     const [showColorModal, setShowColorModal] = useState(false)
-    const [selectedIcon, setSelectedIcon] = useState('FaTag')
+    const [selectedIconName, setSelectedIconName] = useState('FaTag')
     const [selectedColor, setSelectedColor] = useState('#9e9e9e')
     const { showNotification } = useNotification()
     
@@ -50,9 +50,11 @@ function AddCategoryView({ className, onClose }) {
             return;
         }
         
+        console.log('Creando categoría con icono:', selectedIconName);
+        
         const nuevaCategoria = {
             nombre: nombreCategoria,
-            icon: selectedIcon,
+            icon: selectedIconName,
             color: selectedColor,
             background: '#f5f5f5'
         };
@@ -72,7 +74,7 @@ function AddCategoryView({ className, onClose }) {
             
             // Limpiar el input y restablecer icono y color
             setInputValue('');
-            setSelectedIcon('FaTag');
+            setSelectedIconName('FaTag');
             setSelectedColor('#9e9e9e');
             
         } catch (error) {
@@ -167,11 +169,12 @@ function AddCategoryView({ className, onClose }) {
     }
 
     const handleSelectIcon = (icon) => {
-        // Obtener solo el nombre del icono
-        const iconName = icon && icon.name ? icon.name : 'FaTag';
+        console.log('Icono seleccionado:', icon);
+        console.log('Tipo de icono:', typeof icon);
+        console.log('Nombre del icono:', icon?.name);
         
-        // Guardar en estado local
-        setSelectedIcon(iconName);
+        // Guardar solo el nombre del icono
+        setSelectedIconName(icon.name);
         setShowIconModal(false);
         setShowColorModal(true);
     }
@@ -202,7 +205,7 @@ function AddCategoryView({ className, onClose }) {
                     onChange={handleInputChange}
                     onAdd={handleAddCategory} 
                     onIconClick={handleIconClick}
-                    selectedIcon={selectedIcon}
+                    selectedIcon={getIconComponent(selectedIconName)}
                     selectedColor={selectedColor}
                 />
             </div>

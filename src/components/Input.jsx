@@ -36,7 +36,12 @@ function Input({ placeholder, type, value, onChange, onAdd, onIconClick, selecte
                 const IconComponent = selectedIcon;
                 return <IconComponent style={{ color: selectedColor || '#9e9e9e' }} />;
             }
+            // Si selectedIcon es un string, intentar renderizar el icono por defecto
+            if (typeof selectedIcon === 'string') {
+                return <FaTag style={{ color: selectedColor || '#9e9e9e' }} />;
+            }
         }
+        // Icono por defecto
         return <FaTag style={{ color: selectedColor || '#9e9e9e' }} />;
     };
 

@@ -92,7 +92,9 @@ const Transactions = ({ filterActivo = 'salidas', mesSeleccionado }) => {
           />
         ))
       ) : (
-        <p className="no-transactions">No hay categorías disponibles</p>
+        <div className="no-transacciones">
+            <p>No hay transacciones disponibles</p>
+        </div>
       )}
     </div>
   )

@@ -213,59 +213,65 @@ function TransactionView({ className, onClose }) {
                     <CustomSelect
                         options={mesesDisponibles}
                         value={mesSeleccionado}
-                        placeholder="Seleccionar mes"
+                        placeholder="Mes"
                         style={{backgroundColor: 'var(--bg-card'}}
                         onChange={(value) => setMesSeleccionado(value)}
                     />
                     <CustomSelect
                         options={type}
                         value={tipoSeleccionado}
-                        placeholder="Seleccionar tipo"
+                        placeholder="Tipo"
                         style={{backgroundColor: 'var(--bg-card'}}
                         onChange={(value) => setTipoSeleccionado(value)}
                     />
 
                 </div>
                 <div className="transaction-container">
-                    {transaccionesFiltradas.map((transaccion, index) => {
-                        const shouldAnimate = isInitialLoad || isFiltering;
-                        const isDeleting = deletingTransactions.has(transaccion.id);
-                        const isRestoring = restoringTransactions.has(transaccion.id);
-                        
-                        return (
-                            <div 
-                                key={transaccion.id} 
-                                className={`transaction-item ${shouldAnimate ? 'cascade-enter' : ''} ${isDeleting ? 'deleting' : ''} ${isRestoring ? 'restoring' : ''}`}
-                                onClick={() => handleTransactionClick(transaccion)}
-                                style={{ cursor: 'pointer' }}
-                                data-index={index}
-                            >
+                    {transaccionesFiltradas.length > 0 ? (
+                        transaccionesFiltradas.map((transaccion, index) => {
+                            const shouldAnimate = isInitialLoad || isFiltering;
+                            const isDeleting = deletingTransactions.has(transaccion.id);
+                            const isRestoring = restoringTransactions.has(transaccion.id);
+                            
+                            return (
                                 <div 
-                                    className="transaction-item-icon"
-                                    style={{
-                                        backgroundColor: transaccion.categoria ? `${transaccion.categoria.color}20` : 'var(--bg-card)',
-                                        color: transaccion.categoria ? transaccion.categoria.color : 'var(--text-primary)'
-                                    }}
+                                    key={transaccion.id} 
+                                    className={`transaction-item ${shouldAnimate ? 'cascade-enter' : ''} ${isDeleting ? 'deleting' : ''} ${isRestoring ? 'restoring' : ''}`}
+                                    onClick={() => handleTransactionClick(transaccion)}
+                                    style={{ cursor: 'pointer' }}
+                                    data-index={index}
                                 >
-                                    {transaccion.categoria?.icon ? (
-                                        React.createElement(getIconComponent(transaccion.categoria.icon))
-                                    ) : (
-                                        <FaArrowUp />
-                                    )}
+                                    <div 
+                                        className="transaction-item-icon"
+                                        style={{
+                                            backgroundColor: transaccion.categoria ? `${transaccion.categoria.color}20` : 'var(--bg-card)',
+                                            color: transaccion.categoria ? transaccion.categoria.color : 'var(--text-primary)'
+                                        }}
+                                    >
+                                        {transaccion.categoria?.icon ? (
+                                            React.createElement(getIconComponent(transaccion.categoria.icon))
+                                        ) : (
+                                            <FaArrowUp />
+                                        )}
+                                    </div>
+                                    <div className="transaction-item-text">
+                                        <p className="transaction-item-date">{new Date(transaccion.fecha).toLocaleDateString('es-ES')}</p>
+                                        <h2 className="transaction-item-description">{transaccion.descripcion}</h2>
+                                        <p className="transaction-item-category">{transaccion.categoria ? transaccion.categoria.nombre : 'Sin categoría'}</p>
+                                    </div>
+                                    <div className="transaction-item-amount">
+                                        <p className="transaction-item-amount-value">
+                                            {transaccion.tipo === 'Salida' ? '-' : '+'}Bs. {parseFloat(transaccion.monto).toFixed(2)}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="transaction-item-text">
-                                    <p className="transaction-item-date">{new Date(transaccion.fecha).toLocaleDateString('es-ES')}</p>
-                                    <h2 className="transaction-item-description">{transaccion.descripcion}</h2>
-                                    <p className="transaction-item-category">{transaccion.categoria ? transaccion.categoria.nombre : 'Sin categoría'}</p>
-                                </div>
-                                <div className="transaction-item-amount">
-                                    <p className="transaction-item-amount-value">
-                                        {transaccion.tipo === 'Salida' ? '-' : '+'}Bs. {parseFloat(transaccion.monto).toFixed(2)}
-                                    </p>
-                                </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })
+                    ) : (
+                        <div className="no-transacciones">
+                            <p>No hay transacciones disponibles</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
