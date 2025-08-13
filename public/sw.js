@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kashly-cache-v7';
+const CACHE_NAME = 'kashly-cache-v8';
 
 // Archivos a cachear
 const FILES_TO_CACHE = [
