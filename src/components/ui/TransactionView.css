@@ -57,6 +57,7 @@
     flex-direction: column;
     gap: 15px;
     margin-top: 10px;
+    overflow-y: auto;
 
     .transaction-item{
         display: flex;
