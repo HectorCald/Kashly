@@ -57,6 +57,7 @@
     flex-direction: column;
     gap: 15px;
     margin-top: 10px;
+    max-height: calc(100vh - 210px);
     overflow-y: auto;
 
     .transaction-item{
@@ -187,9 +188,10 @@
 .transaction-group {
     margin-bottom: 20px;
     border-radius: 12px;
-    overflow: hidden;
+    overflow-y: auto;
     background-color: var(--bg-card);
     border: 1px solid var(--border);
+
 }
 
 .transaction-group-header {
